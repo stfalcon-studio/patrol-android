@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:inputType="textEmailAddress"
         android:ems="10"
+        android:gravity="center"
         android:id="@+id/et_email"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
@@ -27,6 +28,7 @@
         style="?android:attr/progressBarStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="16dp"
         android:id="@+id/progressBar"
         android:layout_below="@+id/bt_login"
         android:layout_centerHorizontal="true"

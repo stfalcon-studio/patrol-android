@@ -30,6 +30,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:recyclerview-v7:22.0.0'
+    compile 'com.android.support:cardview-v7:22.0.0'
     compile 'com.octo.android.robospice:robospice:1.4.+'
     compile 'com.android.support:design:22.2.0'
 }

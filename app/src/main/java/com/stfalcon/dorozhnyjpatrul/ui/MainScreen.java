@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -25,6 +27,9 @@ public class MainScreen extends AppCompatActivity implements View.OnClickListene
     int REQUEST_CAMERA = 0;
 
     private LinearLayout llSettings;
+    private RecyclerView mRecyclerView;
+    private RecyclerView.LayoutManager mLayoutManager;
+    private RecyclerView.Adapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +42,17 @@ public class MainScreen extends AppCompatActivity implements View.OnClickListene
         findViewById(R.id.bt_settings).setOnClickListener(this);
         findViewById(R.id.snap).setOnClickListener(this);
         llSettings = (LinearLayout) findViewById(R.id.ll_settings);
+
+        // Calling the RecyclerView
+        mRecyclerView = (RecyclerView)findViewById(R.id.recycler_view);
+        mRecyclerView.setHasFixedSize(true);
+
+        // The number of Columns
+        mLayoutManager = new GridLayoutManager(this, 2);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
+        mAdapter = new GridAdapter();
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override

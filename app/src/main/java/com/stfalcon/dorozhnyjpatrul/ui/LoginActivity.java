@@ -9,6 +9,9 @@ import android.widget.TextView;
 
 import com.stfalcon.dorozhnyjpatrul.R;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private View btLogin;
@@ -35,7 +38,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bt_login:
-                loginUser();
+                if (isEmailValid(etLogin.getText().toString())) {
+                    loginUser();
+                }
                 break;
         }
     }
@@ -57,5 +62,34 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 finish();
             }
         }, 2000);
+    }
+
+
+    /**
+     * method is used for checking valid email id format.
+     *
+     * @param email
+     * @return boolean true for valid false for invalid
+     */
+    public boolean isEmailValid(String email) {
+        boolean isValid = false;
+
+        String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+        CharSequence inputStr = email;
+
+        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(inputStr);
+        if (matcher.matches()) {
+            isValid = true;
+        } else {
+            etLogin.setError(getString(R.string.message_invalid_email));
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    etLogin.setError(null);
+                }
+            }, 1000);
+        }
+        return isValid;
     }
 }

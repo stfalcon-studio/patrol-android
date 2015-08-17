@@ -5,18 +5,40 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="48dp"/>
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/snap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="16dp"
+        android:clickable="true"
+        android:src="@android:drawable/ic_menu_camera"
+        app:backgroundTint="@color/primaryColor"
+        app:borderWidth="0dp"
+        app:elevation="6dp"
+        app:fabSize="normal"/>
+
     <android.support.design.widget.CollapsingToolbarLayout
         android:id="@+id/my_awesome_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/primaryColor"
-        android:minHeight="?attr/actionBarSize">
+        android:elevation="2dp"
+        android:minHeight="48dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingLeft="16dp"
-            android:paddingRight="8dp"
+            android:paddingRight="4dp"
             android:animateLayoutChanges="true">
 
 
@@ -37,49 +59,39 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:padding="8dp"
-                android:src="@android:drawable/ic_menu_manage"
+                android:src="@drawable/ic_settings"
                 android:layout_alignParentRight="true"/>
 
             <LinearLayout
                 android:id="@+id/ll_settings"
                 android:orientation="vertical"
-                android:paddingTop="22dp"
                 android:layout_margin="16dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/title"
                 android:visibility="gone">
 
-                <TextView
+                <CheckBox
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Upload only WiFi"/>
+                    android:textColor="@android:color/white"
+                    android:text="Upload only WiFi"
+                    android:checked="false"/>
+
+
+                <Button
+                    android:id="@+id/logout"
+                    android:text="Logout"
+                    android:layout_margin="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="26dp"
+                    android:textColor="@android:color/white"
+                    android:background="@color/primaryColor"/>
 
             </LinearLayout>
 
         </RelativeLayout>
     </android.support.design.widget.CollapsingToolbarLayout>
 
-
-    <!--<android.support.v7.widget.RecyclerView
-        android:id="@+id/my_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/my_awesome_toolbar" />-->
-
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/snap"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_margin="16dp"
-        android:clickable="true"
-        android:src="@android:drawable/ic_menu_camera"
-        app:backgroundTint="@color/primaryColor"
-        app:borderWidth="0dp"
-        app:elevation="6dp"
-        app:fabSize="normal"/>
 
 </RelativeLayout>
