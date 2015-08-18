@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.stfalcon.dorozhnyjpatrul.R;
+import com.stfalcon.dorozhnyjpatrul.utils.UserEmailFetcher;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -47,7 +48,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 
     private void initUserAccount() {
-        etLogin.setText("example@gmail.com");
+        etLogin.setText(UserEmailFetcher.getEmail(this));
         btLogin.setVisibility(View.VISIBLE);
     }
 

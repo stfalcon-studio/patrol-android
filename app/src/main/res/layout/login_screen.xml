@@ -5,33 +5,51 @@
     android:animateLayoutChanges="true">
 
 
-    <EditText
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="textEmailAddress"
+        android:layout_above="@+id/about"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/ic_stfalcon"/>
+
+
+    <TextView
+        android:id="@+id/about"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="26dp"
+        android:layout_above="@+id/et_email"
+        android:layout_centerHorizontal="true"
+        android:text="Somsing about service"/>
+
+
+    <EditText
+        android:id="@+id/et_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:ems="10"
         android:gravity="center"
-        android:id="@+id/et_email"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:inputType="textEmailAddress" />
 
     <Button
+        android:id="@+id/bt_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Button"
-        android:id="@+id/bt_login"
         android:layout_below="@+id/et_email"
         android:layout_centerHorizontal="true"
-        android:visibility="gone"/>
+        android:text="@string/login_button"
+        android:visibility="gone" />
 
     <ProgressBar
+        android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:id="@+id/progressBar"
         android:layout_below="@+id/bt_login"
         android:layout_centerHorizontal="true"
-        android:visibility="gone"/>
+        android:layout_margin="16dp"
+        android:visibility="gone" />
 
 </RelativeLayout>
