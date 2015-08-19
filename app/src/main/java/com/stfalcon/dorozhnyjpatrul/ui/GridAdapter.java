@@ -1,5 +1,7 @@
 package com.stfalcon.dorozhnyjpatrul.ui;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,60 +9,28 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.stfalcon.dorozhnyjpatrul.R;
-import com.stfalcon.dorozhnyjpatrul.models.GridItem;
+import com.stfalcon.dorozhnyjpatrul.models.Photo;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import io.realm.RealmResults;
+
 /**
  * Created by alexandr on 17/08/15.
  */
-public class GridAdapter  extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
+public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
 
-    List<GridItem> mItems;
+    private List<Photo> mItems = new ArrayList<Photo>();
 
-    public GridAdapter() {
+    public GridAdapter(RealmResults<Photo> photos) {
         super();
-        mItems = new ArrayList<GridItem>();
-        GridItem species = new GridItem();
-        species.setState(GridItem.STATE_IN_PROCESS);
-        species.setThumbnail(R.drawable.ic_stfalcon);
-        mItems.add(species);
+        mItems.addAll(photos);
+    }
 
-        species = new GridItem();
-        species.setState(GridItem.STATE_IN_PROCESS);
-        species.setThumbnail(R.drawable.ic_stfalcon);
-        mItems.add(species);
-
-        species = new GridItem();
-        species.setState(GridItem.STATE_IN_PROCESS);
-        species.setThumbnail(R.drawable.ic_stfalcon);
-        mItems.add(species);
-
-        species = new GridItem();
-        species.setState(GridItem.STATE_UPLOADED);
-        species.setThumbnail(R.drawable.ic_stfalcon);
-        mItems.add(species);
-
-        species = new GridItem();
-        species.setState(GridItem.STATE_UPLOADED);
-        species.setThumbnail(R.drawable.ic_stfalcon);
-        mItems.add(species);
-
-        species = new GridItem();
-        species.setState(GridItem.STATE_UPLOADED);
-        species.setThumbnail(R.drawable.ic_stfalcon);
-        mItems.add(species);
-
-        species = new GridItem();
-        species.setState(GridItem.STATE_ERROR);
-        species.setThumbnail(R.drawable.ic_stfalcon);
-        mItems.add(species);
-
-        species = new GridItem();
-        species.setState(GridItem.STATE_UPLOADED);
-        species.setThumbnail(R.drawable.ic_stfalcon);
-        mItems.add(species);
+    public void addItem(Photo photo){
+        mItems.add(photo);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -73,19 +43,21 @@ public class GridAdapter  extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
-        GridItem nature = mItems.get(i);
-        switch (nature.getState()){
-            case GridItem.STATE_IN_PROCESS:
-                viewHolder.tvspecies.setImageResource(android.R.drawable.ic_menu_upload);
+        Photo photo = mItems.get(i);
+        switch (photo.getState()) {
+            case Photo.STATE_IN_PROCESS:
+                viewHolder.imgState.setImageResource(android.R.drawable.ic_menu_upload);
                 break;
-            case GridItem.STATE_UPLOADED:
-                viewHolder.tvspecies.setImageResource(android.R.drawable.ic_menu_save);
+            case Photo.STATE_UPLOADED:
+                viewHolder.imgState.setImageResource(android.R.drawable.ic_menu_save);
                 break;
-            case GridItem.STATE_ERROR:
-                viewHolder.tvspecies.setImageResource(android.R.drawable.ic_delete);
+            case Photo.STATE_ERROR:
+                viewHolder.imgState.setImageResource(android.R.drawable.ic_delete);
                 break;
         }
-        viewHolder.imgThumbnail.setImageResource(nature.getThumbnail());
+        Bitmap bitmap = BitmapFactory.decodeFile(photo.getPhotoURL());
+        viewHolder.imgThumbnail.setImageBitmap(Bitmap.createScaledBitmap(bitmap,
+                bitmap.getWidth()/4, bitmap.getHeight()/4, false));
     }
 
     @Override
@@ -94,15 +66,15 @@ public class GridAdapter  extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
         return mItems.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder{
+    class ViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView imgThumbnail;
-        public ImageView tvspecies;
+        public ImageView imgState;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            imgThumbnail = (ImageView)itemView.findViewById(R.id.img_thumbnail);
-            tvspecies = (ImageView)itemView.findViewById(R.id.img_state);
+            imgThumbnail = (ImageView) itemView.findViewById(R.id.img_thumbnail);
+            imgState = (ImageView) itemView.findViewById(R.id.img_state);
         }
     }
 }

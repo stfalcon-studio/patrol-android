@@ -24,32 +24,30 @@ public class CameraUtils {
         return Uri.fromFile(getOutputMediaFile(type));
     }
 
+
     public static File getOutputMediaFile(int type) {
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "camera");
-
         createMediaStorageDir(mediaStorageDir);
-
         return createFile(type, mediaStorageDir);
     }
+
 
     private static File getOutputInternalMediaFile(Context context, int type) {
         File mediaStorageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "DPatrul");
-
         createMediaStorageDir(mediaStorageDir);
-
         return createFile(type, mediaStorageDir);
     }
 
-    private static void createMediaStorageDir(File mediaStorageDir) // Used to be 'private void ...'
-    {
+
+    private static void createMediaStorageDir(File mediaStorageDir) {
         if (!mediaStorageDir.exists()) {
             mediaStorageDir.mkdirs(); // Used to be 'mediaStorage.mkdirs();'
         }
     } // Was flipped the other way
 
-    private static File createFile(int type, File mediaStorageDir) // Used to be 'private File ...'
-    {
+
+    private static File createFile(int type, File mediaStorageDir) {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         File mediaFile = null;
         if (type == MEDIA_TYPE_IMAGE) {
@@ -61,6 +59,7 @@ public class CameraUtils {
         }
         return mediaFile;
     }
+
 
     public static String saveToInternalStorage(Context context, int type, Uri tempUri) {
         InputStream in = null;

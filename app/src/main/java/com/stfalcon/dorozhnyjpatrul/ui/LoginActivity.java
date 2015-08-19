@@ -8,16 +8,20 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.stfalcon.dorozhnyjpatrul.R;
+import com.stfalcon.dorozhnyjpatrul.models.UserData;
 import com.stfalcon.dorozhnyjpatrul.utils.UserEmailFetcher;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import io.realm.Realm;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private View btLogin;
     private View progressBar;
     private TextView etLogin;
+    private Realm realm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +52,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 
     private void initUserAccount() {
+        realm = Realm.getInstance(LoginActivity.this);
+        UserData userData = realm.where(UserData.class).findFirst();
+        if (userData != null) {
+            if (userData.isLogin()) {
+                startActivity(new Intent(LoginActivity.this, MainScreen.class));
+                finish();
+            }
+        }
+
         etLogin.setText(UserEmailFetcher.getEmail(this));
         btLogin.setVisibility(View.VISIBLE);
     }
@@ -60,6 +73,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void run() {
                 startActivity(new Intent(LoginActivity.this, MainScreen.class));
+
+                UserData userData = new UserData();
+                userData.setEmail(etLogin.getText().toString());
+                userData.setIsLogin(true);
+                realm.beginTransaction();
+                realm.copyToRealmOrUpdate(userData);
+                realm.commitTransaction();
+
                 finish();
             }
         }, 2000);
