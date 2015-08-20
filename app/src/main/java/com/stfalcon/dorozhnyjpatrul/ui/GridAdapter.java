@@ -57,7 +57,7 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
         }
         Bitmap bitmap = BitmapFactory.decodeFile(photo.getPhotoURL());
         viewHolder.imgThumbnail.setImageBitmap(Bitmap.createScaledBitmap(bitmap,
-                bitmap.getWidth() / 4, bitmap.getHeight() / 4, false));
+                bitmap.getWidth() / 8, bitmap.getHeight() / 8, false));
     }
 
     @Override
