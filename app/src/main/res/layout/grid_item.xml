@@ -6,24 +6,20 @@
     android:orientation="vertical">
 
     <android.support.v7.widget.CardView
-        android:layout_width="165dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         card_view:cardCornerRadius="3dp"
-        android:layout_marginTop="9dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        card_view:cardElevation="0.01dp"
-        android:layout_marginBottom="0dp">
+        card_view:cardElevation="0.01dp">
 
         <RelativeLayout
             android:id="@+id/top_layout"
-            android:layout_width="165dp"
-            android:layout_height="160dp">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
-            <ImageView
+            <com.stfalcon.dorozhnyjpatrul.ui.SquareImageView
                 android:id="@+id/img_thumbnail"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:scaleType="centerCrop"/>
 
             <ImageView

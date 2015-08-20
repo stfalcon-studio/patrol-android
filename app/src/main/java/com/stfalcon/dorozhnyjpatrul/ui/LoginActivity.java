@@ -72,7 +72,15 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
     private void loginUser(String email) {
         btLogin.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
+        UserData userData = new UserData();
+        userData.setEmail(etLogin.getText().toString());
+        userData.setIsLogin(true);
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(userData);
+        realm.commitTransaction();
         startActivity(new Intent(LoginActivity.this, MainScreen.class));
+        finish();
+
         //getSpiceManager().execute(new LoginTask(email), new LoginUserRequestListener());
     }
 
