@@ -5,16 +5,20 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
 import com.stfalcon.dorozhnyjpatrul.R;
 import com.stfalcon.dorozhnyjpatrul.models.Photo;
+import com.stfalcon.dorozhnyjpatrul.models.PhotoData;
 import com.stfalcon.dorozhnyjpatrul.models.UserData;
+import com.stfalcon.dorozhnyjpatrul.network.tasks.UploadImageTask;
 import com.stfalcon.dorozhnyjpatrul.utils.CameraUtils;
 
 import io.realm.Realm;
@@ -22,7 +26,7 @@ import io.realm.Realm;
 /**
  * Created by alexandr on 17/08/15.
  */
-public class MainScreen extends AppCompatActivity implements View.OnClickListener {
+public class MainScreen extends BaseSpiceActivity implements View.OnClickListener {
     int REQUEST_CAMERA = 0;
 
     private LinearLayout llSettings;
@@ -31,6 +35,8 @@ public class MainScreen extends AppCompatActivity implements View.OnClickListene
     private RecyclerView.Adapter mAdapter;
     private Uri imageUri;
     private Realm realm;
+    private UploadRequestListener requestListener = new UploadRequestListener();
+    private UserData userData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,8 +72,8 @@ public class MainScreen extends AppCompatActivity implements View.OnClickListene
         findViewById(R.id.logout).setOnClickListener(this);
         llSettings = (LinearLayout) findViewById(R.id.ll_settings);
 
-        UserData userData = realm.where(UserData.class).findFirst();
-        ((TextView)findViewById(R.id.title)).setText(userData.getEmail());
+        userData = realm.where(UserData.class).findFirst();
+        ((TextView) findViewById(R.id.title)).setText(userData.getEmail());
     }
 
     @Override
@@ -81,7 +87,7 @@ public class MainScreen extends AppCompatActivity implements View.OnClickListene
                 break;
             case R.id.logout:
                 UserData userData = new UserData();
-                userData.setEmail(((TextView)findViewById(R.id.title)).getText().toString());
+                userData.setEmail(((TextView) findViewById(R.id.title)).getText().toString());
                 userData.setIsLogin(false);
                 realm.beginTransaction();
                 realm.copyToRealmOrUpdate(userData);
@@ -135,5 +141,28 @@ public class MainScreen extends AppCompatActivity implements View.OnClickListene
         realm.commitTransaction();
 
         ((GridAdapter) mAdapter).addItem(photo);
+
+        getSpiceManager().execute(new UploadImageTask(userData.getId(),
+                photo.getId(), photo.getPhotoURL()), requestListener);
+    }
+
+
+    public final class UploadRequestListener implements RequestListener<PhotoData> {
+
+        @Override
+        public void onRequestFailure(SpiceException spiceException) {
+            Toast.makeText(MainScreen.this, "Exception", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onRequestSuccess(PhotoData photoData) {
+            realm.beginTransaction();
+            Photo photo = realm.where(Photo.class).contains("id", String.valueOf(photoData.getId())).findFirst();
+            photo.setState(Photo.STATE_UPLOADED);
+            realm.copyToRealmOrUpdate(photo);
+            realm.commitTransaction();
+
+            mAdapter = new GridAdapter(realm.where(Photo.class).findAll());
+        }
     }
 }

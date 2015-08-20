@@ -28,7 +28,7 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
         mItems.addAll(photos);
     }
 
-    public void addItem(Photo photo){
+    public void addItem(Photo photo) {
         mItems.add(photo);
         notifyDataSetChanged();
     }
@@ -57,7 +57,7 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
         }
         Bitmap bitmap = BitmapFactory.decodeFile(photo.getPhotoURL());
         viewHolder.imgThumbnail.setImageBitmap(Bitmap.createScaledBitmap(bitmap,
-                bitmap.getWidth()/4, bitmap.getHeight()/4, false));
+                bitmap.getWidth() / 4, bitmap.getHeight() / 4, false));
     }
 
     @Override

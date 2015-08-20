@@ -1,6 +1,5 @@
 package com.stfalcon.dorozhnyjpatrul.models;
 
-import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -10,6 +9,7 @@ import io.realm.annotations.PrimaryKey;
 public class UserData extends RealmObject {
 
     private boolean isLogin;
+    private int id;
     @PrimaryKey
     private String email;
 
@@ -28,5 +28,15 @@ public class UserData extends RealmObject {
 
     public String getEmail() {
         return email;
+    }
+
+
+    public int getId() {
+        return id;
+    }
+
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

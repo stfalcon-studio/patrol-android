@@ -3,12 +3,15 @@ package com.stfalcon.dorozhnyjpatrul.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
 import com.stfalcon.dorozhnyjpatrul.R;
 import com.stfalcon.dorozhnyjpatrul.models.UserData;
+import com.stfalcon.dorozhnyjpatrul.network.tasks.LoginTask;
 import com.stfalcon.dorozhnyjpatrul.utils.UserEmailFetcher;
 
 import java.util.regex.Matcher;
@@ -16,7 +19,7 @@ import java.util.regex.Pattern;
 
 import io.realm.Realm;
 
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+public class LoginActivity extends BaseSpiceActivity implements View.OnClickListener {
 
     private View btLogin;
     private View progressBar;
@@ -44,7 +47,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         switch (v.getId()) {
             case R.id.bt_login:
                 if (isEmailValid(etLogin.getText().toString())) {
-                    loginUser();
+                    loginUser(etLogin.getText().toString());
                 }
                 break;
         }
@@ -66,24 +69,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
 
-    private void loginUser() {
+    private void loginUser(String email) {
         btLogin.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                startActivity(new Intent(LoginActivity.this, MainScreen.class));
-
-                UserData userData = new UserData();
-                userData.setEmail(etLogin.getText().toString());
-                userData.setIsLogin(true);
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(userData);
-                realm.commitTransaction();
-
-                finish();
-            }
-        }, 2000);
+        startActivity(new Intent(LoginActivity.this, MainScreen.class));
+        //getSpiceManager().execute(new LoginTask(email), new LoginUserRequestListener());
     }
 
 
@@ -113,5 +103,27 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }, 1000);
         }
         return isValid;
+    }
+
+
+    public final class LoginUserRequestListener implements RequestListener<UserData> {
+
+        @Override
+        public void onRequestFailure(SpiceException spiceException) {
+            btLogin.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
+            Toast.makeText(LoginActivity.this, "Exception", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onRequestSuccess(UserData userData) {
+            userData.setEmail(etLogin.getText().toString());
+            userData.setIsLogin(true);
+            realm.beginTransaction();
+            realm.copyToRealmOrUpdate(userData);
+            realm.commitTransaction();
+            startActivity(new Intent(LoginActivity.this, MainScreen.class));
+            finish();
+        }
     }
 }
