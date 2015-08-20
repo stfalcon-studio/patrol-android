@@ -5,6 +5,8 @@ package com.stfalcon.dorozhnyjpatrul.models;
  */
 public class PhotoData {
     private int id;
+    private double latitude;
+    private double longitude;
 
     public int getId() {
         return id;

@@ -27,7 +27,7 @@ public class UploadImageTask extends RetrofitSpiceRequest<PhotoData, HPatrulAPI>
     @Override
     public PhotoData loadDataFromNetwork() {
         TypedFile file = new TypedFile("file", new File(fileUrl));
-        PhotoData photoData = getService().uploadImage(id, file);
+        PhotoData photoData = getService().uploadImage(file, "11");
         photoData.setId(photoID);
         return photoData;
     }
