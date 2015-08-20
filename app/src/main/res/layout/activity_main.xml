@@ -9,7 +9,8 @@
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="48dp"/>
+        android:layout_marginTop="48dp"
+        android:padding="4dp"/>
 
 
     <android.support.design.widget.FloatingActionButton
@@ -59,7 +60,7 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:padding="8dp"
-                android:src="@drawable/ic_settings"
+                android:src="@drawable/icon-settings"
                 android:layout_alignParentRight="true"/>
 
             <LinearLayout

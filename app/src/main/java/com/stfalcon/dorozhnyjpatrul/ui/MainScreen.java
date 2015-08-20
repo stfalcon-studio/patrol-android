@@ -43,7 +43,8 @@ public class MainScreen extends BaseSpiceActivity implements View.OnClickListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         realm = Realm.getInstance(this);
-        openCamera();
+        //TODO uncomment openCamera();
+        //openCamera();
         initViews();
     }
 
