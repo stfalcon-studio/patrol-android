@@ -12,6 +12,7 @@ import com.stfalcon.dorozhnyjpatrul.R;
 import com.stfalcon.dorozhnyjpatrul.models.Photo;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.realm.RealmResults;
@@ -22,14 +23,25 @@ import io.realm.RealmResults;
 public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
 
     private List<Photo> mItems = new ArrayList<Photo>();
+    private List<Bitmap> cache = new ArrayList<Bitmap>();
 
     public GridAdapter(RealmResults<Photo> photos) {
         super();
         mItems.addAll(photos);
+        Collections.reverse(mItems);
+        for (Photo photo : photos) {
+            Bitmap bitmap = BitmapFactory.decodeFile(photo.getPhotoURL());
+            cache.add(Bitmap.createScaledBitmap(bitmap,
+                    bitmap.getWidth() / 10, bitmap.getHeight() / 10, false));
+        }
+
     }
 
     public void addItem(Photo photo) {
-        mItems.add(photo);
+        mItems.add(0, photo);
+        Bitmap bitmap = BitmapFactory.decodeFile(photo.getPhotoURL());
+        cache.add(0, Bitmap.createScaledBitmap(bitmap,
+                bitmap.getWidth() / 10, bitmap.getHeight() / 10, false));
         notifyDataSetChanged();
     }
 
@@ -55,16 +67,22 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
                 viewHolder.imgState.setImageResource(R.drawable.icon_repeat);
                 break;
         }
-        //TODO fix photo compression
-        Bitmap bitmap = BitmapFactory.decodeFile(photo.getPhotoURL());
-        viewHolder.imgThumbnail.setImageBitmap(Bitmap.createScaledBitmap(bitmap,
-                bitmap.getWidth() / 8, bitmap.getHeight() / 8, false));
+        viewHolder.imgThumbnail.setImageBitmap(cache.get(i));
     }
 
     @Override
     public int getItemCount() {
 
         return mItems.size();
+    }
+
+    public void updateItem(Photo photo) {
+        for (Photo item : mItems){
+            if (item.getId().equals(photo.getId())){
+                item.setState(photo.getState());
+            }
+        }
+        notifyDataSetChanged();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
