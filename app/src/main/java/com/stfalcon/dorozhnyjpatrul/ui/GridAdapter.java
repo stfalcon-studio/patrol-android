@@ -40,7 +40,7 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
     public void addItem(Photo photo) {
         mItems.add(0, photo);
         Bitmap bitmap = BitmapFactory.decodeFile(photo.getPhotoURL());
-        cache.add(Bitmap.createScaledBitmap(bitmap,
+        cache.add(0, Bitmap.createScaledBitmap(bitmap,
                 bitmap.getWidth() / 10, bitmap.getHeight() / 10, false));
         notifyDataSetChanged();
     }
