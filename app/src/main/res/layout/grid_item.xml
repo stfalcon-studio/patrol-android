@@ -18,8 +18,8 @@
 
             <com.stfalcon.dorozhnyjpatrul.ui.SquareImageView
                 android:id="@+id/img_thumbnail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
                 android:scaleType="centerCrop"/>
 
             <ImageView
@@ -27,7 +27,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:layout_alignParentRight="true"/>
+                android:layout_alignParentRight="true"
+                android:padding="8dp"/>
 
         </RelativeLayout>
 

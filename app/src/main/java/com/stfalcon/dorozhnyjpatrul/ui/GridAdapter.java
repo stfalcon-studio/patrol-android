@@ -46,15 +46,16 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
         Photo photo = mItems.get(i);
         switch (photo.getState()) {
             case Photo.STATE_IN_PROCESS:
-                viewHolder.imgState.setImageResource(android.R.drawable.ic_menu_upload);
+                viewHolder.imgState.setImageResource(R.drawable.icon_upload);
                 break;
             case Photo.STATE_UPLOADED:
-                viewHolder.imgState.setImageResource(android.R.drawable.ic_menu_save);
+                viewHolder.imgState.setImageResource(R.drawable.icon_done);
                 break;
             case Photo.STATE_ERROR:
-                viewHolder.imgState.setImageResource(android.R.drawable.ic_delete);
+                viewHolder.imgState.setImageResource(R.drawable.icon_repeat);
                 break;
         }
+        //TODO fix photo compression
         Bitmap bitmap = BitmapFactory.decodeFile(photo.getPhotoURL());
         viewHolder.imgThumbnail.setImageBitmap(Bitmap.createScaledBitmap(bitmap,
                 bitmap.getWidth() / 8, bitmap.getHeight() / 8, false));
