@@ -26,8 +26,7 @@ public class UploadImageTask extends RetrofitSpiceRequest<PhotoAnswer, HPatrulAP
 
     @Override
     public PhotoAnswer loadDataFromNetwork() {
-        TypedFile file = new TypedFile("multipart/form-data", new File(fileUrl));
-        //PhotoAnswer photoData = getService().uploadImage(file);
+        TypedFile file = new TypedFile("photo", new File(fileUrl));
         PhotoAnswer photoData = getService().uploadImage(file, id);
         photoData.setId(photoID);
         return photoData;

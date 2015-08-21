@@ -95,6 +95,6 @@ public class CameraUtils {
                 // Eh
             }
         }
-        return destinationInternalImageFile.getPath();
+        return destinationInternalImageFile.getAbsolutePath();
     }
 }

@@ -27,9 +27,7 @@ public interface HPatrulAPI {
     @Multipart
     @Headers({"Content-Type: multipart/form-data",
             "Accept: application/json",
-            "Accept-Encoding: gzip, deflate",
-            "Content-Disposition: form-data;"})
+            "Accept-Encoding: gzip, deflate"})
     @POST("/api/{userID}/violation/create")
-    //PhotoAnswer uploadImage(@Part("photo") TypedFile photo);
     PhotoAnswer uploadImage(@Part("photo") TypedFile photo, @EncodedPath("userID") String userID);
 }
