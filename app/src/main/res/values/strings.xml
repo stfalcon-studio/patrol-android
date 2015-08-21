@@ -5,6 +5,6 @@
     <string name="message_invalid_email">не вірна пошта</string>
     <string name="login_button">Авторизуватися</string>
     <string name="gps_dialog_title">Налаштування GPS</string>
-    <string name="gps_dialog_text">Для ефективної роботи додатку, будь ласка, увімкніть датчик GPS.</string>
+    <string name="gps_dialog_text">Для можливості робити фото, будь ласка, увімкніть датчик GPS.</string>
     <string name="gps_turn_on">Увімкнути</string>
 </resources>

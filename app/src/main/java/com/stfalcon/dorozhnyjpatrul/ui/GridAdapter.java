@@ -76,6 +76,15 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
         return mItems.size();
     }
 
+    public void updateItem(Photo photo) {
+        for (Photo item : mItems){
+            if (item.getId().equals(photo.getId())){
+                item.setState(photo.getState());
+            }
+        }
+        notifyDataSetChanged();
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView imgThumbnail;

@@ -132,7 +132,9 @@ public class MainScreen extends BaseSpiceActivity implements View.OnClickListene
                 showOrHideSettingsBlock();
                 break;
             case R.id.snap:
-                openCamera();
+                if (checkLocationManeger()) {
+                    openCamera();
+                }
                 break;
             case R.id.logout:
                 UserData userData = new UserData();
@@ -212,7 +214,7 @@ public class MainScreen extends BaseSpiceActivity implements View.OnClickListene
             realm.copyToRealmOrUpdate(photo);
             realm.commitTransaction();
 
-            mAdapter = new GridAdapter(realm.where(Photo.class).findAll());
+            ((GridAdapter)mAdapter).updateItem(photo);
         }
     }
 
