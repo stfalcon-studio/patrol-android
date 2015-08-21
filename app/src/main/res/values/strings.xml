@@ -13,4 +13,5 @@
     <string name="gps_dialog_text">Для можливості робити фото, будь ласка, увімкніть датчик GPS.</string>
     <string name="gps_turn_on">Увімкнути</string>
     <string name="no_photos_message">Ви ще не зробили жодної фотографії.</string>
+    <string name="upload_only_wifi">Відправка фото лише по Wi-Fi.</string>
 </resources>
