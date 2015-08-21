@@ -45,8 +45,6 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingLeft="16dp"
-            android:paddingRight="4dp"
             android:animateLayoutChanges="true"
             android:minHeight="48dp">
 
@@ -57,8 +55,9 @@
                 android:layout_height="wrap_content"
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
+                android:paddingLeft="8dp"
                 android:text="User name"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="10dp"
                 android:layout_alignParentLeft="true"/>
 
 
@@ -75,28 +74,29 @@
             <LinearLayout
                 android:id="@+id/ll_settings"
                 android:orientation="vertical"
-                android:layout_margin="16dp"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/title"
                 android:visibility="gone">
 
                 <CheckBox
+                    android:id="@+id/onlyWiFiCheckBox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
                     android:textColor="@android:color/white"
+                    android:textSize="14sp"
                     android:text="@string/upload_only_wifi"
                     android:checked="false"/>
 
-
                 <Button
                     android:id="@+id/logout"
-                    android:text="Logout"
-                    android:layout_margin="8dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="26dp"
-                    android:textColor="@android:color/white"
-                    android:background="@color/primaryColor"/>
+                    android:text="@string/logout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="@color/primaryTextColor"
+                    android:background="@color/primaryColorDark"/>
 
             </LinearLayout>
 

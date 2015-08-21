@@ -7,18 +7,20 @@ import android.widget.Toast;
 
 import com.stfalcon.dorozhnyjpatrul.network.UploadService;
 import com.stfalcon.dorozhnyjpatrul.utils.NetworkUtils;
+import com.stfalcon.dorozhnyjpatrul.utils.ProjectPreferecesManager;
 
 public class NetworkStateReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        /*example of receiver work.
-        remove this lines later (including NetworkUtils.getConnectivityStatusString method)*/
-        String status = NetworkUtils.getConnectivityStatusString(context);
-        Toast.makeText(context, status, Toast.LENGTH_SHORT).show();
-        context.startService(new Intent(context, UploadService.class));
+        int connectivityStatus = NetworkUtils.getConnectivityStatus(context);
+        boolean isCanUpload = true;
 
-        //TODO upload new photos with condition of wifi usage (using NetworkUtils.getConnectivityStatus())
+        if (ProjectPreferecesManager.getUploadWifiOnlyMode(context))
+            if (connectivityStatus != NetworkUtils.CONNECTION_WIFI)
+                isCanUpload = false;
+
+        if (isCanUpload) context.startService(new Intent(context, UploadService.class));
     }
 }
