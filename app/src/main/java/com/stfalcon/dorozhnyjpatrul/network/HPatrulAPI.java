@@ -1,7 +1,7 @@
 package com.stfalcon.dorozhnyjpatrul.network;
 
-import com.stfalcon.dorozhnyjpatrul.models.PhotoAnswer;
 import com.stfalcon.dorozhnyjpatrul.models.LoginAnswer;
+import com.stfalcon.dorozhnyjpatrul.models.PhotoAnswer;
 
 import retrofit.http.EncodedPath;
 import retrofit.http.Field;
@@ -24,10 +24,14 @@ public interface HPatrulAPI {
     @POST("/api/register")
     LoginAnswer loginUser(@Field("email") String email);
 
+
     @Multipart
     @Headers({"Content-Type: multipart/form-data",
             "Accept: application/json",
             "Accept-Encoding: gzip, deflate"})
     @POST("/api/{userID}/violation/create")
-    PhotoAnswer uploadImage(@Part("photo") TypedFile photo, @EncodedPath("userID") String userID);
+    PhotoAnswer uploadImage(@Part("photo") TypedFile photo,
+                            @EncodedPath("userID") String userID,
+                            @Part("latitude") double latitude,
+                            @Part("longitude") double longitude);
 }

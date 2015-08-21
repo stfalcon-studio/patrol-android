@@ -12,7 +12,7 @@ public class Photo extends RealmObject {
     public static final int STATE_ERROR = 2;
 
     @PrimaryKey
-    private int id;
+    private String id;
     private String photoURL;
     private int state;
     private double longitude;
@@ -38,11 +38,11 @@ public class Photo extends RealmObject {
         return photoURL;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public int getId() {
+    public String getId() {
 
         return id;
     }
@@ -58,4 +58,4 @@ public class Photo extends RealmObject {
     public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
-}
+    }
