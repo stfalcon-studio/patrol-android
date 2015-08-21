@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="@color/primaryColor">
+    android:background="@color/primaryColor"
+    android:padding="16dp">
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -29,7 +30,7 @@
             android:textStyle="bold"
             android:gravity="center"
             android:textColor="@color/primaryTextColor"
-            android:text="@string/login_title"/>
+            android:text="@string/app_name"/>
 
         <TextView
             android:id="@+id/descriptionTextView"

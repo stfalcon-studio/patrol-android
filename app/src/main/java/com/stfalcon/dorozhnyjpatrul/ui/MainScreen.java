@@ -31,6 +31,7 @@ import com.stfalcon.dorozhnyjpatrul.network.tasks.UploadImageTask;
 import com.stfalcon.dorozhnyjpatrul.utils.CameraUtils;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 /**
  * Created by alexandr on 17/08/15.
@@ -39,6 +40,7 @@ public class MainScreen extends BaseSpiceActivity implements View.OnClickListene
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     int REQUEST_CAMERA = 0;
 
+    private TextView noPhotosTextView;
     private LinearLayout llSettings;
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -115,18 +117,31 @@ public class MainScreen extends BaseSpiceActivity implements View.OnClickListene
         mLayoutManager = new GridLayoutManager(this, 2);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new GridAdapter(realm.where(Photo.class).findAll());
+        RealmResults<Photo> photos = realm.where(Photo.class).findAll();
+        mAdapter = new GridAdapter(photos);
         mRecyclerView.setAdapter(mAdapter);
+        setPhotosListVisibility(photos.size() > 0);
     }
 
     private void initViews() {
         findViewById(R.id.bt_settings).setOnClickListener(this);
         findViewById(R.id.snap).setOnClickListener(this);
         findViewById(R.id.logout).setOnClickListener(this);
+        noPhotosTextView = (TextView) findViewById(R.id.noPhotosTextView);
         llSettings = (LinearLayout) findViewById(R.id.ll_settings);
 
         userData = realm.where(UserData.class).findFirst();
         ((TextView) findViewById(R.id.title)).setText(userData.getEmail());
+    }
+
+    private void setPhotosListVisibility(Boolean isExists) {
+        if (isExists) {
+            noPhotosTextView.setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.VISIBLE);
+        } else {
+            noPhotosTextView.setVisibility(View.VISIBLE);
+            mRecyclerView.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -195,6 +210,7 @@ public class MainScreen extends BaseSpiceActivity implements View.OnClickListene
         realm.commitTransaction();
 
         ((GridAdapter) mAdapter).addItem(photo);
+        setPhotosListVisibility(true);
 
         if (mLastLocation != null) {
             getSpiceManager().execute(new UploadImageTask(userData.getId(),

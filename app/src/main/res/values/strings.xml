@@ -1,18 +1,17 @@
 <resources>
     <string name="app_name">Громадський патруль</string>
 
-    <string name="hello_world">Hello world!</string>
     <string name="made_by">Made by</string>
     <string name="stfalcon_com">stfalcon.com</string>
     <string name="website_url">http://stfalcon.com</string>
-    <string name="login_title">Community patrol</string>
-    <string name="login_description">Saw violator of traffic rules?\nTake his photo and send it to us</string>
-    <string name="login_email_hint">Your e-mail address</string>
+    <string name="login_description">Бачиш порушника правил дорожнього руху - сфотографуй та надішли нам.\nКраїна має знати своїх "героїв"!</string>
+    <string name="login_email_hint">Ваша електронна пошта</string>
     <string name="action_settings">Налаштування</string>
     <string name="message_invalid_email">не вірна пошта</string>
     <string name="login_button">Авторизуватися</string>
     <string name="gps_dialog_title">Налаштування GPS</string>
     <string name="gps_dialog_text">Для можливості робити фото, будь ласка, увімкніть датчик GPS.</string>
     <string name="gps_turn_on">Увімкнути</string>
-    <string name="upload_only_wifi">Завантажувати тільки через WiFi</string>
+    <string name="no_photos_message">Ви ще не зробили жодної фотографії.</string>
+    <string name="upload_only_wifi">Відправка фото лише по Wi-Fi.</string>
 </resources>
