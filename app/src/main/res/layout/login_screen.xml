@@ -2,54 +2,112 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:animateLayoutChanges="true">
+    android:animateLayoutChanges="true"
+    android:background="@color/primaryColor">
 
-
-    <ImageView
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/about"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/ic_stfalcon"/>
+        android:layout_centerInParent="true"
+        android:paddingBottom="30dp">
 
+        <ImageView
+            android:id="@+id/logoImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/logo_login"/>
 
-    <TextView
-        android:id="@+id/about"
+        <TextView
+            android:id="@+id/titleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/logoImageView"
+            android:layout_marginTop="12dp"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textColor="@color/primaryTextColor"
+            android:text="@string/login_title"/>
+
+        <TextView
+            android:id="@+id/descriptionTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/titleTextView"
+            android:layout_marginTop="12dp"
+            android:textSize="18sp"
+            android:textStyle="normal"
+            android:gravity="center"
+            android:textColor="@color/primaryTextColor"
+            android:text="@string/login_description"/>
+
+        <EditText
+            android:id="@+id/emailEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/descriptionTextView"
+            android:layout_marginTop="12dp"
+            android:ems="10"
+            android:inputType="textEmailAddress"
+            android:textSize="18sp"
+            android:textStyle="normal"
+            android:gravity="center"
+            android:textColor="@color/primaryTextColor"
+            android:hint="login_email_hint"/>
+
+        <Button
+            android:id="@+id/loginButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/emailEditText"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="12dp"
+            android:text="@string/login_button"
+            android:textColor="@color/darkTextColor"
+            android:background="@color/primaryTextColor"/>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/loginButton"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="16dp"
+            android:visibility="gone"
+            android:color="@color/primaryTextColor" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/copyrightLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="26dp"
-        android:layout_above="@+id/et_email"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="Somsing about service"/>
-
-
-    <EditText
-        android:id="@+id/et_email"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:ems="10"
         android:gravity="center"
-        android:inputType="textEmailAddress" />
+        android:layout_marginBottom="16dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/primaryTextColor"
+            android:text="@string/made_by"/>
 
-    <Button
-        android:id="@+id/bt_login"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/et_email"
-        android:layout_centerHorizontal="true"
-        android:text="@string/login_button"
-        android:visibility="gone" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_stfalcon"/>
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/bt_login"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="16dp"
-        android:visibility="gone" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/primaryTextColor"
+            android:text="@string/stfalcon_com"/>
+    </LinearLayout>
 
 </RelativeLayout>

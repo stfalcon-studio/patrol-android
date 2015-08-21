@@ -5,4 +5,10 @@
     <string name="action_settings">Settings</string>
     <string name="message_invalid_email">invalid email</string>
     <string name="login_button">Login</string>
+    <string name="made_by">Made by</string>
+    <string name="stfalcon_com">stfalcon.com</string>
+    <string name="website_url">http://stfalcon.com</string>
+    <string name="login_title">Community patrol</string>
+    <string name="login_description">Saw violator of traffic rules?\nTake his photo and send it to us</string>
+    <string name="login_email_hint">Your e-mail address</string>
 </resources>
