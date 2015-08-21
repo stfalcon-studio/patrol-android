@@ -3,15 +3,18 @@ package com.stfalcon.dorozhnyjpatrul.ui;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +32,7 @@ import com.stfalcon.dorozhnyjpatrul.models.PhotoAnswer;
 import com.stfalcon.dorozhnyjpatrul.models.UserData;
 import com.stfalcon.dorozhnyjpatrul.network.tasks.UploadImageTask;
 import com.stfalcon.dorozhnyjpatrul.utils.CameraUtils;
+import com.stfalcon.dorozhnyjpatrul.utils.ProjectPreferecesManager;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -42,6 +46,7 @@ public class MainScreen extends BaseSpiceActivity implements View.OnClickListene
 
     private TextView noPhotosTextView;
     private LinearLayout llSettings;
+    private CheckBox onlyWiFiCheckBox;
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private RecyclerView.Adapter mAdapter;
@@ -127,6 +132,8 @@ public class MainScreen extends BaseSpiceActivity implements View.OnClickListene
         findViewById(R.id.bt_settings).setOnClickListener(this);
         findViewById(R.id.snap).setOnClickListener(this);
         findViewById(R.id.logout).setOnClickListener(this);
+        onlyWiFiCheckBox = (CheckBox)findViewById(R.id.onlyWiFiCheckBox);
+        onlyWiFiCheckBox.setOnClickListener(this);
         noPhotosTextView = (TextView) findViewById(R.id.noPhotosTextView);
         llSettings = (LinearLayout) findViewById(R.id.ll_settings);
 
@@ -154,6 +161,9 @@ public class MainScreen extends BaseSpiceActivity implements View.OnClickListene
                 if (checkLocationManeger()) {
                     openCamera();
                 }
+                break;
+            case R.id.onlyWiFiCheckBox:
+                ProjectPreferecesManager.setUploadWifiOnlyMode(this, onlyWiFiCheckBox.isChecked());
                 break;
             case R.id.logout:
                 UserData userData = new UserData();

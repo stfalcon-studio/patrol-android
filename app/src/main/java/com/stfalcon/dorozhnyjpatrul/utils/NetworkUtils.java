@@ -31,17 +31,4 @@ public final class NetworkUtils {
         }
         return NOT_CONNECTED;
     }
-
-    public static String getConnectivityStatusString(Context context) {
-        int conn = NetworkUtils.getConnectivityStatus(context);
-        String status = null;
-        if (conn == NetworkUtils.CONNECTION_WIFI) {
-            status = "Wifi enabled";
-        } else if (conn == NetworkUtils.CONNECTION_MOBILE) {
-            status = "Mobile data enabled";
-        } else if (conn == NetworkUtils.NOT_CONNECTED) {
-            status = "Not connected to Internet";
-        }
-        return status;
-    }
 }
