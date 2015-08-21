@@ -1,9 +1,11 @@
 package com.stfalcon.dorozhnyjpatrul.ui;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,10 +25,11 @@ import io.realm.Realm;
 
 public class LoginActivity extends BaseSpiceActivity implements View.OnClickListener {
 
-    private View btLogin;
+    private View loginButton;
     private View progressBar;
-    private TextView etLogin;
+    private TextView emailEditText;
     private Realm realm;
+    private LinearLayout copyrightLayout;
     private LoginUserRequestListener requestListener = new LoginUserRequestListener();
 
     @Override
@@ -38,20 +41,30 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
     }
 
     private void initViews() {
-        btLogin = findViewById(R.id.bt_login);
-        btLogin.setOnClickListener(this);
+        loginButton = findViewById(R.id.loginButton);
+        loginButton.setOnClickListener(this);
         progressBar = findViewById(R.id.progressBar);
-        etLogin = (TextView) findViewById(R.id.et_email);
-    }
+        emailEditText = (TextView) findViewById(R.id.emailEditText);
+        copyrightLayout = (LinearLayout) findViewById(R.id.copyrightLayout);
 
+        copyrightLayout.setOnClickListener(this);
+
+
+    }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.bt_login:
-                if (isEmailValid(etLogin.getText().toString())) {
-                    loginUser(etLogin.getText().toString());
+            case R.id.loginButton:
+                if (isEmailValid(emailEditText.getText().toString())) {
+                    loginUser(emailEditText.getText().toString());
                 }
+                break;
+            case R.id.copyrightLayout:
+                Intent intent = new Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse(getResources().getString(R.string.website_url)));
+                startActivity(intent);
                 break;
         }
     }
@@ -67,24 +80,15 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
             }
         }
 
-        etLogin.setText(UserEmailFetcher.getEmail(this));
-        btLogin.setVisibility(View.VISIBLE);
+        emailEditText.setText(UserEmailFetcher.getEmail(this));
+        loginButton.setVisibility(View.VISIBLE);
     }
 
 
     private void loginUser(String email) {
-        btLogin.setVisibility(View.GONE);
+        loginButton.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
-        /*UserData userData = new UserData();
-        userData.setEmail(etLogin.getText().toString());
-        userData.setIsLogin(true);
-        realm.beginTransaction();
-        realm.copyToRealmOrUpdate(userData);
-        realm.commitTransaction();
-        startActivity(new Intent(LoginActivity.this, MainScreen.class));
-        finish();*/
-
-        getSpiceManager().execute(new LoginTask(email),"localAPI", DurationInMillis.ONE_MINUTE, requestListener);
+        getSpiceManager().execute(new LoginTask(email), "localAPI", DurationInMillis.ONE_MINUTE, requestListener);
     }
 
 
@@ -105,11 +109,11 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
         if (matcher.matches()) {
             isValid = true;
         } else {
-            etLogin.setError(getString(R.string.message_invalid_email));
+            emailEditText.setError(getString(R.string.message_invalid_email));
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    etLogin.setError(null);
+                    emailEditText.setError(null);
                 }
             }, 1000);
         }
@@ -121,7 +125,7 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
 
         @Override
         public void onRequestFailure(SpiceException spiceException) {
-            btLogin.setVisibility(View.VISIBLE);
+            loginButton.setVisibility(View.VISIBLE);
             progressBar.setVisibility(View.GONE);
             Toast.makeText(LoginActivity.this, "Exception", Toast.LENGTH_SHORT).show();
         }
