@@ -31,6 +31,7 @@
             android:screenOrientation="portrait"/>
 
         <service android:name=".network.HPSpiceService"/>
+        <service android:name=".network.UploadService"/>
 
         <receiver
             android:name=".receivers.NetworkStateReceiver"

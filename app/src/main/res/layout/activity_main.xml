@@ -85,7 +85,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@android:color/white"
-                    android:text="Upload only WiFi"
+                    android:text="@string/upload_only_wifi"
                     android:checked="false"/>
 
 

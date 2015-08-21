@@ -51,6 +51,7 @@ public class MainScreen extends BaseSpiceActivity implements View.OnClickListene
     private UserData userData;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
+    private boolean isGPSDialogShowed;
 
 
     protected synchronized void buildGoogleApiClient() {
@@ -92,7 +93,10 @@ public class MainScreen extends BaseSpiceActivity implements View.OnClickListene
     private boolean checkLocationManeger() {
         if (!((LocationManager) getSystemService(Context.LOCATION_SERVICE))
                 .isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            if (!isGPSDialogShowed) {
             LocationDialog.showSettingsAlert(this);
+                isGPSDialogShowed = true;
+            }
             return false;
         }
         return true;
@@ -230,7 +234,7 @@ public class MainScreen extends BaseSpiceActivity implements View.OnClickListene
             realm.copyToRealmOrUpdate(photo);
             realm.commitTransaction();
 
-            ((GridAdapter)mAdapter).updateItem(photo);
+            ((GridAdapter) mAdapter).updateItem(photo);
         }
     }
 
