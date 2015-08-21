@@ -29,7 +29,7 @@ public interface HPatrulAPI {
             "Accept: application/json",
             "Accept-Encoding: gzip, deflate",
             "Content-Disposition: form-data;"})
-    @POST("/api/12/violation/create")
-    PhotoAnswer uploadImage(@Part("photo") TypedFile photo);
-    //PhotoAnswer uploadImage(@Part("photo") TypedFile photo, @EncodedPath("userID") String userID);
+    @POST("/api/{userID}/violation/create")
+    //PhotoAnswer uploadImage(@Part("photo") TypedFile photo);
+    PhotoAnswer uploadImage(@Part("photo") TypedFile photo, @EncodedPath("userID") String userID);
 }
