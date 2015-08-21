@@ -29,8 +29,8 @@ public class UploadService extends IntentService {
         Realm realm = Realm.getInstance(this);
         UserData userData = realm.where(UserData.class).findFirst();
         RealmResults<Photo> realmResults = realm.where((Photo.class))
-                .equalTo("state", String.valueOf(Photo.STATE_IN_PROCESS))
-                .equalTo("state", String.valueOf(Photo.STATE_ERROR)).findAll();
+                .equalTo("state", Photo.STATE_IN_PROCESS)
+                .equalTo("state", Photo.STATE_ERROR).findAll();
         for (Photo photo : realmResults) {
             if (photo.getLatitude() != 0) {
                 PhotoAnswer answer = uploadImage(photo.getPhotoURL(), String.valueOf(userData.getId()),
