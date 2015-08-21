@@ -3,7 +3,7 @@ package com.stfalcon.dorozhnyjpatrul.models;
 /**
  * Created by alexandr on 20/08/15.
  */
-public class PhotoData {
+public class PhotoAnswer {
     private int id;
     private double latitude;
     private double longitude;

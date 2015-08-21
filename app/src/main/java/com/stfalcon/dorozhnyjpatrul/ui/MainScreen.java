@@ -16,7 +16,7 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 import com.stfalcon.dorozhnyjpatrul.R;
 import com.stfalcon.dorozhnyjpatrul.models.Photo;
-import com.stfalcon.dorozhnyjpatrul.models.PhotoData;
+import com.stfalcon.dorozhnyjpatrul.models.PhotoAnswer;
 import com.stfalcon.dorozhnyjpatrul.models.UserData;
 import com.stfalcon.dorozhnyjpatrul.network.tasks.UploadImageTask;
 import com.stfalcon.dorozhnyjpatrul.utils.CameraUtils;
@@ -148,7 +148,7 @@ public class MainScreen extends BaseSpiceActivity implements View.OnClickListene
     }
 
 
-    public final class UploadRequestListener implements RequestListener<PhotoData> {
+    public final class UploadRequestListener implements RequestListener<PhotoAnswer> {
 
         @Override
         public void onRequestFailure(SpiceException spiceException) {
@@ -156,7 +156,7 @@ public class MainScreen extends BaseSpiceActivity implements View.OnClickListene
         }
 
         @Override
-        public void onRequestSuccess(PhotoData photoData) {
+        public void onRequestSuccess(PhotoAnswer photoData) {
             realm.beginTransaction();
             Photo photo = realm.where(Photo.class).contains("id", String.valueOf(photoData.getId())).findFirst();
             photo.setState(Photo.STATE_UPLOADED);

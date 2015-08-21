@@ -7,9 +7,11 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 import com.stfalcon.dorozhnyjpatrul.R;
+import com.stfalcon.dorozhnyjpatrul.models.LoginAnswer;
 import com.stfalcon.dorozhnyjpatrul.models.UserData;
 import com.stfalcon.dorozhnyjpatrul.network.tasks.LoginTask;
 import com.stfalcon.dorozhnyjpatrul.utils.UserEmailFetcher;
@@ -25,6 +27,7 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
     private View progressBar;
     private TextView etLogin;
     private Realm realm;
+    private LoginUserRequestListener requestListener = new LoginUserRequestListener();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,16 +75,16 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
     private void loginUser(String email) {
         btLogin.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
-        UserData userData = new UserData();
+        /*UserData userData = new UserData();
         userData.setEmail(etLogin.getText().toString());
         userData.setIsLogin(true);
         realm.beginTransaction();
         realm.copyToRealmOrUpdate(userData);
         realm.commitTransaction();
         startActivity(new Intent(LoginActivity.this, MainScreen.class));
-        finish();
+        finish();*/
 
-        //getSpiceManager().execute(new LoginTask(email), new LoginUserRequestListener());
+        getSpiceManager().execute(new LoginTask(email),"localAPI", DurationInMillis.ONE_MINUTE, requestListener);
     }
 
 
@@ -114,7 +117,7 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
     }
 
 
-    public final class LoginUserRequestListener implements RequestListener<UserData> {
+    public final class LoginUserRequestListener implements RequestListener<LoginAnswer> {
 
         @Override
         public void onRequestFailure(SpiceException spiceException) {
@@ -124,8 +127,10 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
         }
 
         @Override
-        public void onRequestSuccess(UserData userData) {
-            userData.setEmail(etLogin.getText().toString());
+        public void onRequestSuccess(LoginAnswer user) {
+            UserData userData = new UserData();
+            userData.setEmail(user.email);
+            userData.setId(user.id);
             userData.setIsLogin(true);
             realm.beginTransaction();
             realm.copyToRealmOrUpdate(userData);
