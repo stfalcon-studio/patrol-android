@@ -10,6 +10,7 @@ import com.stfalcon.dorozhnyjpatrul.utils.MultipartUtility;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
@@ -28,21 +29,24 @@ public class UploadService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         Realm realm = Realm.getInstance(this);
         UserData userData = realm.where(UserData.class).findFirst();
+        ArrayList<PhotoAnswer> answers = new ArrayList<>();
         RealmResults<Photo> realmResults = realm.where((Photo.class))
-                .equalTo("state", Photo.STATE_IN_PROCESS)
-                .equalTo("state", Photo.STATE_ERROR).findAll();
+                .equalTo("state", Photo.STATE_IN_PROCESS).findAll();
         for (Photo photo : realmResults) {
             if (photo.getLatitude() != 0) {
-                PhotoAnswer answer = uploadImage(photo.getPhotoURL(), String.valueOf(userData.getId()),
-                        photo.getId(), photo.getLatitude(), photo.getLongitude());
+                answers.add(uploadImage(photo.getPhotoURL(), String.valueOf(userData.getId()),
+                        photo.getId(), photo.getLatitude(), photo.getLongitude()));
+            }
+        }
+        if (!answers.isEmpty()) {
+            for (PhotoAnswer answer : answers) {
                 realm.beginTransaction();
                 Photo photoInBase = realm.where(Photo.class).contains("id", String.valueOf(answer.getId())).findFirst();
-                photo.setState(answer.getState());
+                photoInBase.setState(answer.getState());
                 realm.copyToRealmOrUpdate(photoInBase);
                 realm.commitTransaction();
             }
         }
-
     }
 
 
