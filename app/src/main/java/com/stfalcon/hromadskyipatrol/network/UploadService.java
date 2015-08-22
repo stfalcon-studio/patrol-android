@@ -12,8 +12,10 @@ import com.stfalcon.hromadskyipatrol.utils.MultipartUtility;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 /**
  * Created by alexandr on 21/08/15.
@@ -32,15 +34,14 @@ public class UploadService extends IntentService {
         //init objects
         Realm realmDB = Realm.getInstance(this);
         UserItem user = realmDB.where(UserItem.class).findFirst();
-        ArrayList<PhotoAnswer> serverAnswersList = new ArrayList<>();
-        ArrayList<PhotoItem> photoList = new ArrayList<>();
+        ArrayList<PhotoAnswer> serverAnswersList = new ArrayList<PhotoAnswer>();
 
         //get all photos for upload
-        photoList.addAll(realmDB.where((PhotoItem.class))
-                .equalTo("state", PhotoItem.STATE_IN_PROCESS).findAll());
-
-        photoList.addAll(realmDB.where((PhotoItem.class))
-                .equalTo("state", PhotoItem.STATE_ERROR).findAll());
+        RealmResults<PhotoItem> photoList = realmDB.where((PhotoItem.class))
+                .equalTo("state", PhotoItem.STATE_IN_PROCESS)
+                .or()
+                .equalTo("state", PhotoItem.STATE_ERROR)
+                .findAll();
 
         //upload process
         for (PhotoItem photo : photoList) {
@@ -91,6 +92,13 @@ public class UploadService extends IntentService {
             multipart.addFilePart("photo", image);
             multipart.addFormField("latitude", String.valueOf(latitude));
             multipart.addFormField("longitude", String.valueOf(longitude));
+
+            //logs
+            List<String> response = multipart.finish();
+            System.out.println("SERVER REPLIED:");
+            for (String line : response) {
+                System.out.println(line);
+            }
             serverAnswer.setState(PhotoItem.STATE_UPLOADED);
 
         } catch (IOException ex) {

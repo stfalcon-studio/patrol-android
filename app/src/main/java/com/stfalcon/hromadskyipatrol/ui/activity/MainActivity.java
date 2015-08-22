@@ -243,6 +243,8 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
         if (mLastLocation != null) {
             photo.setLatitude(mLastLocation.getLatitude());
             photo.setLongitude(mLastLocation.getLongitude());
+        } else {
+            photo.setState(PhotoItem.STATE_NO_GPS);
         }
         realm.copyToRealmOrUpdate(photo);
         realm.commitTransaction();

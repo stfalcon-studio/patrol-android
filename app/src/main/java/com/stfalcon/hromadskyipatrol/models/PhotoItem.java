@@ -7,8 +7,8 @@ import io.realm.annotations.PrimaryKey;
  * Created by alexandr on 19/08/15.
  */
 public class PhotoItem extends RealmObject {
-    public static final int STATE_UPLOADED = 0;
-    public static final int STATE_IN_PROCESS = 1;
+    public static final int STATE_UPLOADED = 1;
+    public static final int STATE_IN_PROCESS = 0;
     public static final int STATE_ERROR = 2;
     public static final int STATE_NO_GPS = 3;
 
