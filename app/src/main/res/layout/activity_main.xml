@@ -86,6 +86,7 @@
                     android:layout_margin="16dp"
                     android:textColor="@android:color/white"
                     android:textSize="14sp"
+                    android:clickable="true"
                     android:text="@string/upload_only_wifi"
                     android:checked="false"/>
 

@@ -75,7 +75,7 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
         UserItem userData = realm.where(UserItem.class).findFirst();
         if (userData != null) {
             if (userData.isLogin()) {
-                startActivity(new Intent(LoginActivity.this, MainScreen.class));
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
                 finish();
             }
         }
@@ -139,7 +139,7 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
             realm.beginTransaction();
             realm.copyToRealmOrUpdate(userData);
             realm.commitTransaction();
-            startActivity(new Intent(LoginActivity.this, MainScreen.class));
+            startActivity(new Intent(LoginActivity.this, MainActivity.class));
             finish();
         }
     }

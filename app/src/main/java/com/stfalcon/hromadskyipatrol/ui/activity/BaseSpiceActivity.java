@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.octo.android.robospice.SpiceManager;
-import com.stfalcon.hromadskyipatrol.PatrulApp;
+import com.stfalcon.hromadskyipatrol.PatrolApp;
 import com.stfalcon.hromadskyipatrol.network.PatrolSpiceService;
 
 /**
@@ -20,7 +20,7 @@ public class BaseSpiceActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        PatrulApp application = (PatrulApp) getApplication();
+        PatrolApp application = (PatrolApp) getApplication();
         mTracker = application.getDefaultTracker();
     }
 
@@ -29,8 +29,8 @@ public class BaseSpiceActivity extends AppCompatActivity {
         super.onResume();
         if (this instanceof LoginActivity) {
             mTracker.setScreenName(LoginActivity.class.getSimpleName());
-        } else if (this instanceof MainScreen) {
-            mTracker.setScreenName(MainScreen.class.getSimpleName());
+        } else if (this instanceof MainActivity) {
+            mTracker.setScreenName(MainActivity.class.getSimpleName());
         }
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }

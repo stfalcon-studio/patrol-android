@@ -41,7 +41,7 @@ import io.realm.RealmResults;
 /**
  * Created by alexandr on 17/08/15.
  */
-public class MainScreen extends BaseSpiceActivity implements View.OnClickListener, LocationListener,
+public class MainActivity extends BaseSpiceActivity implements View.OnClickListener, LocationListener,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     int REQUEST_CAMERA = 0;
 
@@ -83,12 +83,13 @@ public class MainScreen extends BaseSpiceActivity implements View.OnClickListene
     }
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         realm = Realm.getInstance(this);
-        if (checkLocationManeger()) {
+        if (checkLocationManager()) {
             openCamera();
         }
         initViews();
@@ -98,7 +99,8 @@ public class MainScreen extends BaseSpiceActivity implements View.OnClickListene
                 mMessageReceiver, new IntentFilter(UploadService.UPDATE_PHOTO_UI));
     }
 
-    private boolean checkLocationManeger() {
+
+    private boolean checkLocationManager() {
         if (!((LocationManager) getSystemService(Context.LOCATION_SERVICE))
                 .isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             if (!isGPSDialogShowed) {
@@ -131,6 +133,7 @@ public class MainScreen extends BaseSpiceActivity implements View.OnClickListene
         setPhotosListVisibility(photos.size() > 0);
     }
 
+
     private void initViews() {
         findViewById(R.id.bt_settings).setOnClickListener(this);
         findViewById(R.id.snap).setOnClickListener(this);
@@ -144,6 +147,7 @@ public class MainScreen extends BaseSpiceActivity implements View.OnClickListene
         userData = realm.where(UserItem.class).findFirst();
         ((TextView) findViewById(R.id.title)).setText(userData.getEmail());
     }
+
 
     private void setPhotosListVisibility(Boolean isExists) {
         if (isExists) {
@@ -166,7 +170,7 @@ public class MainScreen extends BaseSpiceActivity implements View.OnClickListene
                         .build());
                 break;
             case R.id.snap:
-                if (checkLocationManeger()) {
+                if (checkLocationManager()) {
                     openCamera();
                     getTracker().send(new HitBuilders.EventBuilder()
                             .setCategory("Settings")
@@ -195,7 +199,7 @@ public class MainScreen extends BaseSpiceActivity implements View.OnClickListene
                         .setAction("logout")
                         .build());
 
-                startActivity(new Intent(MainScreen.this, LoginActivity.class));
+                startActivity(new Intent(MainActivity.this, LoginActivity.class));
                 finish();
                 break;
         }
@@ -207,6 +211,7 @@ public class MainScreen extends BaseSpiceActivity implements View.OnClickListene
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         startActivityForResult(intent, REQUEST_CAMERA);
     }
+
 
     private void showOrHideSettingsBlock() {
         if (llSettings.getVisibility() != View.VISIBLE) {
@@ -253,7 +258,7 @@ public class MainScreen extends BaseSpiceActivity implements View.OnClickListene
                 isCanUpload = false;
 
         if (isCanUpload && connectivityStatus != NetworkUtils.NOT_CONNECTED) {
-            startService(new Intent(MainScreen.this, UploadService.class));
+            startService(new Intent(MainActivity.this, UploadService.class));
         }
     }
 

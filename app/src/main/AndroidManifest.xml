@@ -13,7 +13,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
-        android:name="com.stfalcon.hromadskyipatrol.PatrulApp"
+        android:name=".PatrolApp"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
@@ -28,7 +28,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.stfalcon.hromadskyipatrol.ui.activity.MainScreen"
+        <activity android:name=".ui.activity.MainActivity"
             android:screenOrientation="portrait"/>
 
         <service android:name="com.stfalcon.hromadskyipatrol.network.PatrolSpiceService"/>
@@ -42,6 +42,9 @@
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
             </intent-filter>
         </receiver>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="b7ba58a3e64c5ff0d9fbc4faebb86c28b1bc40b9" />
     </application>
 
 </manifest>

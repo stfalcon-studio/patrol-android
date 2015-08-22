@@ -1,8 +1,19 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
 apply plugin: 'com.google.gms.google-services'
 
 repositories {
     maven { url 'http://oss.jfrog.org/artifactory/oss-snapshot-local'}
+    maven { url 'https://maven.fabric.io/public' }
 }
 
 android {
@@ -42,5 +53,7 @@ dependencies {
     compile 'io.realm:realm-android:0.83.0-SNAPSHOT'
     compile 'com.google.android.gms:play-services:7.5.0'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.3'
-    compile 'com.google.android.gms:play-services-analytics:7.3.0'
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.1@aar') {
+        transitive = true;
+    }
 }
