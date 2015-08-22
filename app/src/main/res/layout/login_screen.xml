@@ -14,8 +14,8 @@
 
         <ImageView
             android:id="@+id/logoImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/login_screen_icon"
+            android:layout_height="@dimen/login_screen_icon"
             android:layout_centerHorizontal="true"
             android:src="@drawable/logo_login"/>
 
@@ -58,7 +58,8 @@
             android:textStyle="normal"
             android:gravity="center"
             android:textColor="@color/primaryTextColor"
-            android:hint="login_email_hint"/>
+            android:hint="@string/email_hint"
+            android:textColorHint="@color/primaryTextColor"/>
 
         <Button
             android:id="@+id/loginButton"
@@ -71,13 +72,14 @@
             android:textColor="@color/darkTextColor"
             android:background="@color/primaryTextColor"
             android:paddingLeft="6dp"
-            android:paddingRight="6dp"/>
+            android:paddingRight="6dp"
+            android:elevation="4dp"/>
 
         <ProgressBar
             android:id="@+id/progressBar"
             style="?android:attr/progressBarStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/abc_action_bar_progress_bar_size"
+            android:layout_height="@dimen/abc_action_bar_progress_bar_size"
             android:layout_below="@+id/loginButton"
             android:layout_centerHorizontal="true"
             android:layout_margin="16dp"

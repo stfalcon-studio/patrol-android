@@ -4,7 +4,7 @@
     <string name="made_by">Made by</string>
     <string name="stfalcon_com">stfalcon.com</string>
     <string name="website_url">http://stfalcon.com</string>
-    <string name="login_description">Бачиш порушника правил дорожнього руху - сфотографуй та надішли нам.\nКраїна має знати своїх \"героїв\"!</string>
+    <string name="login_description">Бачиш порушника правил \nдорожнього руху - сфотографуй\nта надішли нам.\nКраїна має знати своїх \"героїв\"!</string>
     <string name="login_email_hint">Ваша електронна пошта</string>
     <string name="action_settings">Налаштування</string>
     <string name="message_invalid_email">не вірна пошта</string>
@@ -16,4 +16,5 @@
     <string name="upload_only_wifi">Відправка фото лише по Wi-Fi</string>
     <string name="logout">Вийти</string>
     <string name="no_gps">Відсутні GPS \nкоординати</string>
+    <string name="email_hint">Ваша електронна пошта</string>
 </resources>
