@@ -140,7 +140,7 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
         findViewById(R.id.logout).setOnClickListener(this);
         onlyWiFiCheckBox = (CheckBox)findViewById(R.id.onlyWiFiCheckBox);
         onlyWiFiCheckBox.setOnClickListener(this);
-        onlyWiFiCheckBox.setEnabled(ProjectPreferencesManager.getUploadWifiOnlyMode(this));
+        onlyWiFiCheckBox.setChecked(ProjectPreferencesManager.getUploadWifiOnlyMode(this));
         noPhotosTextView = (TextView) findViewById(R.id.noPhotosTextView);
         llSettings = (LinearLayout) findViewById(R.id.ll_settings);
 

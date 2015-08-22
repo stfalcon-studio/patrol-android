@@ -8,6 +8,8 @@ import com.octo.android.robospice.retrofit.RetrofitGsonSpiceService;
 public class PatrolSpiceService extends RetrofitGsonSpiceService {
 
     //TEST
+    public final static String BASE_URL_TEST = "http://192.168.0.29/app_dev.php";
+    //PROD
     public final static String BASE_URL = "http://192.168.0.29/app_dev.php";
 
     @Override
