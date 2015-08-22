@@ -15,4 +15,5 @@
     <string name="no_photos_message">Ви ще не зробили жодної фотографії.</string>
     <string name="upload_only_wifi">Відправка фото лише по Wi-Fi</string>
     <string name="logout">Вийти</string>
+    <string name="no_gps">Відсутні GPS \nкоординати</string>
 </resources>

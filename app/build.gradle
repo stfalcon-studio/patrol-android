@@ -40,4 +40,5 @@ dependencies {
     compile 'com.android.support:design:22.2.0'
     compile 'io.realm:realm-android:0.83.0-SNAPSHOT'
     compile 'com.google.android.gms:play-services:7.5.0'
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.3'
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.stfalcon.dorozhnyjpatrul" >
+    package="com.stfalcon.hromadskyipatrul" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -18,7 +18,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".ui.LoginActivity"
+            android:name="com.stfalcon.hromadskyipatrul.ui.LoginActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -27,14 +27,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.MainScreen"
+        <activity android:name="com.stfalcon.hromadskyipatrul.ui.MainScreen"
             android:screenOrientation="portrait"/>
 
-        <service android:name=".network.HPSpiceService"/>
-        <service android:name=".network.UploadService"/>
+        <service android:name="com.stfalcon.hromadskyipatrul.network.HPSpiceService"/>
+        <service android:name="com.stfalcon.hromadskyipatrul.network.UploadService"/>
 
         <receiver
-            android:name=".receivers.NetworkStateReceiver"
+            android:name="com.stfalcon.hromadskyipatrul.receivers.NetworkStateReceiver"
             android:enabled="true">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
