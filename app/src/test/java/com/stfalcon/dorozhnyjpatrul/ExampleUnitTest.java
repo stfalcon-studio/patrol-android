@@ -1,4 +1,4 @@
-package com.stfalcon.hromadskyipatrul;
+package com.stfalcon.hromadskyipatrol;
 
 import org.junit.Test;
 
