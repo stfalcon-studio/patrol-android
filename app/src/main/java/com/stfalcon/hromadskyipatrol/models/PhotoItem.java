@@ -11,6 +11,7 @@ public class PhotoItem extends RealmObject {
     public static final int STATE_IN_PROCESS = 0;
     public static final int STATE_ERROR = 2;
     public static final int STATE_NO_GPS = 3;
+    public static final int STATE_SAVING = 4;
 
     @PrimaryKey
     private String id;

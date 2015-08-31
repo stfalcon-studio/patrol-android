@@ -1,6 +1,7 @@
 package com.stfalcon.hromadskyipatrol.network;
 
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 
@@ -49,10 +50,10 @@ public class UploadService extends IntentService {
                 PhotoAnswer answer = uploadImage(photo.getPhotoURL(), String.valueOf(user.getId()),
                         photo.getId(), photo.getLatitude(), photo.getLongitude());
                 serverAnswersList.add(answer);
-                updateActivityUI(answer.getId(), answer.getState());
+                updateActivityUI(this, answer.getId(), answer.getState());
             } else {
                 serverAnswersList.add(new PhotoAnswer(photo.getId(), PhotoItem.STATE_NO_GPS));
-                updateActivityUI(photo.getId(), PhotoItem.STATE_NO_GPS);
+                updateActivityUI(this, photo.getId(), PhotoItem.STATE_NO_GPS);
             }
 
         }
@@ -70,11 +71,11 @@ public class UploadService extends IntentService {
     }
 
 
-    private void updateActivityUI(String id, int state) {
+    public static void updateActivityUI(Context context, String id, int state) {
         Intent intent = new Intent(UPDATE_PHOTO_UI);
         intent.putExtra("id", id);
         intent.putExtra("state", state);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
 

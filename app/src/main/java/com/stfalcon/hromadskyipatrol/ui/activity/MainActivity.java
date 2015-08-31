@@ -5,11 +5,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.GridLayoutManager;
@@ -20,19 +18,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.stfalcon.hromadskyipatrol.R;
 import com.stfalcon.hromadskyipatrol.models.PhotoItem;
 import com.stfalcon.hromadskyipatrol.models.UserItem;
 import com.stfalcon.hromadskyipatrol.network.UploadService;
+import com.stfalcon.hromadskyipatrol.network.WaitLocationService;
 import com.stfalcon.hromadskyipatrol.ui.LocationDialog;
 import com.stfalcon.hromadskyipatrol.ui.PhotoGridAdapter;
 import com.stfalcon.hromadskyipatrol.utils.CameraUtils;
-import com.stfalcon.hromadskyipatrol.utils.NetworkUtils;
 import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 
 import io.realm.Realm;
@@ -41,8 +34,7 @@ import io.realm.RealmResults;
 /**
  * Created by alexandr on 17/08/15.
  */
-public class MainActivity extends BaseSpiceActivity implements View.OnClickListener, LocationListener,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends BaseSpiceActivity implements View.OnClickListener {
     int REQUEST_CAMERA = 0;
 
     private TextView noPhotosTextView;
@@ -54,34 +46,7 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
     private Uri imageUri;
     private Realm realm;
     private UserItem userData;
-    private GoogleApiClient mGoogleApiClient;
-    private Location mLastLocation;
     private boolean isGPSDialogShowed;
-
-
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mGoogleApiClient.connect();
-        startLocationUpdates();
-    }
-
-    @Override
-    protected void onStop() {
-        stopLocationUpdates();
-        mGoogleApiClient.disconnect();
-        super.onStop();
-    }
-
 
 
     @Override
@@ -93,8 +58,6 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
             openCamera();
         }
         initViews();
-        buildGoogleApiClient();
-
         LocalBroadcastManager.getInstance(this).registerReceiver(
                 mMessageReceiver, new IntentFilter(UploadService.UPDATE_PHOTO_UI));
     }
@@ -104,7 +67,7 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
         if (!((LocationManager) getSystemService(Context.LOCATION_SERVICE))
                 .isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             if (!isGPSDialogShowed) {
-            LocationDialog.showSettingsAlert(this);
+                LocationDialog.showSettingsAlert(this);
                 isGPSDialogShowed = true;
             }
             return false;
@@ -138,7 +101,7 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
         findViewById(R.id.bt_settings).setOnClickListener(this);
         findViewById(R.id.snap).setOnClickListener(this);
         findViewById(R.id.logout).setOnClickListener(this);
-        onlyWiFiCheckBox = (CheckBox)findViewById(R.id.onlyWiFiCheckBox);
+        onlyWiFiCheckBox = (CheckBox) findViewById(R.id.onlyWiFiCheckBox);
         onlyWiFiCheckBox.setOnClickListener(this);
         onlyWiFiCheckBox.setChecked(ProjectPreferencesManager.getUploadWifiOnlyMode(this));
         noPhotosTextView = (TextView) findViewById(R.id.noPhotosTextView);
@@ -240,30 +203,15 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
         photo.setId(String.valueOf(System.currentTimeMillis()));
         photo.setState(PhotoItem.STATE_IN_PROCESS);
         photo.setPhotoURL(pathToInternallyStoredImage);
-        if (mLastLocation != null) {
-            photo.setLatitude(mLastLocation.getLatitude());
-            photo.setLongitude(mLastLocation.getLongitude());
-        } else {
-            photo.setState(PhotoItem.STATE_NO_GPS);
-        }
+        photo.setState(PhotoItem.STATE_SAVING);
         realm.copyToRealmOrUpdate(photo);
         realm.commitTransaction();
 
         ((PhotoGridAdapter) mAdapter).addItem(photo);
         setPhotosListVisibility(true);
 
-        int connectivityStatus = NetworkUtils.getConnectivityStatus(this);
-        boolean isCanUpload = true;
-
-        if (ProjectPreferencesManager.getUploadWifiOnlyMode(this))
-            if (connectivityStatus != NetworkUtils.CONNECTION_WIFI)
-                isCanUpload = false;
-
-        if (isCanUpload && connectivityStatus != NetworkUtils.NOT_CONNECTED) {
-            startService(new Intent(MainActivity.this, UploadService.class));
-        }
+        startService(new Intent(MainActivity.this, WaitLocationService.class));
     }
-
 
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -275,56 +223,4 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
         }
     };
 
-    //LOCATION
-
-    @Override
-    public void onConnected(Bundle bundle) {
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-
-    }
-
-    private void startLocationUpdates() {
-        try {
-            LocationServices.FusedLocationApi.requestLocationUpdates(
-                    mGoogleApiClient, createLocationRequest(), this);
-        } catch (IllegalStateException e) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    startLocationUpdates();
-                }
-            }, 10000);  // Try after 10sec
-        }
-    }
-
-    private void stopLocationUpdates() {
-        try {
-            LocationServices.FusedLocationApi.removeLocationUpdates(
-                    mGoogleApiClient, this);
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    private LocationRequest createLocationRequest() {
-        LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        return mLocationRequest;
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        mLastLocation = location;
-    }
 }

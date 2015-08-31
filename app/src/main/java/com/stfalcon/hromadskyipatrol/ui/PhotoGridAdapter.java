@@ -69,6 +69,13 @@ public class PhotoGridAdapter extends RecyclerView.Adapter<PhotoGridAdapter.View
                 viewHolder.imgState.setVisibility(View.VISIBLE);
                 break;
             case PhotoItem.STATE_NO_GPS:
+                viewHolder.noGPS.setText(R.string.no_gps);
+                viewHolder.noGPS.setVisibility(View.VISIBLE);
+                viewHolder.imgState.setVisibility(View.GONE);
+                break;
+
+            case PhotoItem.STATE_SAVING:
+                viewHolder.noGPS.setText(R.string.saving);
                 viewHolder.noGPS.setVisibility(View.VISIBLE);
                 viewHolder.imgState.setVisibility(View.GONE);
                 break;
