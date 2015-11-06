@@ -18,4 +18,9 @@
     <string name="no_gps">Відсутні GPS \nкоординати</string>
     <string name="email_hint">Ваша електронна пошта</string>
     <string name="saving">Визначення\nкоординат...</string>
+    <string name="record">Record</string>
+    <string name="stop">Stop</string>
+    <string name="description_info">Info</string>
+    <string name="permission_request">This sample needs permission for camera and audio recording.</string>
+    <string name="camera_error">This device doesn\'t support Camera2 API.</string>
 </resources>

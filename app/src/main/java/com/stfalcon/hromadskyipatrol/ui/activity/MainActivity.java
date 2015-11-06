@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -169,9 +168,7 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
     }
 
     private void openCamera() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        imageUri = CameraUtils.getOutputMediaFileUri(CameraUtils.MEDIA_TYPE_IMAGE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        Intent intent = new Intent(this, VideoCaptureActivity.class);
         startActivityForResult(intent, REQUEST_CAMERA);
     }
 
