@@ -3,13 +3,13 @@ package com.stfalcon.hromadskyipatrol.models;
 /**
  * Created by alexandr on 20/08/15.
  */
-public class PhotoAnswer {
+public class VideoAnswer {
     private String id;
     private int state;
     private double latitude;
     private double longitude;
 
-    public PhotoAnswer(String id, int state) {
+    public VideoAnswer(String id, int state) {
         this.id = id;
         this.state = state;
     }

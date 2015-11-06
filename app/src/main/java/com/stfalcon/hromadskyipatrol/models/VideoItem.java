@@ -6,7 +6,7 @@ import io.realm.annotations.PrimaryKey;
 /**
  * Created by alexandr on 19/08/15.
  */
-public class PhotoItem extends RealmObject {
+public class VideoItem extends RealmObject {
     public static final int STATE_UPLOADED = 1;
     public static final int STATE_IN_PROCESS = 0;
     public static final int STATE_ERROR = 2;
@@ -15,7 +15,7 @@ public class PhotoItem extends RealmObject {
 
     @PrimaryKey
     private String id;
-    private String photoURL;
+    private String videoURL;
     private int state;
     private double longitude;
     private double latitude;
@@ -36,8 +36,8 @@ public class PhotoItem extends RealmObject {
         return state;
     }
 
-    public String getPhotoURL() {
-        return photoURL;
+    public String getVideoURL() {
+        return videoURL;
     }
 
     public void setId(String id) {
@@ -49,8 +49,8 @@ public class PhotoItem extends RealmObject {
         return id;
     }
 
-    public void setPhotoURL(String photoURL) {
-        this.photoURL = photoURL;
+    public void setVideoURL(String photoURL) {
+        this.videoURL = photoURL;
     }
 
     public void setLongitude(double longitude) {
@@ -60,4 +60,4 @@ public class PhotoItem extends RealmObject {
     public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
-    }
+}

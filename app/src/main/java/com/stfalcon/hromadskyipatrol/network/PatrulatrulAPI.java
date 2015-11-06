@@ -1,7 +1,7 @@
 package com.stfalcon.hromadskyipatrol.network;
 
 import com.stfalcon.hromadskyipatrol.models.LoginAnswer;
-import com.stfalcon.hromadskyipatrol.models.PhotoAnswer;
+import com.stfalcon.hromadskyipatrol.models.VideoAnswer;
 
 import retrofit.http.EncodedPath;
 import retrofit.http.Field;
@@ -30,7 +30,7 @@ public interface PatrulatrulAPI {
             "Accept: application/json",
             "Accept-Encoding: gzip, deflate"})
     @POST("/api/{userID}/violation/create")
-    PhotoAnswer uploadImage(@Part("photo") TypedFile photo,
+    VideoAnswer uploadImage(@Part("photo") TypedFile photo,
                             @EncodedPath("userID") String userID,
                             @Part("latitude") double latitude,
                             @Part("longitude") double longitude);

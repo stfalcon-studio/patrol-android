@@ -18,12 +18,12 @@ import android.widget.TextView;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.stfalcon.hromadskyipatrol.R;
-import com.stfalcon.hromadskyipatrol.models.PhotoItem;
+import com.stfalcon.hromadskyipatrol.models.VideoItem;
 import com.stfalcon.hromadskyipatrol.models.UserItem;
 import com.stfalcon.hromadskyipatrol.network.UploadService;
 import com.stfalcon.hromadskyipatrol.network.WaitLocationService;
 import com.stfalcon.hromadskyipatrol.ui.LocationDialog;
-import com.stfalcon.hromadskyipatrol.ui.PhotoGridAdapter;
+import com.stfalcon.hromadskyipatrol.ui.VideoGridAdapter;
 import com.stfalcon.hromadskyipatrol.utils.CameraUtils;
 import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 
@@ -36,13 +36,13 @@ import io.realm.RealmResults;
 public class MainActivity extends BaseSpiceActivity implements View.OnClickListener {
     int REQUEST_CAMERA = 0;
 
-    private TextView noPhotosTextView;
+    private TextView noVideosTextView;
     private LinearLayout llSettings;
-    private CheckBox onlyWiFiCheckBox;
+    private CheckBox onlyWiFiCheckBox, autoUploadCheckBox;
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private RecyclerView.Adapter mAdapter;
-    private Uri imageUri;
+    private Uri videoUri;
     private Realm realm;
     private UserItem userData;
     private boolean isGPSDialogShowed;
@@ -58,7 +58,7 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
         }
         initViews();
         LocalBroadcastManager.getInstance(this).registerReceiver(
-                mMessageReceiver, new IntentFilter(UploadService.UPDATE_PHOTO_UI));
+                mMessageReceiver, new IntentFilter(UploadService.UPDATE_VIDEO_UI));
     }
 
 
@@ -89,10 +89,10 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
         mLayoutManager = new GridLayoutManager(this, 2);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        RealmResults<PhotoItem> photos = realm.where(PhotoItem.class).findAll();
-        mAdapter = new PhotoGridAdapter(photos, this);
+        RealmResults<VideoItem> videos = realm.where(VideoItem.class).findAll();
+        mAdapter = new VideoGridAdapter(videos, this);
         mRecyclerView.setAdapter(mAdapter);
-        setPhotosListVisibility(photos.size() > 0);
+        setVideosListVisibility(videos.size() > 0);
     }
 
 
@@ -100,10 +100,16 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
         findViewById(R.id.bt_settings).setOnClickListener(this);
         findViewById(R.id.snap).setOnClickListener(this);
         findViewById(R.id.logout).setOnClickListener(this);
+
         onlyWiFiCheckBox = (CheckBox) findViewById(R.id.onlyWiFiCheckBox);
         onlyWiFiCheckBox.setOnClickListener(this);
         onlyWiFiCheckBox.setChecked(ProjectPreferencesManager.getUploadWifiOnlyMode(this));
-        noPhotosTextView = (TextView) findViewById(R.id.noPhotosTextView);
+
+        autoUploadCheckBox = (CheckBox) findViewById(R.id.autoUploadCheckBox);
+        autoUploadCheckBox.setOnClickListener(this);
+        autoUploadCheckBox.setChecked(ProjectPreferencesManager.getAutoUploadMode(this));
+
+        noVideosTextView = (TextView) findViewById(R.id.noVideosTextView);
         llSettings = (LinearLayout) findViewById(R.id.ll_settings);
 
         userData = realm.where(UserItem.class).findFirst();
@@ -111,12 +117,12 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
     }
 
 
-    private void setPhotosListVisibility(Boolean isExists) {
+    private void setVideosListVisibility(Boolean isExists) {
         if (isExists) {
-            noPhotosTextView.setVisibility(View.GONE);
+            noVideosTextView.setVisibility(View.GONE);
             mRecyclerView.setVisibility(View.VISIBLE);
         } else {
-            noPhotosTextView.setVisibility(View.VISIBLE);
+            noVideosTextView.setVisibility(View.VISIBLE);
             mRecyclerView.setVisibility(View.GONE);
         }
     }
@@ -138,6 +144,7 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
                             .setCategory("Settings")
                             .setAction("snap")
                             .build());
+
                 }
                 break;
             case R.id.onlyWiFiCheckBox:
@@ -146,6 +153,14 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
                         .setCategory("Settings")
                         .setAction("onlyWiFiCheckBox")
                         .setLabel(String.valueOf(onlyWiFiCheckBox.isChecked()))
+                        .build());
+                break;
+            case R.id.autoUploadCheckBox:
+                ProjectPreferencesManager.setAutoUploadMode(this, autoUploadCheckBox.isChecked());
+                getTracker().send(new HitBuilders.EventBuilder()
+                        .setCategory("Settings")
+                        .setAction("autoUploadCheckBox")
+                        .setLabel(String.valueOf(autoUploadCheckBox.isChecked()))
                         .build());
                 break;
             case R.id.logout:
@@ -187,25 +202,25 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
 
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_CAMERA)
-                onCaptureImageResult(data);
+                onCaptureVideoResult(data);
         }
     }
 
-    private void onCaptureImageResult(Intent data) {
-        String pathToInternallyStoredImage = CameraUtils.saveToInternalStorage(this, CameraUtils.MEDIA_TYPE_IMAGE, imageUri);
+    private void onCaptureVideoResult(Intent data) {
+        String pathToInternallyStoredImage = CameraUtils.saveToInternalStorage(this, CameraUtils.MEDIA_TYPE_VIDEO, videoUri);
         // Transactions give you easy thread-safety
         realm.beginTransaction();
 
-        PhotoItem photo = new PhotoItem();
-        photo.setId(String.valueOf(System.currentTimeMillis()));
-        photo.setState(PhotoItem.STATE_IN_PROCESS);
-        photo.setPhotoURL(pathToInternallyStoredImage);
-        photo.setState(PhotoItem.STATE_SAVING);
-        realm.copyToRealmOrUpdate(photo);
+        VideoItem video = new VideoItem();
+        video.setId(String.valueOf(System.currentTimeMillis()));
+        video.setState(VideoItem.STATE_IN_PROCESS);
+        video.setVideoURL(pathToInternallyStoredImage);
+        video.setState(VideoItem.STATE_SAVING);
+        realm.copyToRealmOrUpdate(video);
         realm.commitTransaction();
 
-        ((PhotoGridAdapter) mAdapter).addItem(photo);
-        setPhotosListVisibility(true);
+        ((VideoGridAdapter) mAdapter).addItem(video);
+        setVideosListVisibility(true);
 
         startService(new Intent(MainActivity.this, WaitLocationService.class));
     }
@@ -214,9 +229,9 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String photoId = intent.getStringExtra("id");
-            int photoState = intent.getIntExtra("state", PhotoItem.STATE_IN_PROCESS);
-            ((PhotoGridAdapter) mAdapter).updateItem(photoId, photoState);
+            String videoId = intent.getStringExtra("id");
+            int videoState = intent.getIntExtra("state", VideoItem.STATE_IN_PROCESS);
+            ((VideoGridAdapter) mAdapter).updateItem(videoId, videoState);
         }
     };
 
