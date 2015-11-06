@@ -14,8 +14,13 @@
     <string name="gps_turn_on">Увімкнути</string>
     <string name="no_photos_message">Ви ще не зробили жодної фотографії.</string>
     <string name="upload_only_wifi">Відправка фото лише по Wi-Fi</string>
+    <string name="upload_automatically">Upload files automatically</string>
     <string name="logout">Вийти</string>
     <string name="no_gps">Відсутні GPS \nкоординати</string>
     <string name="email_hint">Ваша електронна пошта</string>
     <string name="saving">Визначення\nкоординат...</string>
+    <string name="view_video">Переглянути відео</string>
+    <string name="upload_video">Завантажити одне відео</string>
+    <string name="delete_video">Видалити відео</string>
+    <string name="cancel">Відміна</string>
 </resources>

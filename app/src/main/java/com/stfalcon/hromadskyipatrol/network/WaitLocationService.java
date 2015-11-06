@@ -12,8 +12,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.stfalcon.hromadskyipatrol.models.PhotoAnswer;
-import com.stfalcon.hromadskyipatrol.models.PhotoItem;
+import com.stfalcon.hromadskyipatrol.models.VideoAnswer;
+import com.stfalcon.hromadskyipatrol.models.VideoItem;
 import com.stfalcon.hromadskyipatrol.utils.NetworkUtils;
 import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 
@@ -136,14 +136,8 @@ public class WaitLocationService extends IntentService {
                 mLocation = location;
                 setItemsState(location);
 
-                int connectivityStatus = NetworkUtils.getConnectivityStatus(WaitLocationService.this);
-                boolean isCanUpload = true;
-
-                if (ProjectPreferencesManager.getUploadWifiOnlyMode(WaitLocationService.this))
-                    if (connectivityStatus != NetworkUtils.CONNECTION_WIFI)
-                        isCanUpload = false;
-
-                if (isCanUpload && connectivityStatus != NetworkUtils.NOT_CONNECTED) {
+                //if auto upload enable
+                if (ProjectPreferencesManager.getAutoUploadMode(getApplicationContext())) {
                     startService(new Intent(WaitLocationService.this, UploadService.class));
                 }
                 thread.interrupted();
@@ -153,38 +147,38 @@ public class WaitLocationService extends IntentService {
         private void setItemsState(Location location) {
             //init objects
             Realm realmDB = Realm.getInstance(WaitLocationService.this);
-            ArrayList<PhotoAnswer> answersList = new ArrayList<PhotoAnswer>();
+            ArrayList<VideoAnswer> answersList = new ArrayList<VideoAnswer>();
 
             //get all photos for upload
-            RealmResults<PhotoItem> photoList = realmDB.where((PhotoItem.class))
-                    .equalTo("state", PhotoItem.STATE_SAVING)
+            RealmResults<VideoItem> photoList = realmDB.where((VideoItem.class))
+                    .equalTo("state", VideoItem.STATE_SAVING)
                     .findAll();
 
 
-            for (PhotoItem item : photoList) {
+            for (VideoItem item : photoList) {
 
                 if (location == null) {
-                    answersList.add(new PhotoAnswer(item.getId(), PhotoItem.STATE_NO_GPS));
+                    answersList.add(new VideoAnswer(item.getId(), VideoItem.STATE_NO_GPS));
                 } else {
                     long photoTime = Long.valueOf(item.getId());
                     if (photoTime + ACTUAL_INTERVAL > location.getTime()) {
-                        PhotoAnswer answer = new PhotoAnswer(item.getId(), PhotoItem.STATE_IN_PROCESS);
+                        VideoAnswer answer = new VideoAnswer(item.getId(), VideoItem.STATE_IN_PROCESS);
                         answer.setLatitude(location.getLatitude());
                         answer.setLongitude(location.getLongitude());
                         answersList.add(answer);
                     } else {
-                        answersList.add(new PhotoAnswer(item.getId(), PhotoItem.STATE_NO_GPS));
+                        answersList.add(new VideoAnswer(item.getId(), VideoItem.STATE_NO_GPS));
                     }
                 }
-                PhotoAnswer answer = answersList.get(answersList.size() - 1);
+                VideoAnswer answer = answersList.get(answersList.size() - 1);
                 UploadService.updateActivityUI(WaitLocationService.this, answer.getId(), answer.getState());
             }
 
             //update DB
             if (!answersList.isEmpty()) {
-                for (PhotoAnswer answer : answersList) {
+                for (VideoAnswer answer : answersList) {
                     realmDB.beginTransaction();
-                    PhotoItem photoInBase = realmDB.where(PhotoItem.class).contains("id", answer.getId()).findFirst();
+                    VideoItem photoInBase = realmDB.where(VideoItem.class).contains("id", answer.getId()).findFirst();
                     photoInBase.setState(answer.getState());
                     photoInBase.setLatitude(answer.getLatitude());
                     photoInBase.setLongitude(answer.getLongitude());

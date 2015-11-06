@@ -12,7 +12,7 @@
         android:layout_marginTop="48dp"/>
 
     <TextView
-        android:id="@+id/noPhotosTextView"
+        android:id="@+id/noVideosTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/no_photos_message"
@@ -77,23 +77,37 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/title"
+                android:layout_marginTop="16dp"
                 android:visibility="gone">
 
                 <CheckBox
                     android:id="@+id/onlyWiFiCheckBox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
                     android:textColor="@android:color/white"
                     android:textSize="14sp"
                     android:clickable="true"
                     android:text="@string/upload_only_wifi" />
+
+                <CheckBox
+                    android:id="@+id/autoUploadCheckBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp"
+                    android:clickable="true"
+                    android:text="@string/upload_automatically" />
 
                 <Button
                     android:id="@+id/logout"
                     android:text="@string/logout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
                     android:textSize="12sp"
                     android:textColor="@color/primaryTextColor"
                     android:background="@color/primaryColorDark"/>
