@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-
     <com.stfalcon.hromadskyipatrol.ui.view.AutoFitTextureView
         android:id="@+id/texture"
         android:layout_width="match_parent"
@@ -12,13 +11,6 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true" />
-
-    <Button
-        android:id="@+id/video"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/record" />
 
     <TextView
         android:id="@+id/tv_message"
@@ -31,10 +23,11 @@
         android:id="@+id/bt_main_screen"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@null"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:layout_margin="8dp"
         android:padding="16dp"
-        android:src="@drawable/ic_launcher" />
+        android:src="@drawable/grid" />
 
 </RelativeLayout>
