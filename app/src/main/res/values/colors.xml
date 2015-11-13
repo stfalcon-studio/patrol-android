@@ -5,4 +5,5 @@
     <color name="primaryTextColor">#ffffff</color>
     <color name="darkTextColor">#000000</color>
     <color name="accent">#000000</color>
+    <color name="red">#b30c0c</color>
 </resources>

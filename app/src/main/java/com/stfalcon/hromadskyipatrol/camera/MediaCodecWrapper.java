@@ -16,7 +16,9 @@
 
 package com.stfalcon.hromadskyipatrol.camera;
 
-import android.media.*;
+import android.media.MediaCodec;
+import android.media.MediaExtractor;
+import android.media.MediaFormat;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.Surface;

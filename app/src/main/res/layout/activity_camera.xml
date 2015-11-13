@@ -1,7 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
-    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000"/>
+    android:layout_width="match_parent">
+
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:minWidth="100dp"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/frame"/>
+
+
+    <TextView
+        android:id="@+id/tv_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="26dp"
+        android:layout_toLeftOf="@+id/frame"
+        android:textSize="24dp"
+        android:text="@string/violator"
+        android:textColor="@color/red"
+        android:visibility="gone" />
+
+
+    <FrameLayout
+        android:id="@+id/frame"
+        android:minWidth="52dp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:background="@color/primaryColor"
+        android:orientation="horizontal">
+
+
+        <ImageButton
+            android:id="@+id/bt_main_screen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_alignParentTop="true"
+            android:layout_margin="8dp"
+            android:background="@null"
+            android:padding="16dp"
+            android:src="@drawable/grid" />
+
+        <TextView
+            android:id="@+id/time"
+            android:drawableLeft="@drawable/red_circle"
+            android:drawablePadding="2dp"
+            android:text="00:00"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|bottom"
+            android:contentDescription="@string/description_info"
+            android:padding="20dp"/>
+
+    </FrameLayout>
+
+</RelativeLayout>
