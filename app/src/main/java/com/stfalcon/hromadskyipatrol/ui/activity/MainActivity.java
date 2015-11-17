@@ -207,7 +207,7 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
     }
 
     private void onCaptureVideoResult(Intent data) {
-        String pathToInternallyStoredImage = CameraUtils.saveToInternalStorage(this, CameraUtils.MEDIA_TYPE_VIDEO, videoUri);
+        String pathToInternallyStoredImage = CameraUtils.saveToInternalStorage(CameraUtils.MEDIA_TYPE_VIDEO, videoUri);
         // Transactions give you easy thread-safety
         realm.beginTransaction();
 

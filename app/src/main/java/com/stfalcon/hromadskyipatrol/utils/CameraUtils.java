@@ -1,6 +1,5 @@
 package com.stfalcon.hromadskyipatrol.utils;
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
 
@@ -33,7 +32,7 @@ public class CameraUtils {
     }
 
 
-    private static File getOutputInternalMediaFile(Context context, int type) {
+    public static File getOutputInternalMediaFile_App(int type) {
         File mediaStorageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "DPatrul");
         createMediaStorageDir(mediaStorageDir);
         return createFile(type, mediaStorageDir);
@@ -61,12 +60,12 @@ public class CameraUtils {
     }
 
 
-    public static String saveToInternalStorage(Context context, int type, Uri tempUri) {
+    public static String saveToInternalStorage(int type, Uri tempUri) {
         InputStream in = null;
         OutputStream out = null;
 
         File sourceExternalImageFile = new File(tempUri.getPath());
-        File destinationInternalImageFile = new File(getOutputInternalMediaFile(context, type).getPath());
+        File destinationInternalImageFile = new File(getOutputInternalMediaFile_App(type).getPath());
 
         try {
             destinationInternalImageFile.createNewFile();

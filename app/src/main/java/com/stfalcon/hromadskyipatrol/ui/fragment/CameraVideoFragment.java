@@ -3,7 +3,6 @@ package com.stfalcon.hromadskyipatrol.ui.fragment;
 import android.annotation.TargetApi;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
-import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -31,7 +30,6 @@ public class CameraVideoFragment extends BaseCameraFragment implements View.OnCl
     private TextureView mPreview;
     private boolean isRecording = false;
     private static final String TAG = "Recorder";
-    private MediaRecorder mMediaRecorder;
     private Camera mCamera;
 
     public static CameraVideoFragment newInstance() {
@@ -54,23 +52,10 @@ public class CameraVideoFragment extends BaseCameraFragment implements View.OnCl
     }
 
 
-    /**
-     * The capture button controls all user interaction. When recording, the button click
-     * stops recording, releases {@link android.media.MediaRecorder} and {@link android.hardware.Camera}. When not recording,
-     * it prepares the {@link android.media.MediaRecorder} and starts recording.
-     *
-     */
     public void onCaptureClick() {
         if (isRecording) {
-            // BEGIN_INCLUDE(stop_release_media_recorder)
-
-            // stop recording and release camera
-            mMediaRecorder.stop();  // stop the recording
-            releaseMediaRecorder(); // release the MediaRecorder object
+            releaseMRecorder(); // release the MediaRecorder object
             mCamera.lock();         // take camera access back from MediaRecorder
-
-            // inform the user that recording has stopped
-            onStopRecord();
             isRecording = false;
             releaseCamera();
             // END_INCLUDE(stop_release_media_recorder)
@@ -83,22 +68,14 @@ public class CameraVideoFragment extends BaseCameraFragment implements View.OnCl
     public void onPause() {
         super.onPause();
         // if we are using MediaRecorder, release it first
-        releaseMediaRecorder();
+        releaseMRecorder();
         // release the camera immediately on pause event
         releaseCamera();
     }
 
-    private void releaseMediaRecorder() {
-        if (mMediaRecorder != null) {
-            // clear recorder configuration
-            mMediaRecorder.reset();
-            // release the recorder object
-            mMediaRecorder.release();
-            mMediaRecorder = null;
-            // Lock camera for later use i.e taking it back from MediaRecorder.
-            // MediaRecorder doesn't need it anymore and we will release it if the activity pauses.
-            mCamera.lock();
-        }
+    private void releaseMRecorder() {
+        mCamera.lock();
+
     }
 
     private void releaseCamera() {
@@ -139,38 +116,13 @@ public class CameraVideoFragment extends BaseCameraFragment implements View.OnCl
             Log.e(TAG, "Surface texture is unavailable or unsuitable" + e.getMessage());
             return false;
         }
-        // END_INCLUDE (configure_preview)
 
-
-        // BEGIN_INCLUDE (configure_media_recorder)
-        mMediaRecorder = new MediaRecorder();
-
-        // Step 1: Unlock and set camera to MediaRecorder
         mCamera.unlock();
-        mMediaRecorder.setCamera(mCamera);
-
-        // Step 2: Set sources
-        mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
-        mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-
-        // Step 3: Set a CamcorderProfile (requires API Level 8 or higher)
-        mMediaRecorder.setProfile(profile);
-
-        // Step 4: Set output file
-        mMediaRecorder.setOutputFile(CameraHelper.getOutputMediaFile(
-                CameraHelper.MEDIA_TYPE_VIDEO).toString());
-        // END_INCLUDE (configure_media_recorder)
-
-        // Step 5: Prepare configured MediaRecorder
         try {
-            mMediaRecorder.prepare();
+
         } catch (IllegalStateException e) {
             Log.d(TAG, "IllegalStateException preparing MediaRecorder: " + e.getMessage());
-            releaseMediaRecorder();
-            return false;
-        } catch (IOException e) {
-            Log.d(TAG, "IOException preparing MediaRecorder: " + e.getMessage());
-            releaseMediaRecorder();
+            releaseMRecorder();
             return false;
         }
         return true;
@@ -197,12 +149,12 @@ public class CameraVideoFragment extends BaseCameraFragment implements View.OnCl
             if (prepareVideoRecorder()) {
                 // Camera is available and unlocked, MediaRecorder is prepared,
                 // now you can start recording
-                mMediaRecorder.start();
+                onStartRecord();
 
                 isRecording = true;
             } else {
                 // prepare didn't work, release the camera
-                releaseMediaRecorder();
+                releaseMRecorder();
                 return false;
             }
             return true;
@@ -214,7 +166,7 @@ public class CameraVideoFragment extends BaseCameraFragment implements View.OnCl
                 getActivity().finish();
             }
             // inform the user that recording has started
-            onStartSecord();
+            onStartRecord();
 
         }
     }

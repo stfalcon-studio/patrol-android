@@ -41,13 +41,13 @@ public class VideoCaptureActivity extends AppCompatActivity implements ICamera, 
 
     private void initViews() {
         message = (TextView) findViewById(R.id.tv_message);
-        time = (TextView) findViewById(R.id.tv_message);
-        mainMenu = (ImageButton)  findViewById(R.id.bt_main_screen);
+        time = (TextView) findViewById(R.id.time);
+        mainMenu = (ImageButton) findViewById(R.id.bt_main_screen);
         mainMenu.setOnClickListener(this);
     }
 
 
-    public void initCameraFragmentForAPIVersion(int ver){
+    public void initCameraFragmentForAPIVersion(int ver) {
         cameraFragment = getSupportCamera(ver);
         cameraFragment.addCameraCallback(this);
 
@@ -63,18 +63,54 @@ public class VideoCaptureActivity extends AppCompatActivity implements ICamera, 
     }
 
     @Override
+    public void onCameraPrepared() {
+        cameraFragment.startRecordSegment();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                time.setText("REC");
+            }
+        });
+    }
+
+    @Override
     public void onStartRecord() {
-        showRecordMessage();
     }
 
     @Override
     public void onStopRecord() {
-        hideRecordMessage();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                hideRecordMessage();
+                time.setText("--:--");
+            }
+        });
     }
 
     @Override
-    public void onTime() {
+    public void onVideoPrepared() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                time.setText("");
+            }
+        });
+    }
 
+    @Override
+    public void onViolationDetected() {
+        showRecordMessage();
+    }
+
+    @Override
+    public void onTime(final int sec) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                time.setText(String.valueOf(sec));
+            }
+        });
     }
 
     private void startMenuActivity() {
@@ -96,7 +132,7 @@ public class VideoCaptureActivity extends AppCompatActivity implements ICamera, 
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.bt_main_screen:
                 startMenuActivity();
                 break;

@@ -54,10 +54,10 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.stfalcon.hromadskyipatrol.R;
-import com.stfalcon.hromadskyipatrol.ui.view.AutoFitTextureView;
 import com.stfalcon.hromadskyipatrol.utils.CameraUtils;
 
 import java.io.File;
@@ -74,77 +74,32 @@ import java.util.concurrent.TimeUnit;
 public class Camera2VideoFragment extends BaseCameraFragment
         implements View.OnClickListener, FragmentCompat.OnRequestPermissionsResultCallback {
 
-    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
-
     private static final String TAG = "Camera2VideoFragment";
     private static final int REQUEST_VIDEO_PERMISSIONS = 1;
     private static final String FRAGMENT_DIALOG = "dialog";
+    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     private Size mPreviewSize;
     private Size mVideoSize;
     private CaptureRequest.Builder mPreviewBuilder;
-    private MediaRecorder mMediaRecorder;
-    private boolean mIsRecordingVideo;
     private HandlerThread mBackgroundThread;
     private Handler mBackgroundHandler;
     private Semaphore mCameraOpenCloseLock = new Semaphore(1);
-    private AutoFitTextureView mTextureView;
+    private TextureView mTextureView;
     private CameraDevice mCameraDevice;
     private CameraCaptureSession mPreviewSession;
+    private MediaRecorder mMediaRecorder;
+
     private static final String[] VIDEO_PERMISSIONS = {
             Manifest.permission.CAMERA,
             Manifest.permission.RECORD_AUDIO,
     };
 
-
-    public static Camera2VideoFragment newInstance() {
-        return new Camera2VideoFragment();
+    static {
+        ORIENTATIONS.append(Surface.ROTATION_0, 90);
+        ORIENTATIONS.append(Surface.ROTATION_90, 0);
+        ORIENTATIONS.append(Surface.ROTATION_180, 270);
+        ORIENTATIONS.append(Surface.ROTATION_270, 180);
     }
-
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.camera2_screen, container, false);
-    }
-
-    @Override
-    public void onViewCreated(final View view, Bundle savedInstanceState) {
-        mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
-        mTextureView.setOnClickListener(this);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        startBackgroundThread();
-        if (mTextureView.isAvailable()) {
-            openCamera(mTextureView.getWidth(), mTextureView.getHeight());
-        } else {
-            mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
-        }
-    }
-
-    @Override
-    public void onPause() {
-        closeCamera();
-        stopBackgroundThread();
-        super.onPause();
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.texture: {
-                if (mIsRecordingVideo) {
-                    stopRecordingVideo();
-                } else {
-                    startRecordingVideo();
-                }
-                break;
-            }
-        }
-    }
-
 
 
     private TextureView.SurfaceTextureListener mSurfaceTextureListener
@@ -173,9 +128,7 @@ public class Camera2VideoFragment extends BaseCameraFragment
 
     };
 
-    /**
-     * {@link CameraDevice.StateCallback} is called when {@link CameraDevice} changes its status.
-     */
+
     private CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
 
         @Override
@@ -208,6 +161,9 @@ public class Camera2VideoFragment extends BaseCameraFragment
 
     };
 
+    public static Camera2VideoFragment newInstance() {
+        return new Camera2VideoFragment();
+    }
 
     /**
      * In this sample, we choose a video size with 3x4 aspect ratio. Also, we don't use sizes
@@ -258,6 +214,51 @@ public class Camera2VideoFragment extends BaseCameraFragment
         }
     }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.camera2_screen, container, false);
+    }
+
+    @Override
+    public void onViewCreated(final View view, Bundle savedInstanceState) {
+        mTextureView = (TextureView) view.findViewById(R.id.texture);
+        mTextureView.setOnClickListener(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        startBackgroundThread();
+        initCamera();
+    }
+
+    private void initCamera() {
+        if (mTextureView.isAvailable()) {
+            openCamera(mTextureView.getWidth(), mTextureView.getHeight());
+        } else {
+            mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        closeCamera();
+        stopBackgroundThread();
+        super.onPause();
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.texture: {
+                if (mIsRecordingVideo) {
+                    startViolationRecording();
+                }
+                break;
+            }
+        }
+    }
 
     /**
      * Starts a background thread and its {@link Handler}.
@@ -355,7 +356,7 @@ public class Camera2VideoFragment extends BaseCameraFragment
         CameraManager manager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
         try {
             Log.d(TAG, "tryAcquire");
-            if (!mCameraOpenCloseLock.tryAcquire(5000, TimeUnit.MILLISECONDS)) {
+            if (!mCameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
                 throw new RuntimeException("Time out waiting to lock camera opening.");
             }
             String cameraId = manager.getCameraIdList()[0];
@@ -367,13 +368,6 @@ public class Camera2VideoFragment extends BaseCameraFragment
             mVideoSize = chooseVideoSize(map.getOutputSizes(MediaRecorder.class));
             mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class),
                     width, height, mVideoSize);
-
-            int orientation = getResources().getConfiguration().orientation;
-            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                mTextureView.setAspectRatio(mPreviewSize.getWidth(), mPreviewSize.getHeight());
-            } else {
-                mTextureView.setAspectRatio(mPreviewSize.getHeight(), mPreviewSize.getWidth());
-            }
             configureTransform(width, height);
             mMediaRecorder = new MediaRecorder();
             manager.openCamera(cameraId, mStateCallback, null);
@@ -437,6 +431,7 @@ public class Camera2VideoFragment extends BaseCameraFragment
                 public void onConfigured(CameraCaptureSession cameraCaptureSession) {
                     mPreviewSession = cameraCaptureSession;
                     updatePreview();
+                    onCameraPrepared();
                 }
 
                 @Override
@@ -514,7 +509,8 @@ public class Camera2VideoFragment extends BaseCameraFragment
         mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        mMediaRecorder.setOutputFile(CameraUtils.getOutputMediaFile(CameraUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
+        mMediaRecorder.setOutputFile(CameraUtils.getOutputInternalMediaFile_App(
+                CameraUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
         mMediaRecorder.setVideoEncodingBitRate(10000000);
         mMediaRecorder.setVideoFrameRate(30);
         mMediaRecorder.setVideoSize(mVideoSize.getWidth(), mVideoSize.getHeight());
@@ -527,11 +523,12 @@ public class Camera2VideoFragment extends BaseCameraFragment
     }
 
 
-    private void startRecordingVideo() {
+    @Override
+    protected void onStartRecord() {
+        super.onStartRecord();
         try {
             // UI
             mIsRecordingVideo = true;
-            onStartSecord();
             // Start recording
             mMediaRecorder.start();
         } catch (IllegalStateException e) {
@@ -539,11 +536,11 @@ public class Camera2VideoFragment extends BaseCameraFragment
         }
     }
 
-    private void stopRecordingVideo() {
+    @Override
+    protected void onStopRecord() {
         // UI
         mIsRecordingVideo = false;
         // Stop recording
-        onStopRecord();
         mMediaRecorder.stop();
         mMediaRecorder.reset();
         Activity activity = getActivity();
@@ -551,8 +548,17 @@ public class Camera2VideoFragment extends BaseCameraFragment
             Toast.makeText(activity, "Video saved",
                     Toast.LENGTH_SHORT).show();
         }
-        startPreview();
+        /*initCamera();
+        startPreview();*/
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                startPreview();
+            }
+        },500);
+        super.onStopRecord();
     }
+
 
     /**
      * Compares two {@code Size}s based on their areas.

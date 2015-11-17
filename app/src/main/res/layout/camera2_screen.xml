@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.stfalcon.hromadskyipatrol.ui.view.AutoFitTextureView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<TextureView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/texture"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_alignParentStart="true"
+    android:minWidth="100dp"
+    android:layout_alignParentBottom="true"
+    android:layout_alignParentLeft="true"
     android:layout_alignParentTop="true"/>
+
