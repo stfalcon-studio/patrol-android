@@ -13,7 +13,6 @@ import android.widget.TextView;
 import com.stfalcon.hromadskyipatrol.R;
 import com.stfalcon.hromadskyipatrol.camera.ICamera;
 import com.stfalcon.hromadskyipatrol.ui.fragment.BaseCameraFragment;
-import com.stfalcon.hromadskyipatrol.ui.fragment.Camera2VideoFragment;
 import com.stfalcon.hromadskyipatrol.ui.fragment.CameraVideoFragment;
 import com.stfalcon.hromadskyipatrol.utils.AnimationUtils;
 
@@ -57,24 +56,25 @@ public class VideoCaptureActivity extends AppCompatActivity implements ICamera, 
     }
 
     private BaseCameraFragment getSupportCamera(int ver) {
-        return ver < Build.VERSION_CODES.LOLLIPOP ?
+        /*return ver < Build.VERSION_CODES.LOLLIPOP ?
                 CameraVideoFragment.newInstance() :
-                Camera2VideoFragment.newInstance();
+                Camera2VideoFragment.newInstance();*/
+        return CameraVideoFragment.newInstance();
     }
 
     @Override
     public void onCameraPrepared() {
         cameraFragment.startRecordSegment();
+    }
+
+    @Override
+    public void onStartRecord() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 time.setText("REC");
             }
         });
-    }
-
-    @Override
-    public void onStartRecord() {
     }
 
     @Override

@@ -548,14 +548,7 @@ public class Camera2VideoFragment extends BaseCameraFragment
             Toast.makeText(activity, "Video saved",
                     Toast.LENGTH_SHORT).show();
         }
-        /*initCamera();
-        startPreview();*/
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                startPreview();
-            }
-        },500);
+        startPreview();
         super.onStopRecord();
     }
 
