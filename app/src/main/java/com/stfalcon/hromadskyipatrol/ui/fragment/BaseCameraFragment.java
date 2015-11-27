@@ -2,12 +2,12 @@ package com.stfalcon.hromadskyipatrol.ui.fragment;
 
 
 import android.app.Fragment;
-import android.os.Bundle;
 import android.os.Handler;
 import android.util.SparseIntArray;
 import android.view.Surface;
 
 import com.stfalcon.hromadskyipatrol.camera.ICamera;
+import com.stfalcon.hromadskyipatrol.models.ViolationItem;
 
 /**
  * Created by alex on 08.11.15.
@@ -15,6 +15,7 @@ import com.stfalcon.hromadskyipatrol.camera.ICamera;
 public class BaseCameraFragment extends Fragment {
 
     private long detectViolationTime;
+    protected String violationFileURI;
 
     private int TIME_RECORD_AFTER_TAP = 10 * 1000; //10sec
     //private int TIME_RECORD_SEGMENT = 2 * 60 * 1000;  //2 min
@@ -45,21 +46,24 @@ public class BaseCameraFragment extends Fragment {
     public boolean mIsRecordingVideo = false;
 
 
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        violationRecordHandler = new Handler();
-        segmentRecordHandler = new Handler();
-    }
-
     public void addCameraCallback(ICamera callback) {
         this.callback = callback;
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        violationRecordHandler = new Handler();
+        segmentRecordHandler = new Handler();
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
+        onStopRecord();
+        violationRecordHandler.removeCallbacks(updateTimerRunnable);
+        violationRecordHandler.removeCallbacks(stopRecordViolationRecordingRunnable);
+        segmentRecordHandler.removeCallbacks(stopRecordSegmentRunnable);
     }
 
     protected void onCameraPrepared() {
@@ -93,26 +97,33 @@ public class BaseCameraFragment extends Fragment {
         }
         violationRecording = true;
         detectViolationTime = System.currentTimeMillis();
-        violationRecordHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                onStopRecord();
-            }
-        }, TIME_RECORD_AFTER_TAP);
+        violationRecordHandler.postDelayed(stopRecordViolationRecordingRunnable, TIME_RECORD_AFTER_TAP);
         violationRecordHandler.postDelayed(updateTimerRunnable, 1000);
     }
 
 
     public void startRecordSegment() {
         onStartRecord();
-        segmentRecordHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!violationRecording && mIsRecordingVideo) {
-                    onStopRecord();
-                }
-            }
-        }, TIME_RECORD_SEGMENT);
+        segmentRecordHandler.postDelayed(stopRecordSegmentRunnable, TIME_RECORD_SEGMENT);
     }
 
+
+    private Runnable stopRecordSegmentRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (!violationRecording && mIsRecordingVideo) {
+                onStopRecord();
+            }
+        }
+    };
+
+    private Runnable stopRecordViolationRecordingRunnable = new Runnable() {
+        @Override
+        public void run() {
+            onStopRecord();
+            if (callback != null) {
+                callback.onVideoPrepared(new ViolationItem(detectViolationTime, violationFileURI));
+            }
+        }
+    };
 }

@@ -18,14 +18,18 @@ import android.widget.TextView;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.stfalcon.hromadskyipatrol.R;
-import com.stfalcon.hromadskyipatrol.models.VideoItem;
+import com.stfalcon.hromadskyipatrol.camera.VideoCaptureActivity;
 import com.stfalcon.hromadskyipatrol.models.UserItem;
+import com.stfalcon.hromadskyipatrol.models.VideoItem;
+import com.stfalcon.hromadskyipatrol.models.ViolationItem;
 import com.stfalcon.hromadskyipatrol.network.UploadService;
 import com.stfalcon.hromadskyipatrol.network.WaitLocationService;
 import com.stfalcon.hromadskyipatrol.ui.LocationDialog;
 import com.stfalcon.hromadskyipatrol.ui.VideoGridAdapter;
 import com.stfalcon.hromadskyipatrol.utils.CameraUtils;
 import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
+
+import java.util.ArrayList;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -207,19 +211,27 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
     }
 
     private void onCaptureVideoResult(Intent data) {
-        String pathToInternallyStoredImage = CameraUtils.saveToInternalStorage(CameraUtils.MEDIA_TYPE_VIDEO, videoUri);
-        // Transactions give you easy thread-safety
-        realm.beginTransaction();
+        ArrayList<ViolationItem> violationItems = data.getParcelableArrayListExtra("moviesUrls");
+        if (!violationItems.isEmpty()) {
+            // Transactions give you easy thread-safety
+            realm.beginTransaction();
 
-        VideoItem video = new VideoItem();
-        video.setId(String.valueOf(System.currentTimeMillis()));
-        video.setState(VideoItem.STATE_IN_PROCESS);
-        video.setVideoURL(pathToInternallyStoredImage);
-        video.setState(VideoItem.STATE_SAVING);
-        realm.copyToRealmOrUpdate(video);
-        realm.commitTransaction();
+            for (ViolationItem item : violationItems){
+                videoUri = Uri.parse(item.videoUrl);
 
-        ((VideoGridAdapter) mAdapter).addItem(video);
+                String pathToInternallyStoredImage = CameraUtils.saveToInternalStorage(CameraUtils.MEDIA_TYPE_VIDEO, videoUri);
+                VideoItem video = new VideoItem();
+                video.setId(String.valueOf(System.currentTimeMillis()));
+                video.setState(VideoItem.STATE_IN_PROCESS);
+                video.setVideoURL(pathToInternallyStoredImage);
+                video.setState(VideoItem.STATE_SAVING);
+                realm.copyToRealmOrUpdate(video);
+
+                ((VideoGridAdapter) mAdapter).addItem(video);
+            }
+            realm.commitTransaction();
+        }
+
         setVideosListVisibility(true);
 
         startService(new Intent(MainActivity.this, WaitLocationService.class));

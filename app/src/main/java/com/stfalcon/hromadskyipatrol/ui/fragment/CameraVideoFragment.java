@@ -1,8 +1,10 @@
 package com.stfalcon.hromadskyipatrol.ui.fragment;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
+import android.media.AudioManager;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.os.Build;
@@ -33,6 +35,7 @@ public class CameraVideoFragment extends BaseCameraFragment implements View.OnCl
     private static final String TAG = "Recorder";
     private MediaRecorder mMediaRecorder;
     private Camera mCamera;
+    private AudioManager mgr;
 
     public static CameraVideoFragment newInstance() {
         return new CameraVideoFragment();
@@ -66,10 +69,11 @@ public class CameraVideoFragment extends BaseCameraFragment implements View.OnCl
     @Override
     protected void onStopRecord() {
         releaseMediaRecorder(); // release the MediaRecorder object
-        mCamera.lock();         // take camera access back from MediaRecorder
         mIsRecordingVideo = false;
         releaseCamera();
         super.onStopRecord();
+        mgr = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+        mgr.setStreamMute(AudioManager.STREAM_SYSTEM, false);
         initCamera();
     }
 
@@ -127,6 +131,8 @@ public class CameraVideoFragment extends BaseCameraFragment implements View.OnCl
 
         // BEGIN_INCLUDE (configure_preview)
         mCamera = Camera.open();
+        mgr = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+        mgr.setStreamMute(AudioManager.STREAM_SYSTEM, true);
         Camera.Parameters parameters = mCamera.getParameters();
         List<Camera.Size> mSupportedPreviewSizes = parameters.getSupportedPreviewSizes();
         Camera.Size optimalSize = CameraHelper.getOptimalPreviewSize(mSupportedPreviewSizes,
@@ -168,8 +174,10 @@ public class CameraVideoFragment extends BaseCameraFragment implements View.OnCl
         mMediaRecorder.setProfile(profile);
 
         // Step 4: Set output file
-        mMediaRecorder.setOutputFile(CameraUtils.getOutputInternalMediaFile_App(
-                CameraUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
+        violationFileURI = CameraUtils.getOutputInternalMediaFile_App(
+                CameraUtils.MEDIA_TYPE_VIDEO).getAbsolutePath();
+
+        mMediaRecorder.setOutputFile(violationFileURI);
         // END_INCLUDE (configure_media_recorder)
 
         // Step 5: Prepare configured MediaRecorder

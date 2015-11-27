@@ -1,4 +1,4 @@
-package com.stfalcon.hromadskyipatrol.ui.activity;
+package com.stfalcon.hromadskyipatrol.camera;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -11,10 +11,13 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.stfalcon.hromadskyipatrol.R;
-import com.stfalcon.hromadskyipatrol.camera.ICamera;
+import com.stfalcon.hromadskyipatrol.models.ViolationItem;
 import com.stfalcon.hromadskyipatrol.ui.fragment.BaseCameraFragment;
+import com.stfalcon.hromadskyipatrol.ui.fragment.Camera2VideoFragment;
 import com.stfalcon.hromadskyipatrol.ui.fragment.CameraVideoFragment;
 import com.stfalcon.hromadskyipatrol.utils.AnimationUtils;
+
+import java.util.ArrayList;
 
 public class VideoCaptureActivity extends AppCompatActivity implements ICamera, View.OnClickListener {
 
@@ -22,6 +25,7 @@ public class VideoCaptureActivity extends AppCompatActivity implements ICamera, 
     private TextView message;
     private TextView time;
     private ImageButton mainMenu;
+    private ArrayList<ViolationItem> violationItems;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +40,8 @@ public class VideoCaptureActivity extends AppCompatActivity implements ICamera, 
         if (null == savedInstanceState) {
             initCameraFragmentForAPIVersion(Build.VERSION.SDK_INT);
         }
+
+        violationItems = new ArrayList<ViolationItem>();
     }
 
     private void initViews() {
@@ -56,10 +62,10 @@ public class VideoCaptureActivity extends AppCompatActivity implements ICamera, 
     }
 
     private BaseCameraFragment getSupportCamera(int ver) {
-        /*return ver < Build.VERSION_CODES.LOLLIPOP ?
+        return ver < Build.VERSION_CODES.LOLLIPOP ?
                 CameraVideoFragment.newInstance() :
-                Camera2VideoFragment.newInstance();*/
-        return CameraVideoFragment.newInstance();
+                Camera2VideoFragment.newInstance();
+        //return CameraVideoFragment.newInstance();
     }
 
     @Override
@@ -89,7 +95,8 @@ public class VideoCaptureActivity extends AppCompatActivity implements ICamera, 
     }
 
     @Override
-    public void onVideoPrepared() {
+    public void onVideoPrepared(ViolationItem violationItem) {
+        violationItems.add(violationItem);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -114,9 +121,13 @@ public class VideoCaptureActivity extends AppCompatActivity implements ICamera, 
     }
 
     private void startMenuActivity() {
-        Intent intent = new Intent();
-        //intent.putExtra("moviesUrls", moviesUrls.toArray());
-        setResult(RESULT_CANCELED, intent);
+        if (!violationItems.isEmpty()) {
+            Intent intent = new Intent();
+            intent.putParcelableArrayListExtra("moviesUrls", violationItems);
+            setResult(RESULT_OK, intent);
+        } else {
+            setResult(RESULT_CANCELED, null);
+        }
         finish();
     }
 

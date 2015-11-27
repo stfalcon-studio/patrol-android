@@ -33,7 +33,7 @@
         <activity android:name=".ui.activity.MainActivity"
             android:screenOrientation="portrait"/>
 
-        <activity android:name=".ui.activity.VideoCaptureActivity"
+        <activity android:name=".camera.VideoCaptureActivity"
             android:screenOrientation="landscape"/>
 
         <service android:name="com.stfalcon.hromadskyipatrol.network.PatrolSpiceService"/>
