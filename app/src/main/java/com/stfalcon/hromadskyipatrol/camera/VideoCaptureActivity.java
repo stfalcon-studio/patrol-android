@@ -2,15 +2,16 @@ package com.stfalcon.hromadskyipatrol.camera;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.stfalcon.hromadskyipatrol.R;
+import com.stfalcon.hromadskyipatrol.location.LocationActivity;
 import com.stfalcon.hromadskyipatrol.models.ViolationItem;
 import com.stfalcon.hromadskyipatrol.ui.fragment.BaseCameraFragment;
 import com.stfalcon.hromadskyipatrol.ui.fragment.Camera2VideoFragment;
@@ -19,7 +20,7 @@ import com.stfalcon.hromadskyipatrol.utils.AnimationUtils;
 
 import java.util.ArrayList;
 
-public class VideoCaptureActivity extends AppCompatActivity implements ICamera, View.OnClickListener {
+public class VideoCaptureActivity extends LocationActivity implements ICamera, View.OnClickListener {
 
     private BaseCameraFragment cameraFragment;
     private TextView message;
@@ -28,7 +29,7 @@ public class VideoCaptureActivity extends AppCompatActivity implements ICamera, 
     private ArrayList<ViolationItem> violationItems;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
 
@@ -96,6 +97,11 @@ public class VideoCaptureActivity extends AppCompatActivity implements ICamera, 
 
     @Override
     public void onVideoPrepared(ViolationItem violationItem) {
+        Location location = getLastUserLocation();
+        if (location != null) {
+            violationItem.setLat(location.getLatitude());
+            violationItem.setLon(location.getLongitude());
+        }
         violationItems.add(violationItem);
         runOnUiThread(new Runnable() {
             @Override
