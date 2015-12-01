@@ -58,8 +58,8 @@ public class BaseCameraFragment extends Fragment {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onStop() {
+        super.onStop();
         onStopRecord();
         violationRecordHandler.removeCallbacks(updateTimerRunnable);
         violationRecordHandler.removeCallbacks(stopRecordViolationRecordingRunnable);

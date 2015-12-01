@@ -46,7 +46,6 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private RecyclerView.Adapter mAdapter;
-    private Uri videoUri;
     private Realm realm;
     private UserItem userData;
     private boolean isGPSDialogShowed;
@@ -217,9 +216,9 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
             realm.beginTransaction();
 
             for (ViolationItem item : violationItems){
-                videoUri = Uri.parse(item.videoUrl);
 
-                String pathToInternallyStoredImage = CameraUtils.saveToInternalStorage(CameraUtils.MEDIA_TYPE_VIDEO, videoUri);
+                String pathToInternallyStoredImage =
+                        CameraUtils.saveToInternalStorage(CameraUtils.MEDIA_TYPE_VIDEO, Uri.parse(item.videoUrl));
                 VideoItem video = new VideoItem();
                 video.setId(String.valueOf(System.currentTimeMillis()));
                 video.setState(VideoItem.STATE_IN_PROCESS);
@@ -230,11 +229,10 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
                 ((VideoGridAdapter) mAdapter).addItem(video);
             }
             realm.commitTransaction();
+
+            setVideosListVisibility(true);
+            startService(new Intent(MainActivity.this, WaitLocationService.class));
         }
-
-        setVideosListVisibility(true);
-
-        startService(new Intent(MainActivity.this, WaitLocationService.class));
     }
 
 

@@ -27,6 +27,9 @@ android {
         versionCode 3
         versionName "1.1"
         multiDexEnabled true
+
+        //buildConfigField "String", "BASE_URL", "\"http://xn--80awkfjh8d.com\""
+        buildConfigField "String", "BASE_URL", "\"http://192.168.0.29/app_dev.php\""
     }
 
     buildTypes {

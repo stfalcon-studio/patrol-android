@@ -543,13 +543,9 @@ public class Camera2VideoFragment extends BaseCameraFragment
         // Stop recording
         mMediaRecorder.stop();
         mMediaRecorder.reset();
-        Activity activity = getActivity();
-        if (null != activity) {
-            Toast.makeText(activity, "Video saved",
-                    Toast.LENGTH_SHORT).show();
-        }
-        startPreview();
         super.onStopRecord();
+
+        startPreview();
     }
 
 

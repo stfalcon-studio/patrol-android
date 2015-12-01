@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 
+import com.stfalcon.hromadskyipatrol.BuildConfig;
 import com.stfalcon.hromadskyipatrol.models.VideoAnswer;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
 import com.stfalcon.hromadskyipatrol.models.UserItem;
@@ -28,7 +29,7 @@ import io.realm.RealmResults;
 public class UploadService extends IntentService {
 
     public static final String UPDATE_VIDEO_UI = "videoExceeded";
-    private static final String UPLOAD_URL = "/api/{userID}/violation/create";
+    private static final String UPLOAD_URL = "/api/{userID}/violation-video/create";
 
     public UploadService() {
         super(UploadService.class.getName());
@@ -104,8 +105,8 @@ public class UploadService extends IntentService {
 
     public static VideoAnswer uploadImage(String fileUrl, String userID, String videoID, double latitude, double longitude) {
         String charset = "UTF-8";
-        File image = new File(fileUrl);
-        String requestURL = PatrolSpiceService.BASE_URL + UPLOAD_URL.replace("{userID}", userID);
+        File file = new File(fileUrl);
+        String requestURL = BuildConfig.BASE_URL + UPLOAD_URL.replace("{userID}", userID);
         VideoAnswer serverAnswer = new VideoAnswer(videoID, VideoItem.STATE_IN_PROCESS);
         try {
             MultipartUtility multipart = new MultipartUtility(requestURL, charset);
@@ -113,7 +114,7 @@ public class UploadService extends IntentService {
             multipart.addHeaderField("Content-Type", "multipart/form-data");
             multipart.addHeaderField("Accept", "application/json");
             multipart.addHeaderField("Accept-Encoding", "gzip, deflate");
-            multipart.addFilePart("photo", image);
+            multipart.addFilePart("video", file);
             multipart.addFormField("latitude", String.valueOf(latitude));
             multipart.addFormField("longitude", String.valueOf(longitude));
 

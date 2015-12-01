@@ -1,16 +1,12 @@
 package com.stfalcon.hromadskyipatrol.network;
 
 import com.octo.android.robospice.retrofit.RetrofitGsonSpiceService;
+import com.stfalcon.hromadskyipatrol.BuildConfig;
 
 /**
  * Created by alexandr on 18/08/15.
  */
 public class PatrolSpiceService extends RetrofitGsonSpiceService {
-
-    //TEST
-    public final static String BASE_URL_TEST = "http://192.168.0.29/app_dev.php";
-    //PROD
-    public final static String BASE_URL = "http://xn--80awkfjh8d.com";
 
     @Override
     public void onCreate() {
@@ -20,6 +16,6 @@ public class PatrolSpiceService extends RetrofitGsonSpiceService {
 
     @Override
     protected String getServerUrl() {
-        return BASE_URL;
+        return BuildConfig.BASE_URL;
     }
 }
