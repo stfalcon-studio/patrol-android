@@ -24,7 +24,6 @@ import com.stfalcon.hromadskyipatrol.models.VideoItem;
 import com.stfalcon.hromadskyipatrol.models.ViolationItem;
 import com.stfalcon.hromadskyipatrol.network.UploadService;
 import com.stfalcon.hromadskyipatrol.network.WaitLocationService;
-import com.stfalcon.hromadskyipatrol.ui.LocationDialog;
 import com.stfalcon.hromadskyipatrol.ui.VideoGridAdapter;
 import com.stfalcon.hromadskyipatrol.utils.CameraUtils;
 import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;

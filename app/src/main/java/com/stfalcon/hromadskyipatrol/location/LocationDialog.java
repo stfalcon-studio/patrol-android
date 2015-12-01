@@ -1,22 +1,23 @@
-package com.stfalcon.hromadskyipatrol.ui;
+package com.stfalcon.hromadskyipatrol.location;
 
-import android.content.Context;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.provider.Settings;
-import android.support.v7.app.AlertDialog;
 
 import com.stfalcon.hromadskyipatrol.R;
 
 /**
- * Created by alexandr on 21/08/15.
+ * Created by alexandr on 19/05/15.
  */
 public class LocationDialog {
+
     /**
      * Function to show settings popup_sos dialog On pressing SettingsActivity button will
      * lauch SettingsActivity Options
      */
-    public static void showSettingsAlert(final Context activity) {
+    public static void showSettingsAlert(final Activity activity) {
         try {
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(activity);
             alertDialog.setTitle(R.string.gps_dialog_title);
