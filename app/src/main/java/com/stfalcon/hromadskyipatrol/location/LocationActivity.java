@@ -56,7 +56,7 @@ public class LocationActivity extends AppCompatActivity implements MyLocationLis
 
     @Override
     public void onLocationChanged(Location location) {
-
+        userLastLocation = location;
     }
 
     public void checkGPSEnabled() {
