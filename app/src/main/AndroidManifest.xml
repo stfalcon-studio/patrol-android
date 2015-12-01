@@ -38,7 +38,7 @@
 
         <service android:name="com.stfalcon.hromadskyipatrol.network.PatrolSpiceService"/>
         <service android:name="com.stfalcon.hromadskyipatrol.network.UploadService"/>
-        <service android:name="com.stfalcon.hromadskyipatrol.network.WaitLocationService"/>
+        <service android:name=".services.WaitLocationService"/>
 
         <receiver
             android:name="com.stfalcon.hromadskyipatrol.receivers.NetworkStateReceiver"

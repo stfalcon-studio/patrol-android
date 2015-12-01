@@ -23,7 +23,7 @@ import com.stfalcon.hromadskyipatrol.models.UserItem;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
 import com.stfalcon.hromadskyipatrol.models.ViolationItem;
 import com.stfalcon.hromadskyipatrol.network.UploadService;
-import com.stfalcon.hromadskyipatrol.network.WaitLocationService;
+import com.stfalcon.hromadskyipatrol.services.VideoProcessingService;
 import com.stfalcon.hromadskyipatrol.ui.LocationDialog;
 import com.stfalcon.hromadskyipatrol.ui.VideoGridAdapter;
 import com.stfalcon.hromadskyipatrol.utils.CameraUtils;
@@ -221,7 +221,6 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
                         CameraUtils.saveToInternalStorage(CameraUtils.MEDIA_TYPE_VIDEO, Uri.parse(item.videoUrl));
                 VideoItem video = new VideoItem();
                 video.setId(String.valueOf(System.currentTimeMillis()));
-                video.setState(VideoItem.STATE_IN_PROCESS);
                 video.setVideoURL(pathToInternallyStoredImage);
                 video.setState(VideoItem.STATE_SAVING);
                 realm.copyToRealmOrUpdate(video);
@@ -231,7 +230,8 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
             realm.commitTransaction();
 
             setVideosListVisibility(true);
-            startService(new Intent(MainActivity.this, WaitLocationService.class));
+            //xstartService(new Intent(MainActivity.this, WaitLocationService.class));
+            startService(new Intent(MainActivity.this, VideoProcessingService.class));
         }
     }
 

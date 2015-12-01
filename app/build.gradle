@@ -64,4 +64,5 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.5.1@aar') {
         transitive = true;
     }
+    compile 'com.googlecode.mp4parser:isoparser:1.1.7'
 }

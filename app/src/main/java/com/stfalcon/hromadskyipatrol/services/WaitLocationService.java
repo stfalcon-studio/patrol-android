@@ -1,4 +1,4 @@
-package com.stfalcon.hromadskyipatrol.network;
+package com.stfalcon.hromadskyipatrol.services;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -14,7 +14,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.stfalcon.hromadskyipatrol.models.VideoAnswer;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
-import com.stfalcon.hromadskyipatrol.utils.NetworkUtils;
+import com.stfalcon.hromadskyipatrol.network.UploadService;
 import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 
 import java.util.ArrayList;
