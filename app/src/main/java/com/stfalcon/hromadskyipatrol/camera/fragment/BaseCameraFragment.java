@@ -1,4 +1,4 @@
-package com.stfalcon.hromadskyipatrol.ui.fragment;
+package com.stfalcon.hromadskyipatrol.camera.fragment;
 
 
 import android.app.Fragment;
@@ -8,6 +8,10 @@ import android.view.Surface;
 
 import com.stfalcon.hromadskyipatrol.camera.ICamera;
 import com.stfalcon.hromadskyipatrol.models.ViolationItem;
+
+import java.io.File;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by alex on 08.11.15.
@@ -31,13 +35,18 @@ public class BaseCameraFragment extends Fragment {
     }
 
     public ICamera callback;
-    private Handler violationRecordHandler;
-    private Handler segmentRecordHandler;
+    private Handler handler;
+    private Timer segmentTimer;
+    private Timer violationTimer;
+    private StopRecordSegmentTask stopRecordSegmentTask;
+    private StopRecordViolationTask stopRecordViolationTask;
+
+
     private Runnable updateTimerRunnable = new Runnable() {
         public void run() {
             updateTimerView((int) (System.currentTimeMillis() - detectViolationTime) / 1000);
             if (violationRecording) {
-                violationRecordHandler.postDelayed(updateTimerRunnable, 1000);
+                handler.postDelayed(updateTimerRunnable, 1000);
             }
         }
     };
@@ -53,17 +62,20 @@ public class BaseCameraFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        violationRecordHandler = new Handler();
-        segmentRecordHandler = new Handler();
+        handler = new Handler();
+        segmentTimer = new Timer();
+        violationTimer = new Timer();
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        handler.removeCallbacks(updateTimerRunnable);
+        prepareTimer();
         onStopRecord();
-        violationRecordHandler.removeCallbacks(updateTimerRunnable);
-        violationRecordHandler.removeCallbacks(stopRecordViolationRecordingRunnable);
-        segmentRecordHandler.removeCallbacks(stopRecordSegmentRunnable);
+    }
+
+    protected void initCamera(){
     }
 
     protected void onCameraPrepared() {
@@ -79,14 +91,19 @@ public class BaseCameraFragment extends Fragment {
     }
 
     protected void onStopRecord() {
+        violationRecording = false;
+        handler.removeCallbacks(updateTimerRunnable);
         if (callback != null) {
             callback.onStopRecord();
         }
-        violationRecording = false;
+    }
+
+
+    protected void createNewVideFile(){
     }
 
     private void updateTimerView(int sec) {
-        if (callback != null) {
+        if (callback != null && violationRecording) {
             callback.onTime(sec);
         }
     }
@@ -97,33 +114,58 @@ public class BaseCameraFragment extends Fragment {
         }
         violationRecording = true;
         detectViolationTime = System.currentTimeMillis();
-        violationRecordHandler.postDelayed(stopRecordViolationRecordingRunnable, TIME_RECORD_AFTER_TAP);
-        violationRecordHandler.postDelayed(updateTimerRunnable, 1000);
+
+        stopRecordSegmentTask.cancel();
+        stopRecordViolationTask = new StopRecordViolationTask();
+        violationTimer.schedule(stopRecordViolationTask, TIME_RECORD_AFTER_TAP);
+        handler.postDelayed(updateTimerRunnable, 1000);
     }
 
 
     public void startRecordSegment() {
         onStartRecord();
-        segmentRecordHandler.postDelayed(stopRecordSegmentRunnable, TIME_RECORD_SEGMENT);
+        stopRecordSegmentTask = new StopRecordSegmentTask();
+        segmentTimer.schedule(stopRecordSegmentTask, TIME_RECORD_SEGMENT);
+    }
+
+    private void prepareTimer() {
+        try {
+            segmentTimer.cancel();
+            violationTimer.cancel();
+        } catch (IllegalStateException e){}
     }
 
 
-    private Runnable stopRecordSegmentRunnable = new Runnable() {
+    class StopRecordSegmentTask extends TimerTask {
+
         @Override
         public void run() {
             if (!violationRecording && mIsRecordingVideo) {
                 onStopRecord();
+                new File(violationFileURI).delete();
+                initCamera();
             }
         }
-    };
+    }
 
-    private Runnable stopRecordViolationRecordingRunnable = new Runnable() {
+    class StopRecordViolationTask extends TimerTask {
+
         @Override
         public void run() {
-            onStopRecord();
-            if (callback != null) {
-                callback.onVideoPrepared(new ViolationItem(detectViolationTime, violationFileURI));
+            if (violationRecording && mIsRecordingVideo) {
+                onStopRecord();
+                initCamera();
             }
+
+            getActivity().runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    if (callback != null) {
+                        callback.onVideoPrepared(new ViolationItem(detectViolationTime, violationFileURI));
+                    }
+                }
+            });
         }
-    };
+    }
 }

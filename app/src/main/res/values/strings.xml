@@ -29,4 +29,5 @@
     <string name="delete_video">Видалити відео</string>
     <string name="cancel">Відміна</string>
     <string name="violator">Фіксую порушення</string>
+    <string name="timer_format">00:%1$s</string>
 </resources>

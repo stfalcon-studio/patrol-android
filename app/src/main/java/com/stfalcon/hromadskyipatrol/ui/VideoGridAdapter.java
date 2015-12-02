@@ -7,17 +7,13 @@ import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.download.ImageDownloader;
 import com.stfalcon.hromadskyipatrol.R;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
 import com.stfalcon.hromadskyipatrol.network.UploadService;
@@ -63,6 +59,12 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
         VideoItem video = mItems.get(i);
         viewHolder.video = video;
+
+        //check location in item
+        /*if (video.getState() == VideoItem.STATE_SAVING
+                && video.getLatitude() == 0){
+            video.setState(VideoItem.STATE_NO_GPS);
+        }*/
 
         switch (video.getState()) {
             case VideoItem.STATE_IN_PROCESS:

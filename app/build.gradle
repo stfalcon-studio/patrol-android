@@ -65,4 +65,5 @@ dependencies {
         transitive = true;
     }
     compile 'com.googlecode.mp4parser:isoparser:1.1.7'
+    compile 'com.google.android.gms:play-services-appindexing:8.3.0'
 }

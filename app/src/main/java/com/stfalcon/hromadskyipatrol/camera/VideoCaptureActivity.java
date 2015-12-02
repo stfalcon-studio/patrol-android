@@ -11,17 +11,18 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.stfalcon.hromadskyipatrol.R;
+import com.stfalcon.hromadskyipatrol.camera.fragment.BaseCameraFragment;
+import com.stfalcon.hromadskyipatrol.camera.fragment.Camera2VideoFragment;
+import com.stfalcon.hromadskyipatrol.camera.fragment.CameraVideoFragment;
 import com.stfalcon.hromadskyipatrol.location.LocationActivity;
 import com.stfalcon.hromadskyipatrol.models.ViolationItem;
-import com.stfalcon.hromadskyipatrol.ui.fragment.BaseCameraFragment;
-import com.stfalcon.hromadskyipatrol.ui.fragment.Camera2VideoFragment;
-import com.stfalcon.hromadskyipatrol.ui.fragment.CameraVideoFragment;
 import com.stfalcon.hromadskyipatrol.utils.AnimationUtils;
 
 import java.util.ArrayList;
 
 public class VideoCaptureActivity extends LocationActivity implements ICamera, View.OnClickListener {
 
+    public static final String MOVIES_RESULT = "moviesUrls";
     private BaseCameraFragment cameraFragment;
     private TextView message;
     private TextView time;
@@ -103,12 +104,6 @@ public class VideoCaptureActivity extends LocationActivity implements ICamera, V
             violationItem.setLon(location.getLongitude());
         }
         violationItems.add(violationItem);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                time.setText("");
-            }
-        });
     }
 
     @Override
@@ -121,7 +116,8 @@ public class VideoCaptureActivity extends LocationActivity implements ICamera, V
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                time.setText(String.valueOf(sec));
+                time.setText(String.format(getResources()
+                        .getString(R.string.timer_format), String.valueOf(10 + sec)));
             }
         });
     }
@@ -129,7 +125,7 @@ public class VideoCaptureActivity extends LocationActivity implements ICamera, V
     private void startMenuActivity() {
         if (!violationItems.isEmpty()) {
             Intent intent = new Intent();
-            intent.putParcelableArrayListExtra("moviesUrls", violationItems);
+            intent.putParcelableArrayListExtra(MOVIES_RESULT, violationItems);
             setResult(RESULT_OK, intent);
         } else {
             setResult(RESULT_CANCELED, null);

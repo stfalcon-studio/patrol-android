@@ -69,11 +69,6 @@ public class LocationManagerApi implements LocationApi, LocationListener {
     }
 
     @Override
-    public void initActivityRecognition(Context context) {
-
-    }
-
-    @Override
     public void setLocationListener(MyLocationListener listener) {
         callback = listener;
     }
