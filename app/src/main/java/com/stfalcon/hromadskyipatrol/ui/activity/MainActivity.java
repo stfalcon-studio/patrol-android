@@ -143,8 +143,6 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
                         .build());
                 break;
             case R.id.snap:
-                startProcessVideoService();
-
                 if (checkLocationManager()) {
                     openCamera();
                     getTracker().send(new HitBuilders.EventBuilder()
@@ -191,7 +189,7 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
 
     private void openCamera() {
         Intent intent = new Intent(this, VideoCaptureActivity.class);
-        //TODO startActivityForResult(intent, REQUEST_CAMERA);
+        startActivityForResult(intent, REQUEST_CAMERA);
     }
 
 
