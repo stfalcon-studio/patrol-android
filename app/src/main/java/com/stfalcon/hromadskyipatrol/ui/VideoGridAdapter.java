@@ -65,7 +65,7 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
         viewHolder.video = video;
 
         switch (video.getState()) {
-            case VideoItem.STATE_IN_PROCESS:
+            case VideoItem.STATE_READY_TO_SEND:
                 viewHolder.imgState.setImageResource(R.drawable.icon_upload);
                 viewHolder.noGPS.setVisibility(View.GONE);
                 viewHolder.imgState.setVisibility(View.VISIBLE);
@@ -79,11 +79,6 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
                 viewHolder.imgState.setImageResource(R.drawable.icon_repeat);
                 viewHolder.noGPS.setVisibility(View.GONE);
                 viewHolder.imgState.setVisibility(View.VISIBLE);
-                break;
-            case VideoItem.STATE_NO_GPS:
-                viewHolder.noGPS.setText(R.string.no_gps);
-                viewHolder.noGPS.setVisibility(View.VISIBLE);
-                viewHolder.imgState.setVisibility(View.GONE);
                 break;
 
             case VideoItem.STATE_SAVING:
@@ -106,16 +101,8 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
         return mItems.size();
     }
 
-    public void updateItem(String photoID, int state) {
-        Realm realm = Realm.getInstance(context);
-        for (int i = 0; i<mItems.size(); i++){
-            if (mItems.get(i).getId().equals(photoID)){
-                realm.beginTransaction();
-                mItems.get(i).setState(state);
-                realm.commitTransaction();
-                notifyItemChanged(i);
-            }
-        }
+    public void setItems(List<VideoItem> mItems) {
+        this.mItems = mItems;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder

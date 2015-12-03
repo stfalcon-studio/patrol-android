@@ -158,20 +158,20 @@ public class WaitLocationService extends IntentService {
             for (VideoItem item : photoList) {
 
                 if (location == null) {
-                    answersList.add(new VideoAnswer(item.getId(), VideoItem.STATE_NO_GPS));
+                    //answersList.add(new VideoAnswer(item.getId(), VideoItem.STATE_NO_GPS));
                 } else {
                     long photoTime = Long.valueOf(item.getId());
                     if (photoTime + ACTUAL_INTERVAL > location.getTime()) {
-                        VideoAnswer answer = new VideoAnswer(item.getId(), VideoItem.STATE_IN_PROCESS);
+                        VideoAnswer answer = new VideoAnswer(item.getId(), VideoItem.STATE_SENDING);
                         answer.setLatitude(location.getLatitude());
                         answer.setLongitude(location.getLongitude());
                         answersList.add(answer);
                     } else {
-                        answersList.add(new VideoAnswer(item.getId(), VideoItem.STATE_NO_GPS));
+                     //   answersList.add(new VideoAnswer(item.getId(), VideoItem.STATE_NO_GPS));
                     }
                 }
                 VideoAnswer answer = answersList.get(answersList.size() - 1);
-                UploadService.updateActivityUI(WaitLocationService.this, answer.getId(), answer.getState());
+                //UploadService.updateActivityUI(WaitLocationService.this, answer.getId(), answer.getState());
             }
 
             //update DB

@@ -58,7 +58,7 @@ public class UploadService extends IntentService {
             } else {
                 //get all videos for upload
                 videoList = realmDB.where((VideoItem.class))
-                        .equalTo("state", VideoItem.STATE_IN_PROCESS)
+                        .equalTo("state", VideoItem.STATE_READY_TO_SEND)
                         .or()
                         .equalTo("state", VideoItem.STATE_ERROR)
                         .findAll();
@@ -66,15 +66,9 @@ public class UploadService extends IntentService {
 
             //upload process
             for (VideoItem video : videoList) {
-                if (video.getLatitude() != 0) {
-                    VideoAnswer answer = uploadImage(video, user);
-                    serverAnswersList.add(answer);
-                    updateActivityUI(this, answer.getId(), answer.getState());
-                } else {
-                    serverAnswersList.add(new VideoAnswer(video.getId(), VideoItem.STATE_NO_GPS));
-                    updateActivityUI(this, video.getId(), VideoItem.STATE_NO_GPS);
-                }
-
+                VideoAnswer answer = uploadImage(video, user);
+                serverAnswersList.add(answer);
+                updateActivityUI(this, answer.getId(), answer.getState());
             }
 
             //update DB
@@ -107,7 +101,7 @@ public class UploadService extends IntentService {
         String charset = "UTF-8";
         File file = new File(fileUrl);
         String requestURL = BuildConfig.BASE_URL + UPLOAD_URL.replace("{userID}", userID);
-        VideoAnswer serverAnswer = new VideoAnswer(videoID, VideoItem.STATE_IN_PROCESS);
+        VideoAnswer serverAnswer = new VideoAnswer(videoID, VideoItem.STATE_SENDING);
         try {
             MultipartUtility multipart = new MultipartUtility(requestURL, charset);
 

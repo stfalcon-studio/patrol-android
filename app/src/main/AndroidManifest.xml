@@ -39,6 +39,7 @@
         <service android:name="com.stfalcon.hromadskyipatrol.network.PatrolSpiceService"/>
         <service android:name="com.stfalcon.hromadskyipatrol.network.UploadService"/>
         <service android:name=".services.WaitLocationService"/>
+        <service android:name=".services.VideoProcessingService"/>
 
         <receiver
             android:name="com.stfalcon.hromadskyipatrol.receivers.NetworkStateReceiver"

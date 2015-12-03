@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
@@ -38,6 +39,7 @@ import io.realm.RealmResults;
  * Created by alexandr on 17/08/15.
  */
 public class MainActivity extends BaseSpiceActivity implements View.OnClickListener {
+    private static final String TAG = BaseSpiceActivity.class.getName();
     int REQUEST_CAMERA = 0;
 
     private TextView noVideosTextView;
@@ -45,7 +47,7 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
     private CheckBox onlyWiFiCheckBox, autoUploadCheckBox;
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
-    private RecyclerView.Adapter mAdapter;
+    private VideoGridAdapter mAdapter;
     private Realm realm;
     private UserItem userData;
     private boolean isGPSDialogShowed;
@@ -141,6 +143,8 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
                         .build());
                 break;
             case R.id.snap:
+                startProcessVideoService();
+
                 if (checkLocationManager()) {
                     openCamera();
                     getTracker().send(new HitBuilders.EventBuilder()
@@ -187,7 +191,7 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
 
     private void openCamera() {
         Intent intent = new Intent(this, VideoCaptureActivity.class);
-        startActivityForResult(intent, REQUEST_CAMERA);
+        //TODO startActivityForResult(intent, REQUEST_CAMERA);
     }
 
 
@@ -204,8 +208,10 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == REQUEST_CAMERA)
+            if (requestCode == REQUEST_CAMERA) {
                 onCaptureVideoResult(data);
+                startProcessVideoService();
+            }
         }
     }
 
@@ -215,7 +221,7 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
             // Transactions give you easy thread-safety
             realm.beginTransaction();
 
-            for (ViolationItem item : violationItems){
+            for (ViolationItem item : violationItems) {
 
                 String pathToInternallyStoredImage =
                         CameraUtils.saveToInternalStorage(CameraUtils.MEDIA_TYPE_VIDEO, Uri.parse(item.videoUrl));
@@ -225,23 +231,28 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
                 video.setState(VideoItem.STATE_SAVING);
                 realm.copyToRealmOrUpdate(video);
 
-                ((VideoGridAdapter) mAdapter).addItem(video);
+                mAdapter.addItem(video);
             }
             realm.commitTransaction();
 
             setVideosListVisibility(true);
-            //xstartService(new Intent(MainActivity.this, WaitLocationService.class));
-            startService(new Intent(MainActivity.this, VideoProcessingService.class));
         }
+    }
+
+    private void startProcessVideoService() {
+        Log.d(TAG, "startProcessVideoService");
+        startService(new Intent(MainActivity.this, VideoProcessingService.class));
     }
 
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String videoId = intent.getStringExtra("id");
-            int videoState = intent.getIntExtra("state", VideoItem.STATE_IN_PROCESS);
-            ((VideoGridAdapter) mAdapter).updateItem(videoId, videoState);
+            if (intent.getAction().equals(UploadService.UPDATE_VIDEO_UI)) {
+                RealmResults<VideoItem> videos = realm.where(VideoItem.class).findAll();
+                mAdapter.setItems(videos);
+                mAdapter.notifyDataSetChanged();
+            }
         }
     };
 

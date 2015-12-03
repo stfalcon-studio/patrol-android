@@ -22,7 +22,7 @@ public class LocationManagerApi implements LocationApi, LocationListener {
     @Override
     public void init(Context context) {
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        prev_location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        //prev_location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
     }
 
     @Override
@@ -50,27 +50,22 @@ public class LocationManagerApi implements LocationApi, LocationListener {
     @Override
     public void startLocationUpdates() {
         // Register the listener with the Location Manager to receive location updates
-        try {
+        /*try {
             locationManager.requestLocationUpdates(provider, MIN_TIME_TO_UPDATE, 0, this);
         } catch (Exception e){
             Log.i("LocationApi", "provider doesn't exist: network");
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_TO_UPDATE, 0, this);
-        }
+        }*/
     }
 
     @Override
     public void stopLocationUpdates() {
-        locationManager.removeUpdates(this);
+        //locationManager.removeUpdates(this);
     }
 
     @Override
     public Location getPreviousLocation() {
         return prev_location;
-    }
-
-    @Override
-    public void initActivityRecognition(Context context) {
-
     }
 
     @Override

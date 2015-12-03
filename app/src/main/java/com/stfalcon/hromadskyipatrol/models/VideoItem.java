@@ -8,9 +8,9 @@ import io.realm.annotations.PrimaryKey;
  */
 public class VideoItem extends RealmObject {
     public static final int STATE_UPLOADED = 1;
-    public static final int STATE_IN_PROCESS = 0;
+    public static final int STATE_SENDING = 0;
     public static final int STATE_ERROR = 2;
-    public static final int STATE_NO_GPS = 3;
+    public static final int STATE_READY_TO_SEND = 3;
     public static final int STATE_SAVING = 4;
 
     @PrimaryKey
