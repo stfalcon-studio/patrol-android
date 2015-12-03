@@ -30,4 +30,5 @@
     <string name="cancel">Відміна</string>
     <string name="violator">Фіксую порушення</string>
     <string name="in_process">Обробляється...</string>
+    <string name="timer_format">00:%1$s</string>
 </resources>

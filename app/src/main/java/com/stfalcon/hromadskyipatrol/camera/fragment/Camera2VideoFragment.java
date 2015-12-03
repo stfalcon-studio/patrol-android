@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.stfalcon.hromadskyipatrol.ui.fragment;
+package com.stfalcon.hromadskyipatrol.camera.fragment;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -26,7 +26,6 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
@@ -54,13 +53,11 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.stfalcon.hromadskyipatrol.R;
 import com.stfalcon.hromadskyipatrol.utils.CameraUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -233,7 +230,8 @@ public class Camera2VideoFragment extends BaseCameraFragment
         initCamera();
     }
 
-    private void initCamera() {
+    @Override
+    public void initCamera() {
         if (mTextureView.isAvailable()) {
             openCamera(mTextureView.getWidth(), mTextureView.getHeight());
         } else {

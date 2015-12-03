@@ -1,4 +1,4 @@
-package com.stfalcon.hromadskyipatrol.ui.fragment;
+package com.stfalcon.hromadskyipatrol.camera.fragment;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -68,16 +68,19 @@ public class CameraVideoFragment extends BaseCameraFragment implements View.OnCl
 
     @Override
     protected void onStopRecord() {
+        if (mMediaRecorder != null) {
+            mMediaRecorder.stop();
+        }
         releaseMediaRecorder(); // release the MediaRecorder object
         mIsRecordingVideo = false;
         releaseCamera();
         super.onStopRecord();
         mgr = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
         mgr.setStreamMute(AudioManager.STREAM_SYSTEM, false);
-        initCamera();
     }
 
-    private void initCamera(){
+    @Override
+    protected void initCamera(){
         if (mPreview.isAvailable()){
             prepareCamera(mPreview.getWidth(), mPreview.getHeight());
         } else {

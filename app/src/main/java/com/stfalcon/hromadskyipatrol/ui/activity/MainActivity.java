@@ -216,7 +216,8 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
     }
 
     private void onCaptureVideoResult(Intent data) {
-        ArrayList<ViolationItem> violationItems = data.getParcelableArrayListExtra("moviesUrls");
+        ArrayList<ViolationItem> violationItems
+                = data.getParcelableArrayListExtra(VideoCaptureActivity.MOVIES_RESULT);
         if (!violationItems.isEmpty()) {
             // Transactions give you easy thread-safety
             realm.beginTransaction();
@@ -228,6 +229,8 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
                 VideoItem video = new VideoItem();
                 video.setId(String.valueOf(System.currentTimeMillis()));
                 video.setVideoURL(pathToInternallyStoredImage);
+                video.setLatitude(item.getLat());
+                video.setLongitude(item.getLon());
                 video.setState(VideoItem.STATE_SAVING);
                 realm.copyToRealmOrUpdate(video);
 
