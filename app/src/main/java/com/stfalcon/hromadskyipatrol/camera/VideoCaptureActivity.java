@@ -18,6 +18,7 @@ import com.stfalcon.hromadskyipatrol.location.LocationActivity;
 import com.stfalcon.hromadskyipatrol.models.ViolationItem;
 import com.stfalcon.hromadskyipatrol.utils.AnimationUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class VideoCaptureActivity extends LocationActivity implements ICamera, View.OnClickListener {
@@ -33,6 +34,7 @@ public class VideoCaptureActivity extends LocationActivity implements ICamera, V
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         initViews();
 
@@ -123,6 +125,14 @@ public class VideoCaptureActivity extends LocationActivity implements ICamera, V
     }
 
     private void startMenuActivity() {
+        if (null != cameraFragment.violationFileURI) {
+            try {
+                new File(cameraFragment.violationFileURI).delete();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         if (!violationItems.isEmpty()) {
             Intent intent = new Intent();
             intent.putParcelableArrayListExtra(MOVIES_RESULT, violationItems);

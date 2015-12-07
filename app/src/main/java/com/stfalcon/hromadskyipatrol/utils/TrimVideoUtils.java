@@ -42,15 +42,18 @@ import java.util.List;
 public class TrimVideoUtils {
     private static final String TAG = TrimVideoUtils.class.getName();
 
-    public static void trimToLast20sec(File src, File dst) throws IOException {
+    public static boolean trimToLast20sec(File src, File dst) throws IOException {
         IsoFile isoFile = new IsoFile(src.getAbsolutePath());
         double duration = (double)
                 isoFile.getMovieBox().getMovieHeaderBox().getDuration() /
                 isoFile.getMovieBox().getMovieHeaderBox().getTimescale();
+        Log.d(TAG, "trimToLast20sec: " + duration);
         if (duration > 20) {
             double startTime = duration - 20;
             startTrim(src, dst, startTime, duration);
+            return true;
         }
+        return false;
     }
 
     public static void startTrim(File src, File dst, double startTime, double endTime) throws IOException {

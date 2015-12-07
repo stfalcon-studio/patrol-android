@@ -58,6 +58,7 @@ import android.widget.Toast;
 import com.stfalcon.hromadskyipatrol.R;
 import com.stfalcon.hromadskyipatrol.utils.CameraUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -91,13 +92,6 @@ public class Camera2VideoFragment extends BaseCameraFragment
             Manifest.permission.RECORD_AUDIO,
     };
 
-    static {
-        ORIENTATIONS.append(Surface.ROTATION_0, 90);
-        ORIENTATIONS.append(Surface.ROTATION_90, 0);
-        ORIENTATIONS.append(Surface.ROTATION_180, 270);
-        ORIENTATIONS.append(Surface.ROTATION_270, 180);
-    }
-
 
     private TextureView.SurfaceTextureListener mSurfaceTextureListener
             = new TextureView.SurfaceTextureListener() {
@@ -105,12 +99,14 @@ public class Camera2VideoFragment extends BaseCameraFragment
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture,
                                               int width, int height) {
+            Log.d(TAG, "onSurfaceTextureAvailable: ");
             openCamera(width, height);
         }
 
         @Override
         public void onSurfaceTextureSizeChanged(SurfaceTexture surfaceTexture,
                                                 int width, int height) {
+            Log.d(TAG, "onSurfaceTextureSizeChanged: ");
             configureTransform(width, height);
         }
 
@@ -130,6 +126,7 @@ public class Camera2VideoFragment extends BaseCameraFragment
 
         @Override
         public void onOpened(CameraDevice cameraDevice) {
+            Log.d(TAG, "onOpened");
             mCameraDevice = cameraDevice;
             startPreview();
             mCameraOpenCloseLock.release();
@@ -140,6 +137,7 @@ public class Camera2VideoFragment extends BaseCameraFragment
 
         @Override
         public void onDisconnected(CameraDevice cameraDevice) {
+            Log.d(TAG, "onDisconnected");
             mCameraOpenCloseLock.release();
             cameraDevice.close();
             mCameraDevice = null;
@@ -147,6 +145,7 @@ public class Camera2VideoFragment extends BaseCameraFragment
 
         @Override
         public void onError(CameraDevice cameraDevice, int error) {
+            Log.d(TAG, "onError");
             mCameraOpenCloseLock.release();
             cameraDevice.close();
             mCameraDevice = null;
@@ -241,6 +240,13 @@ public class Camera2VideoFragment extends BaseCameraFragment
 
     @Override
     public void onPause() {
+        if (violationFileURI != null) {
+            try {
+                new File(violationFileURI).delete();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         closeCamera();
         stopBackgroundThread();
         super.onPause();
@@ -384,6 +390,7 @@ public class Camera2VideoFragment extends BaseCameraFragment
 
     private void closeCamera() {
         try {
+            Log.d(TAG, "initCamera: 1");
             mCameraOpenCloseLock.acquire();
             if (null != mCameraDevice) {
                 mCameraDevice.close();
@@ -427,6 +434,8 @@ public class Camera2VideoFragment extends BaseCameraFragment
 
                 @Override
                 public void onConfigured(CameraCaptureSession cameraCaptureSession) {
+                    Log.d(TAG, "onConfigured camera");
+
                     mPreviewSession = cameraCaptureSession;
                     updatePreview();
                     onCameraPrepared();
@@ -438,6 +447,8 @@ public class Camera2VideoFragment extends BaseCameraFragment
                     if (null != activity) {
                         Toast.makeText(activity, "Failed", Toast.LENGTH_SHORT).show();
                     }
+
+
                 }
             }, mBackgroundHandler);
         } catch (CameraAccessException e) {
@@ -482,7 +493,7 @@ public class Camera2VideoFragment extends BaseCameraFragment
             return;
         }
         int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
-        Matrix matrix = new Matrix();
+        final Matrix matrix = new Matrix();
         RectF viewRect = new RectF(0, 0, viewWidth, viewHeight);
         RectF bufferRect = new RectF(0, 0, mPreviewSize.getHeight(), mPreviewSize.getWidth());
         float centerX = viewRect.centerX();
@@ -496,7 +507,12 @@ public class Camera2VideoFragment extends BaseCameraFragment
             matrix.postScale(scale, scale, centerX, centerY);
             matrix.postRotate(90 * (rotation - 2), centerX, centerY);
         }
-        mTextureView.setTransform(matrix);
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mTextureView.setTransform(matrix);
+            }
+        });
     }
 
     private void setUpMediaRecorder() throws IOException {
@@ -507,8 +523,9 @@ public class Camera2VideoFragment extends BaseCameraFragment
         mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        mMediaRecorder.setOutputFile(CameraUtils.getOutputInternalMediaFile_App(
-                CameraUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
+        violationFileURI = CameraUtils.getOutputInternalMediaFile_App(
+                CameraUtils.MEDIA_TYPE_VIDEO).getAbsolutePath();
+        mMediaRecorder.setOutputFile(violationFileURI);
         mMediaRecorder.setVideoEncodingBitRate(10000000);
         mMediaRecorder.setVideoFrameRate(30);
         mMediaRecorder.setVideoSize(mVideoSize.getWidth(), mVideoSize.getHeight());
@@ -536,16 +553,16 @@ public class Camera2VideoFragment extends BaseCameraFragment
 
     @Override
     protected void onStopRecord() {
+        closeCamera();
         // UI
         mIsRecordingVideo = false;
         // Stop recording
-        mMediaRecorder.stop();
-        mMediaRecorder.reset();
+//        mMediaRecorder.stop();
+//        mMediaRecorder.reset();
         super.onStopRecord();
 
-        startPreview();
+//        startPreview();
     }
-
 
     /**
      * Compares two {@code Size}s based on their areas.

@@ -29,39 +29,59 @@ public class VideoProcessingService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Realm realm = Realm.getInstance(this);
 
         RealmResults<VideoItem> videoList;
 
         Log.d(TAG, "onHandleIntent: start process video service");
 
-
-        videoList = realm.where((VideoItem.class))
-                .equalTo("state", VideoItem.STATE_SAVING)
-                .findAll();
-
-        for (int i = 0; i < videoList.size(); i++) {
-            String id = videoList.get(i).getId();
-
-            Log.d(TAG, "item: " + id);
-            Log.d(TAG, "itemUrl: " + videoList.get(i).getVideoURL());
-            File src = new File(videoList.get(i).getVideoURL());
-            File dst = new File(CameraUtils.getOutputInternalMediaFile_App(CameraUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
-            Log.d(TAG, "dst: " + dst.getAbsolutePath());
-            try {
-                realm.beginTransaction();
-                TrimVideoUtils.trimToLast20sec(src, dst);
-                videoList.get(i).setVideoURL(dst.getAbsolutePath());
-                videoList.get(i).setState(VideoItem.STATE_READY_TO_SEND);
-                realm.commitTransaction();
-                updateUI(id);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
+        tryToProcessVideo();
     }
 
+    private void tryToProcessVideo() {
+        Realm realm = Realm.getInstance(this);
+        VideoItem video = realm.where((VideoItem.class))
+                .equalTo("state", VideoItem.STATE_SAVING)
+                .findFirst();
+
+        if (video == null) {
+            return;
+        }
+
+        String id = video.getId();
+
+        Log.d(TAG, "item: " + id);
+        Log.d(TAG, "itemUrl: " + video.getVideoURL());
+        File src = new File(video.getVideoURL());
+        File dst = new File(CameraUtils.getOutputInternalMediaFile_App(CameraUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
+        Log.d(TAG, "dst: " + dst.getAbsolutePath());
+        try {
+            realm.beginTransaction();
+            if (TrimVideoUtils.trimToLast20sec(src, dst)) {
+                video.setVideoURL(dst.getAbsolutePath());
+                try {
+                    Log.d(TAG, "remove + src: " + src.getAbsolutePath());
+                    src.delete();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    Log.d(TAG, "remove + dst: " + dst.getAbsolutePath());
+                    dst.delete();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            video.setState(VideoItem.STATE_READY_TO_SEND);
+            realm.commitTransaction();
+            updateUI(id);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //try to process next video if present
+        tryToProcessVideo();
+    }
 
     private void updateUI(String id) {
         Intent intent = new Intent(UploadService.UPDATE_VIDEO_UI);

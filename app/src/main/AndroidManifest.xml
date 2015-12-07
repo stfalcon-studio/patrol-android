@@ -23,6 +23,7 @@
         <activity
             android:name="com.stfalcon.hromadskyipatrol.ui.activity.LoginActivity"
             android:label="@string/app_name"
+            android:keepScreenOn="true"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,9 +32,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.activity.MainActivity"
+            android:keepScreenOn="true"
             android:screenOrientation="portrait"/>
 
         <activity android:name=".camera.VideoCaptureActivity"
+            android:keepScreenOn="true"
             android:screenOrientation="landscape"/>
 
         <service android:name="com.stfalcon.hromadskyipatrol.network.PatrolSpiceService"/>

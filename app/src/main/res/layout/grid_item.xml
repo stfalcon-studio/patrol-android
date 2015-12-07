@@ -1,23 +1,22 @@
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/top_layout"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:padding="2dp"
-    android:animateLayoutChanges="true">
+    android:animateLayoutChanges="true"
+    android:padding="2dp">
 
     <com.stfalcon.hromadskyipatrol.ui.view.SquareImageView
         android:id="@+id/img_thumbnail"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:scaleType="centerCrop"/>
+        android:scaleType="centerCrop" />
 
     <View
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:background="@drawable/shadow"/>
+        android:background="@drawable/shadow" />
 
 
     <ImageView
@@ -26,23 +25,32 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:padding="8dp"/>
+        android:padding="8dp" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp" />
 
     <TextView
         android:id="@+id/gps"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:gravity="center"
         android:text="@string/no_gps"
         android:textColor="@android:color/white"
         android:textStyle="bold"
-        android:gravity="center"
-        android:layout_centerInParent="true"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <com.stfalcon.hromadskyipatrol.ui.view.SquareImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:src="@drawable/ic_play_circle_outline_white_48dp"/>
+        android:src="@drawable/ic_play_circle_outline_white_48dp" />
 
 </RelativeLayout>

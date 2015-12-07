@@ -3,6 +3,7 @@ package com.stfalcon.hromadskyipatrol.camera.fragment;
 
 import android.app.Fragment;
 import android.os.Handler;
+import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.Surface;
 
@@ -18,8 +19,9 @@ import java.util.TimerTask;
  */
 public class BaseCameraFragment extends Fragment {
 
+    private static final String TAG = BaseCameraFragment.class.getName();
     private long detectViolationTime;
-    protected String violationFileURI;
+    public String violationFileURI;
 
     private int TIME_RECORD_AFTER_TAP = 10 * 1000; //10sec
     //private int TIME_RECORD_SEGMENT = 2 * 60 * 1000;  //2 min
@@ -75,7 +77,7 @@ public class BaseCameraFragment extends Fragment {
         onStopRecord();
     }
 
-    protected void initCamera(){
+    protected void initCamera() {
     }
 
     protected void onCameraPrepared() {
@@ -99,7 +101,7 @@ public class BaseCameraFragment extends Fragment {
     }
 
 
-    protected void createNewVideFile(){
+    protected void createNewVideFile() {
     }
 
     private void updateTimerView(int sec) {
@@ -132,7 +134,8 @@ public class BaseCameraFragment extends Fragment {
         try {
             segmentTimer.cancel();
             violationTimer.cancel();
-        } catch (IllegalStateException e){}
+        } catch (IllegalStateException e) {
+        }
     }
 
 
@@ -143,7 +146,12 @@ public class BaseCameraFragment extends Fragment {
             if (!violationRecording && mIsRecordingVideo) {
                 onStopRecord();
                 new File(violationFileURI).delete();
-                initCamera();
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        initCamera();
+                    }
+                });
             }
         }
     }
@@ -152,20 +160,25 @@ public class BaseCameraFragment extends Fragment {
 
         @Override
         public void run() {
-            if (violationRecording && mIsRecordingVideo) {
-                onStopRecord();
-                initCamera();
-            }
-
             getActivity().runOnUiThread(new Runnable() {
 
                 @Override
                 public void run() {
                     if (callback != null) {
+                        Log.d(TAG, "run: " + violationFileURI);
                         callback.onVideoPrepared(new ViolationItem(detectViolationTime, violationFileURI));
                     }
                 }
             });
+            if (violationRecording && mIsRecordingVideo) {
+                onStopRecord();
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        initCamera();
+                    }
+                });
+            }
         }
     }
 }

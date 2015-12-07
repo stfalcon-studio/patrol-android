@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.stfalcon.hromadskyipatrol.R;
@@ -20,6 +21,7 @@ import com.stfalcon.hromadskyipatrol.network.UploadService;
 import com.stfalcon.hromadskyipatrol.utils.IntentUtilities;
 import com.stfalcon.hromadskyipatrol.utils.StringUtilities;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -43,7 +45,11 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
     }
 
     public void addItem(VideoItem photo) {
-        mItems.add(0, photo);
+        try {
+            mItems.add(0, photo);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         notifyDataSetChanged();
     }
 
@@ -71,22 +77,32 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
                 viewHolder.imgState.setImageResource(R.drawable.icon_upload);
                 viewHolder.noGPS.setVisibility(View.GONE);
                 viewHolder.imgState.setVisibility(View.VISIBLE);
+                viewHolder.progressBar.setVisibility(View.GONE);
+                break;
+            case VideoItem.STATE_SENDING:
+                viewHolder.imgState.setImageResource(R.drawable.icon_camera);
+                viewHolder.noGPS.setVisibility(View.GONE);
+                viewHolder.imgState.setVisibility(View.GONE);
+                viewHolder.progressBar.setVisibility(View.VISIBLE);
                 break;
             case VideoItem.STATE_UPLOADED:
                 viewHolder.imgState.setImageResource(R.drawable.icon_done);
                 viewHolder.noGPS.setVisibility(View.GONE);
                 viewHolder.imgState.setVisibility(View.VISIBLE);
+                viewHolder.progressBar.setVisibility(View.GONE);
                 break;
             case VideoItem.STATE_ERROR:
                 viewHolder.imgState.setImageResource(R.drawable.icon_repeat);
                 viewHolder.noGPS.setVisibility(View.GONE);
                 viewHolder.imgState.setVisibility(View.VISIBLE);
+                viewHolder.progressBar.setVisibility(View.GONE);
                 break;
 
             case VideoItem.STATE_SAVING:
                 viewHolder.noGPS.setText(R.string.saving);
                 viewHolder.noGPS.setVisibility(View.VISIBLE);
                 viewHolder.imgState.setVisibility(View.GONE);
+                viewHolder.progressBar.setVisibility(View.GONE);
                 break;
         }
 
@@ -115,6 +131,7 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
         public ImageView imgThumbnail;
         public ImageView imgState;
         public TextView noGPS;
+        public ProgressBar progressBar;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -123,6 +140,7 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
             imgThumbnail = (ImageView) itemView.findViewById(R.id.img_thumbnail);
             imgState = (ImageView) itemView.findViewById(R.id.img_state);
             noGPS = (TextView) itemView.findViewById(R.id.gps);
+            progressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar);
         }
 
         @Override
@@ -137,12 +155,22 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
         }
 
         private void delete() {
-            mItems.remove(video);
-            notifyItemRemoved(getAdapterPosition());
             Realm realm = Realm.getInstance(context);
+            try {
+                new File(video.getVideoURL()).delete();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             realm.beginTransaction();
             video.removeFromRealm();
             realm.commitTransaction();
+
+            try {
+                mItems.remove(video);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            notifyItemRemoved(getAdapterPosition());
         }
 
         private void showDialog() {

@@ -221,16 +221,12 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
             realm.beginTransaction();
 
             for (ViolationItem item : violationItems) {
-
-                String pathToInternallyStoredImage =
-                        CameraUtils.saveToInternalStorage(CameraUtils.MEDIA_TYPE_VIDEO, Uri.parse(item.videoUrl));
-                VideoItem video = new VideoItem();
+                VideoItem video = Realm.getInstance(this).createObject(VideoItem.class);
                 video.setId(String.valueOf(System.currentTimeMillis()));
-                video.setVideoURL(pathToInternallyStoredImage);
+                video.setVideoURL(item.videoUrl);
                 video.setLatitude(item.getLat());
                 video.setLongitude(item.getLon());
                 video.setState(VideoItem.STATE_SAVING);
-                realm.copyToRealmOrUpdate(video);
 
                 mAdapter.addItem(video);
             }

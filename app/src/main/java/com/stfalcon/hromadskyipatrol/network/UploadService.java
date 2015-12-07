@@ -65,8 +65,13 @@ public class UploadService extends IntentService {
             }
 
             //upload process
-            for (VideoItem video : videoList) {
-                VideoAnswer answer = uploadImage(video, user);
+            for (int i = 0; i < videoList.size(); i++) {
+                realmDB.beginTransaction();
+                videoList.get(i).setState(VideoItem.STATE_SENDING);
+                realmDB.copyToRealmOrUpdate(videoList.get(i));
+                realmDB.commitTransaction();
+                updateActivityUI(this, videoList.get(i).getId(), VideoItem.STATE_SENDING);
+                VideoAnswer answer = uploadImage(videoList.get(i), user);
                 serverAnswersList.add(answer);
                 updateActivityUI(this, answer.getId(), answer.getState());
             }
