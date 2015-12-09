@@ -20,6 +20,7 @@ import com.stfalcon.hromadskyipatrol.R;
 import com.stfalcon.hromadskyipatrol.camera.CameraHelper;
 import com.stfalcon.hromadskyipatrol.utils.CameraUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -80,8 +81,8 @@ public class CameraVideoFragment extends BaseCameraFragment implements View.OnCl
     }
 
     @Override
-    protected void initCamera(){
-        if (mPreview.isAvailable()){
+    protected void initCamera() {
+        if (mPreview.isAvailable()) {
             prepareCamera(mPreview.getWidth(), mPreview.getHeight());
         } else {
             mPreview.setSurfaceTextureListener(this);
@@ -102,10 +103,23 @@ public class CameraVideoFragment extends BaseCameraFragment implements View.OnCl
     @Override
     public void onPause() {
         super.onPause();
+        if (violationFileURI != null) {
+            try {
+                new File(violationFileURI).delete();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         // if we are using MediaRecorder, release it first
         releaseMediaRecorder();
         // release the camera immediately on pause event
         releaseCamera();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        initCamera();
     }
 
     private void releaseMediaRecorder() {

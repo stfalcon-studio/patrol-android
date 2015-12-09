@@ -37,63 +37,71 @@ public class UploadService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        if (isConnectionAvailable()) {
+        if (NetworkUtils.isConnectionAvailable(this)) {
             Bundle extras = intent.getExtras();
             String videoId = null;
-
+            Realm realmDB = Realm.getInstance(this);
             if (extras != null) {
                 videoId = extras.getString(IntentUtilities.VIDEO_ID);
             }
 
-            //init objects
-            Realm realmDB = Realm.getInstance(this);
-            UserItem user = realmDB.where(UserItem.class).findFirst();
-            ArrayList<VideoAnswer> serverAnswersList = new ArrayList<>();
-            RealmResults<VideoItem> videoList;
 
             if (videoId != null) {
-                videoList = realmDB.where((VideoItem.class))
+                VideoItem videoItem = realmDB.where((VideoItem.class))
                         .contains("id", videoId)
-                        .findAll();
-            } else {
-                //get all videos for upload
-                videoList = realmDB.where((VideoItem.class))
-                        .equalTo("state", VideoItem.STATE_READY_TO_SEND)
-                        .or()
-                        .equalTo("state", VideoItem.STATE_ERROR)
-                        .findAll();
-            }
-
-            //upload process
-            for (int i = 0; i < videoList.size(); i++) {
+                        .findFirst();
+                UserItem user = realmDB.where(UserItem.class).findFirst();
                 realmDB.beginTransaction();
-                videoList.get(i).setState(VideoItem.STATE_SENDING);
-                realmDB.copyToRealmOrUpdate(videoList.get(i));
+                videoItem.setState(VideoItem.STATE_SENDING);
                 realmDB.commitTransaction();
-                updateActivityUI(this, videoList.get(i).getId(), VideoItem.STATE_SENDING);
-                VideoAnswer answer = uploadImage(videoList.get(i), user);
-                serverAnswersList.add(answer);
-                updateActivityUI(this, answer.getId(), answer.getState());
-            }
+                updateActivityUI(this);
+                VideoAnswer answer = uploadImage(videoItem, user);
+                realmDB.beginTransaction();
+                VideoItem videoInBase = realmDB.where(VideoItem.class).contains("id", answer.getId()).findFirst();
+                videoInBase.setState(answer.getState());
+                realmDB.commitTransaction();
 
-            //update DB
-            if (!serverAnswersList.isEmpty()) {
-                for (VideoAnswer answer : serverAnswersList) {
-                    realmDB.beginTransaction();
-                    VideoItem videoInBase = realmDB.where(VideoItem.class).contains("id", answer.getId()).findFirst();
-                    videoInBase.setState(answer.getState());
-                    realmDB.copyToRealmOrUpdate(videoInBase);
-                    realmDB.commitTransaction();
-                }
+                updateActivityUI(this);
+
+            } else {
+                tryToSendVideo();
             }
         }
     }
 
+    public void tryToSendVideo() {
+        //init objects
+        Realm realmDB = Realm.getInstance(this);
+        UserItem user = realmDB.where(UserItem.class).findFirst();
 
-    public static void updateActivityUI(Context context, String id, int state) {
+        VideoItem videoItem = realmDB.where((VideoItem.class))
+                .equalTo("state", VideoItem.STATE_READY_TO_SEND)
+                .or()
+                .equalTo("state", VideoItem.STATE_ERROR)
+                .findFirst();
+
+        if (videoItem == null) {
+            return;
+        }
+
+        realmDB.beginTransaction();
+        videoItem.setState(VideoItem.STATE_SENDING);
+        realmDB.commitTransaction();
+        updateActivityUI(this);
+
+        VideoAnswer answer = uploadImage(videoItem, user);
+        realmDB.beginTransaction();
+        VideoItem videoInBase = realmDB.where(VideoItem.class).contains("id", answer.getId()).findFirst();
+        videoInBase.setState(answer.getState());
+        realmDB.commitTransaction();
+        updateActivityUI(this);
+
+        tryToSendVideo();
+    }
+
+
+    public static void updateActivityUI(Context context) {
         Intent intent = new Intent(UPDATE_VIDEO_UI);
-        intent.putExtra("id", id);
-        intent.putExtra("state", state);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
@@ -130,17 +138,5 @@ public class UploadService extends IntentService {
             serverAnswer.setState(VideoItem.STATE_ERROR);
         }
         return serverAnswer;
-    }
-
-    private boolean isConnectionAvailable() {
-        int connectivityStatus = NetworkUtils.getConnectivityStatus(UploadService.this);
-        boolean isCanUpload = true;
-
-        if (ProjectPreferencesManager.getUploadWifiOnlyMode(UploadService.this))
-            if (connectivityStatus != NetworkUtils.CONNECTION_WIFI) {
-                isCanUpload = false;
-            }
-
-        return (isCanUpload && connectivityStatus != NetworkUtils.NOT_CONNECTED);
     }
 }

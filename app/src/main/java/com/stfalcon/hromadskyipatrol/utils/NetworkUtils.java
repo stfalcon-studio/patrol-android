@@ -31,4 +31,16 @@ public final class NetworkUtils {
         }
         return NOT_CONNECTED;
     }
+
+    public static boolean isConnectionAvailable(Context context) {
+        int connectivityStatus = NetworkUtils.getConnectivityStatus(context);
+        boolean isCanUpload = true;
+
+        if (ProjectPreferencesManager.getUploadWifiOnlyMode(context))
+            if (connectivityStatus != NetworkUtils.CONNECTION_WIFI) {
+                isCanUpload = false;
+            }
+
+        return (isCanUpload && connectivityStatus != NetworkUtils.NOT_CONNECTED);
+    }
 }

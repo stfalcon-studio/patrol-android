@@ -125,12 +125,12 @@ public class VideoCaptureActivity extends LocationActivity implements ICamera, V
     }
 
     private void startMenuActivity() {
-        if (null != cameraFragment.violationFileURI) {
-            try {
+        try {
+            if (null != cameraFragment.violationFileURI) {
                 new File(cameraFragment.violationFileURI).delete();
-            } catch (Exception e) {
-                e.printStackTrace();
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         if (!violationItems.isEmpty()) {

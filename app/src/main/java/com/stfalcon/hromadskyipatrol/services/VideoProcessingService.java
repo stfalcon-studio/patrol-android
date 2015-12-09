@@ -8,6 +8,7 @@ import android.util.Log;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
 import com.stfalcon.hromadskyipatrol.network.UploadService;
 import com.stfalcon.hromadskyipatrol.utils.CameraUtils;
+import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 import com.stfalcon.hromadskyipatrol.utils.TrimVideoUtils;
 
 import java.io.File;
@@ -35,6 +36,9 @@ public class VideoProcessingService extends IntentService {
         Log.d(TAG, "onHandleIntent: start process video service");
 
         tryToProcessVideo();
+        if (ProjectPreferencesManager.getAutoUploadMode(getApplicationContext())) {
+            startService(new Intent(VideoProcessingService.this, UploadService.class));
+        }
     }
 
     private void tryToProcessVideo() {
