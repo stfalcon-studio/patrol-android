@@ -45,7 +45,14 @@
             android:textColor="@color/primaryTextColor"
             android:text="@string/login_description"/>
 
-        <EditText
+        <!--    focus thief     -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true" />
+
+        <com.stfalcon.hromadskyipatrol.ui.custom.ClearEditText
             android:id="@+id/emailEditText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -59,7 +66,8 @@
             android:gravity="center"
             android:textColor="@color/primaryTextColor"
             android:hint="@string/email_hint"
-            android:textColorHint="@color/primaryTextColor"/>
+            android:textColorHint="@color/primaryTextColor"
+            style="@style/Base.V12.Widget.AppCompat.EditText"/>
 
         <Button
             android:id="@+id/loginButton"

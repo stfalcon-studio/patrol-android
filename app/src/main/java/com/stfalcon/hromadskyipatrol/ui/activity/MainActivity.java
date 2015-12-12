@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.GridLayoutManager;
@@ -20,6 +19,7 @@ import android.widget.TextView;
 import com.google.android.gms.analytics.HitBuilders;
 import com.stfalcon.hromadskyipatrol.R;
 import com.stfalcon.hromadskyipatrol.camera.VideoCaptureActivity;
+import com.stfalcon.hromadskyipatrol.database.DatabasePatrol;
 import com.stfalcon.hromadskyipatrol.location.LocationDialog;
 import com.stfalcon.hromadskyipatrol.models.UserItem;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
@@ -27,20 +27,17 @@ import com.stfalcon.hromadskyipatrol.models.ViolationItem;
 import com.stfalcon.hromadskyipatrol.network.UploadService;
 import com.stfalcon.hromadskyipatrol.services.VideoProcessingService;
 import com.stfalcon.hromadskyipatrol.ui.VideoGridAdapter;
-import com.stfalcon.hromadskyipatrol.utils.CameraUtils;
+import com.stfalcon.hromadskyipatrol.utils.Constants;
 import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 
 import java.util.ArrayList;
-
-import io.realm.Realm;
-import io.realm.RealmResults;
+import java.util.Collections;
 
 /**
  * Created by alexandr on 17/08/15.
  */
 public class MainActivity extends BaseSpiceActivity implements View.OnClickListener {
     private static final String TAG = BaseSpiceActivity.class.getName();
-    int REQUEST_CAMERA = 0;
 
     private TextView noVideosTextView;
     private LinearLayout llSettings;
@@ -48,7 +45,6 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private VideoGridAdapter mAdapter;
-    private Realm realm;
     private UserItem userData;
     private boolean isGPSDialogShowed;
 
@@ -57,7 +53,6 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        realm = Realm.getInstance(this);
         if (checkLocationManager()) {
             openCamera();
         }
@@ -94,7 +89,8 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
         mLayoutManager = new GridLayoutManager(this, 2);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        RealmResults<VideoItem> videos = realm.where(VideoItem.class).findAll();
+        ArrayList<VideoItem> videos = DatabasePatrol.get(this).getVideos();
+        Collections.reverse(videos);
         mAdapter = new VideoGridAdapter(videos, this);
         mRecyclerView.setAdapter(mAdapter);
         setVideosListVisibility(videos.size() > 0);
@@ -117,7 +113,7 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
         noVideosTextView = (TextView) findViewById(R.id.noVideosTextView);
         llSettings = (LinearLayout) findViewById(R.id.ll_settings);
 
-        userData = realm.where(UserItem.class).findFirst();
+        userData = ProjectPreferencesManager.getUser(this);
         ((TextView) findViewById(R.id.title)).setText(userData.getEmail());
     }
 
@@ -149,7 +145,8 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
                             .setCategory("Settings")
                             .setAction("snap")
                             .build());
-
+                } else {
+                    LocationDialog.showSettingsAlert(this);
                 }
                 break;
             case R.id.onlyWiFiCheckBox:
@@ -172,9 +169,8 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
                 UserItem userData = new UserItem();
                 userData.setEmail(((TextView) findViewById(R.id.title)).getText().toString());
                 userData.setIsLogin(false);
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(userData);
-                realm.commitTransaction();
+                ProjectPreferencesManager.setUser(this, userData);
+
 
                 getTracker().send(new HitBuilders.EventBuilder()
                         .setCategory("Settings")
@@ -189,7 +185,7 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
 
     private void openCamera() {
         Intent intent = new Intent(this, VideoCaptureActivity.class);
-        startActivityForResult(intent, REQUEST_CAMERA);
+        startActivityForResult(intent, Constants.REQUEST_CAMERA);
     }
 
 
@@ -206,9 +202,13 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == REQUEST_CAMERA) {
+            if (requestCode == Constants.REQUEST_CAMERA) {
                 onCaptureVideoResult(data);
                 startProcessVideoService();
+            }
+        } else if (requestCode == Constants.REQUEST_GPS_SETTINGS) {
+            if (checkLocationManager()) {
+                openCamera();
             }
         }
     }
@@ -216,22 +216,23 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
     private void onCaptureVideoResult(Intent data) {
         ArrayList<ViolationItem> violationItems
                 = data.getParcelableArrayListExtra(VideoCaptureActivity.MOVIES_RESULT);
+
         if (!violationItems.isEmpty()) {
-            // Transactions give you easy thread-safety
-            realm.beginTransaction();
+            ArrayList<VideoItem> videos = new ArrayList<>();
 
             for (ViolationItem item : violationItems) {
-                VideoItem video = Realm.getInstance(this).createObject(VideoItem.class);
+                VideoItem video = new VideoItem();
                 video.setId(String.valueOf(System.currentTimeMillis()));
                 video.setVideoURL(item.videoUrl);
                 video.setLatitude(item.getLat());
                 video.setLongitude(item.getLon());
-                video.setState(VideoItem.STATE_SAVING);
+                video.setState(VideoItem.State.SAVING);
 
+                videos.add(video);
                 mAdapter.addItem(video);
             }
-            realm.commitTransaction();
 
+            DatabasePatrol.get(this).addVideos(videos);
             setVideosListVisibility(true);
         }
     }
@@ -246,7 +247,8 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(UploadService.UPDATE_VIDEO_UI)) {
-                RealmResults<VideoItem> videos = realm.where(VideoItem.class).findAll();
+                ArrayList<VideoItem> videos = DatabasePatrol.get(MainActivity.this).getVideos();
+                Collections.reverse(videos);
                 mAdapter.setItems(videos);
                 mAdapter.notifyDataSetChanged();
             }

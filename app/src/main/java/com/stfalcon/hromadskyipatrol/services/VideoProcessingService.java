@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.stfalcon.hromadskyipatrol.database.DatabasePatrol;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
 import com.stfalcon.hromadskyipatrol.network.UploadService;
 import com.stfalcon.hromadskyipatrol.utils.CameraUtils;
@@ -14,8 +15,6 @@ import com.stfalcon.hromadskyipatrol.utils.TrimVideoUtils;
 import java.io.File;
 import java.io.IOException;
 
-import io.realm.Realm;
-import io.realm.RealmResults;
 
 /**
  * Created by Anton Bevza on 12/1/15.
@@ -31,8 +30,6 @@ public class VideoProcessingService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
-        RealmResults<VideoItem> videoList;
-
         Log.d(TAG, "onHandleIntent: start process video service");
 
         tryToProcessVideo();
@@ -42,10 +39,8 @@ public class VideoProcessingService extends IntentService {
     }
 
     private void tryToProcessVideo() {
-        Realm realm = Realm.getInstance(this);
-        VideoItem video = realm.where((VideoItem.class))
-                .equalTo("state", VideoItem.STATE_SAVING)
-                .findFirst();
+        DatabasePatrol db = DatabasePatrol.get(this);
+        VideoItem video = db.getVideo(VideoItem.State.SAVING);
 
         if (video == null) {
             return;
@@ -59,9 +54,8 @@ public class VideoProcessingService extends IntentService {
         File dst = new File(CameraUtils.getOutputInternalMediaFile_App(CameraUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
         Log.d(TAG, "dst: " + dst.getAbsolutePath());
         try {
-            realm.beginTransaction();
             if (TrimVideoUtils.trimToLast20sec(src, dst)) {
-                video.setVideoURL(dst.getAbsolutePath());
+                db.updateVideo(video.getId(), dst.getAbsolutePath());
                 try {
                     Log.d(TAG, "remove + src: " + src.getAbsolutePath());
                     src.delete();
@@ -76,8 +70,7 @@ public class VideoProcessingService extends IntentService {
                     e.printStackTrace();
                 }
             }
-            video.setState(VideoItem.STATE_READY_TO_SEND);
-            realm.commitTransaction();
+            db.updateVideo(video.getId(), VideoItem.State.READY_TO_SEND);
             updateUI(id);
         } catch (IOException e) {
             e.printStackTrace();
@@ -90,7 +83,7 @@ public class VideoProcessingService extends IntentService {
     private void updateUI(String id) {
         Intent intent = new Intent(UploadService.UPDATE_VIDEO_UI);
         intent.putExtra("id", id);
-        intent.putExtra("state", VideoItem.STATE_READY_TO_SEND);
+        intent.putExtra("state", VideoItem.State.READY_TO_SEND);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 }

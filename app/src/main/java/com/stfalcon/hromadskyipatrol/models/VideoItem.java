@@ -1,26 +1,38 @@
 package com.stfalcon.hromadskyipatrol.models;
 
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by alexandr on 19/08/15.
  */
-public class VideoItem extends RealmObject {
-    public static final int STATE_UPLOADED = 1;
-    public static final int STATE_SENDING = 0;
-    public static final int STATE_ERROR = 2;
-    public static final int STATE_READY_TO_SEND = 3;
-    public static final int STATE_SAVING = 4;
+public class VideoItem {
 
-    @PrimaryKey
+    public VideoItem() {
+    }
+
+    public VideoItem(String id, String videoURL, int state, double longitude, double latitude) {
+        this(id, videoURL, State.from(state), longitude, latitude);
+    }
+
+    public VideoItem(String id, String videoURL, State state, double longitude, double latitude) {
+        this.id = id;
+        this.videoURL = videoURL;
+        this.state = state;
+        this.longitude = longitude;
+        this.latitude = latitude;
+    }
+
+//    @PrimaryKey
     private String id;
     private String videoURL;
-    private int state;
+    private State state;
     private double longitude;
     private double latitude;
 
     public void setState(int state) {
+        this.state = State.from(state);
+    }
+
+    public void setState(State state) {
         this.state = state;
     }
 
@@ -32,7 +44,7 @@ public class VideoItem extends RealmObject {
         return latitude;
     }
 
-    public int getState() {
+    public State getState() {
         return state;
     }
 
@@ -45,7 +57,6 @@ public class VideoItem extends RealmObject {
     }
 
     public String getId() {
-
         return id;
     }
 
@@ -59,5 +70,25 @@ public class VideoItem extends RealmObject {
 
     public void setLatitude(double latitude) {
         this.latitude = latitude;
+    }
+
+    public enum State {
+        UNDEFINED(-1), SAVING(1), READY_TO_SEND(2), SENDING(3), UPLOADED(4), ERROR(5);
+
+        private final int value;
+
+        private State(int value) {
+            this.value = value;
+        }
+
+        public int value() {
+            return value;
+        }
+
+        public static State from(int value) {
+            for (State my: State.values())
+                if (my.value == value) return my;
+            return null;
+        }
     }
 }

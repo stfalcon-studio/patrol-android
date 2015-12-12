@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.stfalcon.hromadskyipatrol.BuildConfig;
+import com.stfalcon.hromadskyipatrol.database.DatabasePatrol;
 import com.stfalcon.hromadskyipatrol.models.VideoAnswer;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
 import com.stfalcon.hromadskyipatrol.models.UserItem;
@@ -17,11 +18,7 @@ import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-
-import io.realm.Realm;
-import io.realm.RealmResults;
 
 /**
  * Created by alexandr on 21/08/15.
@@ -40,28 +37,25 @@ public class UploadService extends IntentService {
         if (NetworkUtils.isConnectionAvailable(this)) {
             Bundle extras = intent.getExtras();
             String videoId = null;
-            Realm realmDB = Realm.getInstance(this);
+            DatabasePatrol db = DatabasePatrol.get(this);
             if (extras != null) {
                 videoId = extras.getString(IntentUtilities.VIDEO_ID);
             }
 
 
             if (videoId != null) {
-                VideoItem videoItem = realmDB.where((VideoItem.class))
-                        .contains("id", videoId)
-                        .findFirst();
-                UserItem user = realmDB.where(UserItem.class).findFirst();
-                realmDB.beginTransaction();
-                videoItem.setState(VideoItem.STATE_SENDING);
-                realmDB.commitTransaction();
-                updateActivityUI(this);
-                VideoAnswer answer = uploadImage(videoItem, user);
-                realmDB.beginTransaction();
-                VideoItem videoInBase = realmDB.where(VideoItem.class).contains("id", answer.getId()).findFirst();
-                videoInBase.setState(answer.getState());
-                realmDB.commitTransaction();
+                VideoItem videoItem = db.getVideo(videoId);
+                if (videoItem.getState() != VideoItem.State.UPLOADED) {
 
-                updateActivityUI(this);
+                    UserItem user = ProjectPreferencesManager.getUser(this);
+                    db.updateVideo(videoItem.getId(), VideoItem.State.SENDING);
+                    updateActivityUI(this);
+                    VideoAnswer answer = uploadImage(videoItem, user);
+                    VideoItem videoInBase = db.getVideo(answer.getId());
+                    db.updateVideo(videoInBase.getId(), VideoItem.State.from(answer.getState()));
+
+                    updateActivityUI(this);
+                }
 
             } else {
                 tryToSendVideo();
@@ -71,29 +65,23 @@ public class UploadService extends IntentService {
 
     public void tryToSendVideo() {
         //init objects
-        Realm realmDB = Realm.getInstance(this);
-        UserItem user = realmDB.where(UserItem.class).findFirst();
+        DatabasePatrol db = DatabasePatrol.get(this);
+        UserItem user = ProjectPreferencesManager.getUser(this);
 
-        VideoItem videoItem = realmDB.where((VideoItem.class))
-                .equalTo("state", VideoItem.STATE_READY_TO_SEND)
-                .or()
-                .equalTo("state", VideoItem.STATE_ERROR)
-                .findFirst();
+        VideoItem videoItem = db.getVideo(VideoItem.State.READY_TO_SEND);
+        if (videoItem == null) db.getVideo(VideoItem.State.ERROR);
+
 
         if (videoItem == null) {
             return;
         }
 
-        realmDB.beginTransaction();
-        videoItem.setState(VideoItem.STATE_SENDING);
-        realmDB.commitTransaction();
+        db.updateVideo(videoItem.getId(), VideoItem.State.SENDING);
         updateActivityUI(this);
 
         VideoAnswer answer = uploadImage(videoItem, user);
-        realmDB.beginTransaction();
-        VideoItem videoInBase = realmDB.where(VideoItem.class).contains("id", answer.getId()).findFirst();
-        videoInBase.setState(answer.getState());
-        realmDB.commitTransaction();
+        VideoItem videoInBase = db.getVideo(answer.getId());
+        db.updateVideo(videoInBase.getId(), VideoItem.State.from(answer.getState()));
         updateActivityUI(this);
 
         tryToSendVideo();
@@ -114,7 +102,7 @@ public class UploadService extends IntentService {
         String charset = "UTF-8";
         File file = new File(fileUrl);
         String requestURL = BuildConfig.BASE_URL + UPLOAD_URL.replace("{userID}", userID);
-        VideoAnswer serverAnswer = new VideoAnswer(videoID, VideoItem.STATE_SENDING);
+        VideoAnswer serverAnswer = new VideoAnswer(videoID, VideoItem.State.SENDING.value());
         try {
             MultipartUtility multipart = new MultipartUtility(requestURL, charset);
 
@@ -131,11 +119,11 @@ public class UploadService extends IntentService {
             for (String line : response) {
                 System.out.println(line);
             }
-            serverAnswer.setState(VideoItem.STATE_UPLOADED);
+            serverAnswer.setState(VideoItem.State.UPLOADED.value());
 
         } catch (IOException ex) {
             System.err.println(ex);
-            serverAnswer.setState(VideoItem.STATE_ERROR);
+            serverAnswer.setState(VideoItem.State.ERROR.value());
         }
         return serverAnswer;
     }

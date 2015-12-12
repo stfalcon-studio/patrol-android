@@ -12,11 +12,11 @@ import java.util.ArrayList;
 public final class StringUtilities {
     private StringUtilities() { throw new AssertionError(); }
 
-    public static ArrayList<String> getOptions(Context context, boolean isLoaded) {
+    public static ArrayList<String> getOptions(Context context, boolean isCanLoad) {
         ArrayList<String> options = new ArrayList<>();
 
         options.add(context.getString(R.string.view_video));
-        if (!isLoaded) options.add(context.getString(R.string.upload_video));
+        if (isCanLoad) options.add(context.getString(R.string.upload_video));
         options.add(context.getString(R.string.delete_video));
 
         return options;

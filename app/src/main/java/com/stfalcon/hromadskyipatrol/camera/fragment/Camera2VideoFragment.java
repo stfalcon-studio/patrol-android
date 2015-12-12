@@ -56,7 +56,9 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.stfalcon.hromadskyipatrol.R;
+import com.stfalcon.hromadskyipatrol.utils.AppUtilities;
 import com.stfalcon.hromadskyipatrol.utils.CameraUtils;
+import com.stfalcon.hromadskyipatrol.utils.Constants;
 
 import java.io.File;
 import java.io.IOException;
@@ -73,7 +75,6 @@ public class Camera2VideoFragment extends BaseCameraFragment
         implements View.OnClickListener, FragmentCompat.OnRequestPermissionsResultCallback {
 
     private static final String TAG = "Camera2VideoFragment";
-    private static final int REQUEST_VIDEO_PERMISSIONS = 1;
     private static final String FRAGMENT_DIALOG = "dialog";
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     private Size mPreviewSize;
@@ -309,7 +310,7 @@ public class Camera2VideoFragment extends BaseCameraFragment
         if (shouldShowRequestPermissionRationale(VIDEO_PERMISSIONS)) {
             new ConfirmationDialog().show(getChildFragmentManager(), FRAGMENT_DIALOG);
         } else {
-            FragmentCompat.requestPermissions(this, VIDEO_PERMISSIONS, REQUEST_VIDEO_PERMISSIONS);
+            FragmentCompat.requestPermissions(this, VIDEO_PERMISSIONS, Constants.REQUEST_VIDEO_PERMISSIONS);
         }
     }
 
@@ -317,7 +318,7 @@ public class Camera2VideoFragment extends BaseCameraFragment
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         Log.d(TAG, "onRequestPermissionsResult");
-        if (requestCode == REQUEST_VIDEO_PERMISSIONS) {
+        if (requestCode == Constants.REQUEST_VIDEO_PERMISSIONS) {
             if (grantResults.length == VIDEO_PERMISSIONS.length) {
                 for (int result : grantResults) {
                     if (result != PackageManager.PERMISSION_GRANTED) {
@@ -376,7 +377,7 @@ public class Camera2VideoFragment extends BaseCameraFragment
             mMediaRecorder = new MediaRecorder();
             manager.openCamera(cameraId, mStateCallback, null);
         } catch (CameraAccessException e) {
-            Toast.makeText(activity, "Cannot access the camera.", Toast.LENGTH_SHORT).show();
+            AppUtilities.showToast(getActivity(), R.string.error_camera_access_denied, false);
             activity.finish();
         } catch (NullPointerException e) {
             // Currently an NPE is thrown when the Camera2API is used but not supported on the
@@ -445,7 +446,7 @@ public class Camera2VideoFragment extends BaseCameraFragment
                 public void onConfigureFailed(CameraCaptureSession cameraCaptureSession) {
                     Activity activity = getActivity();
                     if (null != activity) {
-                        Toast.makeText(activity, "Failed", Toast.LENGTH_SHORT).show();
+                        AppUtilities.showToast(getActivity(), "Failed", false);
                     }
 
 
@@ -617,7 +618,7 @@ public class Camera2VideoFragment extends BaseCameraFragment
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             FragmentCompat.requestPermissions(parent, VIDEO_PERMISSIONS,
-                                    REQUEST_VIDEO_PERMISSIONS);
+                                    Constants.REQUEST_VIDEO_PERMISSIONS);
                         }
                     })
                     .setNegativeButton(android.R.string.cancel,
