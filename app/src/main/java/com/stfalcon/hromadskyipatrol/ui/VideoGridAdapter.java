@@ -47,9 +47,19 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
         notifyItemInserted(0);
     }
 
-    public void addItems(ArrayList<VideoItem> videos) {
-        mItems.addAll(0, videos);
-        notifyItemRangeInserted(0, videos.size());
+    public void updateState(String id, VideoItem.State state) {
+        int position = -1;
+        for (int i = 0 ; i < mItems.size(); i++) {
+            VideoItem item = mItems.get(i);
+            if (item.getId().contentEquals(id)) {
+                item.setState(state);
+                position = i;
+                break;
+            }
+        }
+        if (position >= 0) {
+            notifyItemChanged(position);
+        }
     }
 
     @Override
@@ -64,12 +74,6 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
         VideoItem video = mItems.get(i);
         viewHolder.video = video;
-
-        //check location in item
-        /*if (video.getState() == VideoItem.State.SAVING
-                && video.getLatitude() == 0){
-            video.setState(VideoItem.State.NO_GPS);
-        }*/
 
         switch (video.getState()) {
             case READY_TO_SEND:
@@ -117,10 +121,6 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
     @Override
     public int getItemCount() {
         return mItems.size();
-    }
-
-    public void setItems(List<VideoItem> mItems) {
-        this.mItems = mItems;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder

@@ -247,7 +247,7 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
             if (intent.getAction().equals(UploadService.UPDATE_VIDEO_UI)) {
                 String id = intent.getExtras().getString("id");
                 VideoItem.State state = VideoItem.State.from(intent.getExtras().getInt("state"));
-                mAdapter.notifyDataSetChanged();
+                mAdapter.updateState(id, state);
             }
         }
     };
