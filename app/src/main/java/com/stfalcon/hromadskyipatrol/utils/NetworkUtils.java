@@ -49,4 +49,8 @@ public final class NetworkUtils {
     public static boolean isCanLoadItem(VideoItem.State state) {
         return state == VideoItem.State.READY_TO_SEND || state == VideoItem.State.ERROR;
     }
+
+    public static boolean isCanDelete(VideoItem.State state) {
+        return state != VideoItem.State.SAVING && state != VideoItem.State.SENDING;
+    }
 }

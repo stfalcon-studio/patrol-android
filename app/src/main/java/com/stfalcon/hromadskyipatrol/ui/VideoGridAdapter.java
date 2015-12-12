@@ -166,17 +166,14 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
             }
             DatabasePatrol.get(context).deleteVideo(video.getId());
 
-            try {
-                mItems.remove(video);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            mItems.remove(video);
             notifyItemRemoved(getAdapterPosition());
         }
 
         private void showDialog() {
+            final boolean isCanDelete = NetworkUtils.isCanDelete(video.getState());
             final boolean isCanLoad = NetworkUtils.isCanLoadItem(video.getState());
-            ArrayList<String> options = StringUtilities.getOptions(context, isCanLoad);
+            ArrayList<String> options = StringUtilities.getOptions(context, isCanLoad, isCanDelete);
 
             new AlertDialog.Builder(context)
                     .setItems(
