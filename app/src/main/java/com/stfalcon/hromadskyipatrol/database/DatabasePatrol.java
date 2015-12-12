@@ -29,16 +29,15 @@ public class DatabasePatrol
     @Override
     public void addVideo(VideoItem item) {
         SQLiteDatabase db = helper.getWritableDatabase();
-        addVideo(item, db);
-        db.close();
-    }
 
-    @Override
-    public void addVideos(ArrayList<VideoItem> items) {
-        SQLiteDatabase db = helper.getWritableDatabase();
-        for (VideoItem item : items) {
-            addVideo(item, db);
-        }
+        ContentValues values = new ContentValues();
+        values.put(Const.KEY_ID, item.getId());
+        values.put(Const.KEY_URL, item.getVideoURL());
+        values.put(Const.KEY_STATE, item.getState().value());
+        values.put(Const.KEY_LON, item.getLongitude());
+        values.put(Const.KEY_LAT, item.getLatitude());
+
+        db.insert(Const.TABLE_VIDEOS, null, values);
         db.close();
     }
 
@@ -96,17 +95,6 @@ public class DatabasePatrol
 
 
     /*      PRIVATE     */
-
-    private void addVideo(VideoItem item, SQLiteDatabase db) {
-        ContentValues values = new ContentValues();
-        values.put(Const.KEY_ID, item.getId());
-        values.put(Const.KEY_URL, item.getVideoURL());
-        values.put(Const.KEY_STATE, item.getState().value());
-        values.put(Const.KEY_LON, item.getLongitude());
-        values.put(Const.KEY_LAT, item.getLatitude());
-
-        db.insert(Const.TABLE_VIDEOS, null, values);
-    }
 
     private VideoItem getVideoWhere(String state, int value) {
         return getVideoWhere(state, Integer.toString(value));

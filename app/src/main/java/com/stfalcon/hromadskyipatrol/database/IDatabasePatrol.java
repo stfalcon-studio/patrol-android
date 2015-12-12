@@ -10,7 +10,6 @@ import java.util.ArrayList;
 public interface IDatabasePatrol {
 
     void addVideo(VideoItem item);
-    void addVideos(ArrayList<VideoItem> item);
 
     ArrayList<VideoItem> getVideos();
     ArrayList<VideoItem> getVideos(VideoItem.State state);

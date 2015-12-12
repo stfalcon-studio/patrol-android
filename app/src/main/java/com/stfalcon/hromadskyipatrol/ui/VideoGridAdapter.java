@@ -42,13 +42,14 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
         mItems = videos;
     }
 
-    public void addItem(VideoItem photo) {
-        try {
-            mItems.add(0, photo);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void addItem(VideoItem video) {
+        mItems.add(0, video);
         notifyItemInserted(0);
+    }
+
+    public void addItems(ArrayList<VideoItem> videos) {
+        mItems.addAll(0, videos);
+        notifyItemRangeInserted(0, videos.size());
     }
 
     @Override
