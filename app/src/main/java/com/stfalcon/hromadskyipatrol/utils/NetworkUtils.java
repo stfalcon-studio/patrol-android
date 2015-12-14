@@ -51,6 +51,6 @@ public final class NetworkUtils {
     }
 
     public static boolean isCanDelete(VideoItem.State state) {
-        return state != VideoItem.State.SAVING && state != VideoItem.State.SENDING;
+        return state != VideoItem.State.SENDING;
     }
 }

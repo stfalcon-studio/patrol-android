@@ -13,7 +13,11 @@ import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 import com.stfalcon.hromadskyipatrol.utils.ProcessVideoUtils;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 
@@ -49,54 +53,45 @@ public class VideoProcessingService extends IntentService {
         Log.d(TAG, "itemUrl: " + video.getVideoURL());
         File src = new File(video.getVideoURL());
         String videoPrevURL = video.getVideoPrevURL();
-        File result = null;
         if (videoPrevURL != null) {
             File src2 = new File(videoPrevURL);
-            result = new File(CameraUtils.getOutputInternalMediaFile_App(CameraUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
+            File result = new File(CameraUtils.getOutputInternalMediaFile_App(CameraUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
             ProcessVideoUtils.concatTwoVideos(src2, src, result);
+            deleteFile(src);
+            deleteFile(src2);
+            src = result;
         }
         File dst = new File(CameraUtils.getOutputInternalMediaFile_App(CameraUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
         Log.d(TAG, "dst: " + dst.getAbsolutePath());
         try {
-            if (ProcessVideoUtils.trimToLast20sec(videoPrevURL != null && videoPrevURL.length() > 0 ? result : src, dst)) {
-                db.updateVideo(id, dst.getAbsolutePath());
-            } else {
-                db.updateVideo(id, src.getAbsolutePath());
-            }
-            /*if (ProcessVideoUtils.trimToLast20sec(video.getVideoPrevURL() != null ? result : src, dst)) {
+            if (ProcessVideoUtils.trimToLast20sec(src, dst)) {
+                deleteFile(src);
                 video.setVideoURL(dst.getAbsolutePath());
-                try {
-                    Log.d(TAG, "remove + src: " + src.getAbsolutePath());
-                    src.delete();
-                    result.delete();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
             } else {
-                video.setVideoURL(video.getVideoPrevURL() != null ? result.getAbsolutePath() : src.getAbsolutePath());
-                try {
-                    Log.d(TAG, "remove + dst: " + dst.getAbsolutePath());
-                    dst.delete();
-                    result.delete();
-                } catch (Exception e) {
-
-                    e.printStackTrace();
-                }
-            }*/
-
+                deleteFile(dst);
+                video.setVideoURL(src.getAbsolutePath());
+            }
+            db.updateVideo(id, video.getVideoURL());
             db.updateVideo(video.getId(), VideoItem.State.READY_TO_SEND);
-            updateUI(id);
+            updateUI(id, video.getVideoURL());
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            updateUI(id);
         }
     }
 
-    private void updateUI(String id) {
+    private void deleteFile(File file) {
+        try {
+            file.delete();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateUI(String id, String url) {
         Intent intent = new Intent(UploadService.UPDATE_VIDEO_UI);
         intent.putExtra("id", id);
         intent.putExtra("state", VideoItem.State.READY_TO_SEND.value());
+        intent.putExtra("url", url);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 }

@@ -31,9 +31,12 @@ import com.googlecode.mp4parser.util.Matrix;
 import com.googlecode.mp4parser.util.Path;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.channels.WritableByteChannel;
 import java.util.LinkedList;
 import java.util.List;
@@ -100,6 +103,8 @@ public class ProcessVideoUtils {
         WritableByteChannel fc = fos.getChannel();
         try {
             out.writeContainer(fc);
+        }catch (Exception e){
+            e.printStackTrace();
         } finally {
             fc.close();
             fos.close();
@@ -166,5 +171,19 @@ public class ProcessVideoUtils {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public static void copyFile(File src, File dst) throws IOException {
+        InputStream in = new FileInputStream(src);
+        OutputStream out = new FileOutputStream(dst);
+
+        // Transfer bytes from in to out
+        byte[] buf = new byte[1024];
+        int len;
+        while ((len = in.read(buf)) > 0) {
+            out.write(buf, 0, len);
+        }
+        in.close();
+        out.close();
     }
 }

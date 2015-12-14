@@ -251,6 +251,9 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
                 String id = intent.getExtras().getString("id");
                 VideoItem.State state = VideoItem.State.from(intent.getExtras().getInt("state"));
                 mAdapter.updateState(id, state);
+                if (intent.hasExtra("url")) {
+                    mAdapter.updateUrl(id, intent.getExtras().getString("url"));
+                }
             }
         }
     };

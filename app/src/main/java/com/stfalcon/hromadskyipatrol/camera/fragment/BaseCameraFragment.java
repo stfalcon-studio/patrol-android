@@ -14,6 +14,7 @@ import com.stfalcon.hromadskyipatrol.utils.CameraUtils;
 import com.stfalcon.hromadskyipatrol.utils.ProcessVideoUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -175,7 +176,13 @@ public class BaseCameraFragment extends Fragment {
                         Log.d(TAG, "run: " + violationFileURI);
                         Log.d(TAG, "prev run: " + previousFileURI);
                         if (previousFileURI != null) {
-                            callback.onVideoPrepared(new ViolationItem(violationFileURI, previousFileURI, detectViolationTime));
+                            File prevVideo = new File(CameraUtils.getOutputInternalMediaFile_App(CameraUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
+                            try {
+                                ProcessVideoUtils.copyFile(new File(previousFileURI), prevVideo);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            callback.onVideoPrepared(new ViolationItem(violationFileURI, prevVideo.getAbsolutePath(), detectViolationTime));
                         } else {
                             callback.onVideoPrepared(new ViolationItem(detectViolationTime, violationFileURI));
                         }
