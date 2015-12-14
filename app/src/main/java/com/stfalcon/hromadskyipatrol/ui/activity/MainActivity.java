@@ -23,14 +23,12 @@ import com.stfalcon.hromadskyipatrol.database.DatabasePatrol;
 import com.stfalcon.hromadskyipatrol.location.LocationDialog;
 import com.stfalcon.hromadskyipatrol.models.UserItem;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
-import com.stfalcon.hromadskyipatrol.models.ViolationItem;
 import com.stfalcon.hromadskyipatrol.network.UploadService;
 import com.stfalcon.hromadskyipatrol.services.VideoProcessingService;
 import com.stfalcon.hromadskyipatrol.ui.VideoGridAdapter;
 import com.stfalcon.hromadskyipatrol.utils.Constants;
 import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -204,8 +202,7 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
 
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == Constants.REQUEST_CAMERA) {
-                onCaptureVideoResult(data);
-                startProcessVideoService();
+                startProcessVideoService(data);
             }
         } else if (requestCode == Constants.REQUEST_GPS_SETTINGS) {
             if (checkLocationManager()) {
@@ -214,33 +211,11 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
         }
     }
 
-    private void onCaptureVideoResult(Intent data) {
-        ArrayList<ViolationItem> violationItems
-                = data.getParcelableArrayListExtra(VideoCaptureActivity.MOVIES_RESULT);
-
-        if (!violationItems.isEmpty()) {
-            // Transactions give you easy thread-safety
-            int i = 0;
-            for (ViolationItem item : violationItems) {
-                VideoItem video = new VideoItem();
-                video.setId(String.valueOf(System.currentTimeMillis() + i++));
-                video.setVideoPrevURL(item.videoUrlPrev);
-                video.setVideoURL(item.videoUrl);
-                video.setLatitude(item.getLat());
-                video.setLongitude(item.getLon());
-                video.setState(VideoItem.State.SAVING);
-
-                DatabasePatrol.get(this).addVideo(video);
-                mAdapter.addItem(video);
-            }
-            setVideosListVisibility(true);
-            updateList();
-        }
-    }
-
-    private void startProcessVideoService() {
+    private void startProcessVideoService(Intent data) {
         Log.d(TAG, "startProcessVideoService");
-        startService(new Intent(MainActivity.this, VideoProcessingService.class));
+        Intent processVideoIntent = new Intent(MainActivity.this, VideoProcessingService.class);
+        processVideoIntent.putExtras(data.getExtras());
+        startService(processVideoIntent);
     }
 
 

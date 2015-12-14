@@ -2,15 +2,20 @@ package com.stfalcon.hromadskyipatrol.services;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.media.ThumbnailUtils;
+import android.provider.MediaStore;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.stfalcon.hromadskyipatrol.camera.VideoCaptureActivity;
 import com.stfalcon.hromadskyipatrol.database.DatabasePatrol;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
+import com.stfalcon.hromadskyipatrol.models.ViolationItem;
 import com.stfalcon.hromadskyipatrol.network.UploadService;
 import com.stfalcon.hromadskyipatrol.utils.FilesUtils;
-import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 import com.stfalcon.hromadskyipatrol.utils.ProcessVideoUtils;
+import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
+import com.stfalcon.hromadskyipatrol.utils.VideoTumbUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,6 +37,11 @@ public class VideoProcessingService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         DatabasePatrol db = DatabasePatrol.get(this);
 
+        // add new video to db if need
+        if (intent.hasExtra(VideoCaptureActivity.MOVIES_RESULT)) {
+            addVideos(intent);
+        }
+
         Log.d(TAG, "onHandleIntent: start process video service");
         ArrayList<VideoItem> videoItems = db.getVideos(VideoItem.State.SAVING);
         for (int i = 0; i < videoItems.size(); i++) {
@@ -40,6 +50,34 @@ public class VideoProcessingService extends IntentService {
 
         if (ProjectPreferencesManager.getAutoUploadMode(getApplicationContext())) {
             startService(new Intent(VideoProcessingService.this, UploadService.class));
+        }
+    }
+
+    private void addVideos(Intent data) {
+
+        DatabasePatrol db = DatabasePatrol.get(this);
+
+        ArrayList<ViolationItem> violationItems
+                = data.getParcelableArrayListExtra(VideoCaptureActivity.MOVIES_RESULT);
+
+        if (!violationItems.isEmpty()) {
+            int i = 0;
+            for (ViolationItem item : violationItems) {
+                VideoItem video = new VideoItem();
+                video.setId(String.valueOf(System.currentTimeMillis() + i++));
+                video.setVideoPrevURL(item.videoUrlPrev);
+                video.setVideoURL(item.videoUrl);
+                video.setLatitude(item.getLat());
+                video.setLongitude(item.getLon());
+                video.setState(VideoItem.State.SAVING);
+
+                String tumbUrl = VideoTumbUtils.makeTumb(ThumbnailUtils.createVideoThumbnail(video.getVideoURL(),
+                        MediaStore.Images.Thumbnails.MINI_KIND));
+
+                video.setTumbURL(tumbUrl);
+
+                db.addVideo(video);
+            }
         }
     }
 

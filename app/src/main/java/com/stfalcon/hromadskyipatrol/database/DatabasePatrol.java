@@ -34,6 +34,7 @@ public class DatabasePatrol
 
         ContentValues values = new ContentValues();
         values.put(Const.KEY_ID, item.getId());
+        values.put(Const.KEY_TUMB, item.getTumbURL());
         values.put(Const.KEY_URL, item.getVideoURL());
         values.put(Const.KEY_PREV_URL, item.getVideoPrevURL());
         values.put(Const.KEY_STATE, item.getState().value());
@@ -117,7 +118,8 @@ public class DatabasePatrol
                     cursor.getInt(cursor.getColumnIndex(Const.KEY_STATE)),
                     cursor.getDouble(cursor.getColumnIndex(Const.KEY_LON)),
                     cursor.getDouble(cursor.getColumnIndex(Const.KEY_LAT)),
-                    cursor.getString(cursor.getColumnIndex(Const.KEY_PREV_URL))
+                    cursor.getString(cursor.getColumnIndex(Const.KEY_PREV_URL)),
+                    cursor.getString(cursor.getColumnIndex(Const.KEY_TUMB))
             );
         }
 
@@ -135,7 +137,9 @@ public class DatabasePatrol
                         cursor.getInt(cursor.getColumnIndex(Const.KEY_STATE)),
                         cursor.getDouble(cursor.getColumnIndex(Const.KEY_LON)),
                         cursor.getDouble(cursor.getColumnIndex(Const.KEY_LAT)),
-                        cursor.getString(cursor.getColumnIndex(Const.KEY_PREV_URL))
+                        cursor.getString(cursor.getColumnIndex(Const.KEY_PREV_URL)),
+                        cursor.getString(cursor.getColumnIndex(Const.KEY_TUMB))
+
                 ));
             while (cursor.moveToNext());
         }
