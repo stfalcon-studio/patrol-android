@@ -12,10 +12,11 @@ import com.stfalcon.hromadskyipatrol.database.DatabasePatrol;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
 import com.stfalcon.hromadskyipatrol.models.ViolationItem;
 import com.stfalcon.hromadskyipatrol.network.UploadService;
+import com.stfalcon.hromadskyipatrol.utils.Constants;
 import com.stfalcon.hromadskyipatrol.utils.FilesUtils;
 import com.stfalcon.hromadskyipatrol.utils.ProcessVideoUtils;
 import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
-import com.stfalcon.hromadskyipatrol.utils.VideoTumbUtils;
+import com.stfalcon.hromadskyipatrol.utils.VideoThumbUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +44,10 @@ public class VideoProcessingService extends IntentService {
         }
 
         Log.d(TAG, "onHandleIntent: start process video service");
-        ArrayList<VideoItem> videoItems = db.getVideos(VideoItem.State.SAVING);
+        ArrayList<VideoItem> videoItems = db.getVideos(
+                VideoItem.State.SAVING,
+                ProjectPreferencesManager.getUser(this)
+        );
         for (int i = 0; i < videoItems.size(); i++) {
             tryToProcessVideo(videoItems.get(i), db);
         }
@@ -59,6 +63,7 @@ public class VideoProcessingService extends IntentService {
 
         ArrayList<ViolationItem> violationItems
                 = data.getParcelableArrayListExtra(VideoCaptureActivity.MOVIES_RESULT);
+        String ownerEmail = data.getStringExtra(Constants.EXTRAS_OWNER_EMAIL);
 
         if (!violationItems.isEmpty()) {
             int i = 0;
@@ -70,11 +75,12 @@ public class VideoProcessingService extends IntentService {
                 video.setLatitude(item.getLat());
                 video.setLongitude(item.getLon());
                 video.setState(VideoItem.State.SAVING);
+                video.setOwnerEmail(ownerEmail);
 
-                String tumbUrl = VideoTumbUtils.makeTumb(ThumbnailUtils.createVideoThumbnail(video.getVideoURL(),
+                String thumbUrl = VideoThumbUtils.makeThumb(ThumbnailUtils.createVideoThumbnail(video.getVideoURL(),
                         MediaStore.Images.Thumbnails.MINI_KIND));
 
-                video.setTumbURL(tumbUrl);
+                video.setThumb(thumbUrl);
 
                 db.addVideo(video);
             }

@@ -115,7 +115,7 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
                 break;
         }
         
-        ImageLoader.getInstance().displayImage(mItems.get(i).getTumbURL(), viewHolder.imgThumbnail);
+        ImageLoader.getInstance().displayImage(mItems.get(i).getThumb(), viewHolder.imgThumbnail);
     }
 
     @Override

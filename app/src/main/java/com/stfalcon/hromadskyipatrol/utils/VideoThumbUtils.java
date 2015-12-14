@@ -7,11 +7,11 @@ import android.graphics.Bitmap;
  */
 public class VideoThumbUtils {
 
-    public static String makeTumb(Bitmap bitmap){
-        return FilesUtils.storeTumb(bitmap);
+    public static String makeThumb(Bitmap bitmap){
+        return FilesUtils.storeThumb(bitmap);
     }
 
-    public static void removeTumb(String url){
+    public static void removeThumb(String url){
         FilesUtils.removeFile(url);
     }
 }

@@ -22,14 +22,14 @@ public class FilesUtils {
     private static String TAG = FilesUtils.class.getSimpleName();
 
     private static String APP_CONTENT_PATH = "DPatrul";
-    private static String VIDEO_TUMB_PATH = APP_CONTENT_PATH + "/tumbs";
+    private static String VIDEO_THUMB_PATH = APP_CONTENT_PATH + "/thumbs";
 
     public static final int MEDIA_TYPE_IMAGE = 0;
     public static final int MEDIA_TYPE_VIDEO = 1;
 
 
-    public static String storeTumb(Bitmap image) {
-        File pictureFile = getOutputInternalTumbFile();
+    public static String storeThumb(Bitmap image) {
+        File pictureFile = getOutputInternalThumbFile();
         if (pictureFile == null) {
             Log.d(TAG,
                     "Error creating media file, check storage permissions: ");// e.getMessage());
@@ -62,8 +62,8 @@ public class FilesUtils {
         return createFile(type, mediaStorageDir);
     }
 
-    public static File getOutputInternalTumbFile() {
-        File mediaStorageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), VIDEO_TUMB_PATH);
+    public static File getOutputInternalThumbFile() {
+        File mediaStorageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), VIDEO_THUMB_PATH);
         createMediaStorageDir(mediaStorageDir);
         return createFile(MEDIA_TYPE_IMAGE, mediaStorageDir);
     }
