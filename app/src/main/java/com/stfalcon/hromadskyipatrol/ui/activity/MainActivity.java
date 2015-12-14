@@ -27,6 +27,7 @@ import com.stfalcon.hromadskyipatrol.network.UploadService;
 import com.stfalcon.hromadskyipatrol.services.VideoProcessingService;
 import com.stfalcon.hromadskyipatrol.ui.VideoGridAdapter;
 import com.stfalcon.hromadskyipatrol.utils.Constants;
+import com.stfalcon.hromadskyipatrol.utils.Extras;
 import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 
 import java.util.ArrayList;
@@ -226,13 +227,13 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(UploadService.UPDATE_VIDEO_UI)) {
-                String id = intent.getExtras().getString("id");
-                VideoItem.State state = VideoItem.State.from(intent.getExtras().getInt("state"));
+                String id = intent.getExtras().getString(Extras.ID);
+                VideoItem.State state = VideoItem.State.from(intent.getExtras().getInt(Extras.STATE));
                 mAdapter.updateState(id, state);
-            } else if (intent.getAction().equals(VideoProcessingService.ADD_VIDEO_UI)){
-                String id = intent.getExtras().getString("id");
+            } else if (intent.getAction().equals(VideoProcessingService.ADD_VIDEO_UI)) {
+                String id = intent.getExtras().getString(Extras.ID);
                 mAdapter.addItem(DatabasePatrol.get(MainActivity.this).getVideo(id));
-                mRecyclerView.scrollBy(0, 0);
+                mRecyclerView.scrollTo(0, 0);
             }
         }
     };

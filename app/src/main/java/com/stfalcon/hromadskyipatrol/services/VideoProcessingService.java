@@ -12,10 +12,11 @@ import com.stfalcon.hromadskyipatrol.database.DatabasePatrol;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
 import com.stfalcon.hromadskyipatrol.models.ViolationItem;
 import com.stfalcon.hromadskyipatrol.network.UploadService;
+import com.stfalcon.hromadskyipatrol.utils.Extras;
 import com.stfalcon.hromadskyipatrol.utils.FilesUtils;
 import com.stfalcon.hromadskyipatrol.utils.ProcessVideoUtils;
 import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
-import com.stfalcon.hromadskyipatrol.utils.VideoTumbUtils;
+import com.stfalcon.hromadskyipatrol.utils.VideoThumbUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -72,7 +73,7 @@ public class VideoProcessingService extends IntentService {
                 video.setLongitude(item.getLon());
                 video.setState(VideoItem.State.SAVING);
 
-                String tumbUrl = VideoTumbUtils.makeThumb(ThumbnailUtils.createVideoThumbnail(video.getVideoURL(),
+                String tumbUrl = VideoThumbUtils.makeThumb(ThumbnailUtils.createVideoThumbnail(video.getVideoURL(),
                         MediaStore.Images.Thumbnails.MINI_KIND));
 
                 video.setTumbURL(tumbUrl);
@@ -138,14 +139,14 @@ public class VideoProcessingService extends IntentService {
 
     private void updateUI(String id) {
         Intent intent = new Intent(UploadService.UPDATE_VIDEO_UI);
-        intent.putExtra("id", id);
-        intent.putExtra("state", VideoItem.State.READY_TO_SEND.value());
+        intent.putExtra(Extras.ID, id);
+        intent.putExtra(Extras.STATE, VideoItem.State.READY_TO_SEND.value());
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
     private void addVideoToUI(String id) {
         Intent intent = new Intent(ADD_VIDEO_UI);
-        intent.putExtra("id", id);
+        intent.putExtra(Extras.ID, id);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 }
