@@ -88,6 +88,13 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
                 viewHolder.imgState.setVisibility(View.GONE);
                 viewHolder.progressBar.setVisibility(View.VISIBLE);
                 viewHolder.upload();
+                if (!NetworkUtils.isConnectionAvailable(context)) {
+                    video.setState(VideoItem.State.ERROR);
+                    viewHolder.imgState.setImageResource(R.drawable.icon_repeat);
+                    viewHolder.noGPS.setVisibility(View.GONE);
+                    viewHolder.imgState.setVisibility(View.VISIBLE);
+                    viewHolder.progressBar.setVisibility(View.GONE);
+                }
                 break;
             case UPLOADED:
                 viewHolder.imgState.setImageResource(R.drawable.icon_done);

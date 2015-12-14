@@ -89,7 +89,7 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
         mLayoutManager = new GridLayoutManager(this, 2);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        ArrayList<VideoItem> videos = DatabasePatrol.get(this).getVideos();
+        ArrayList<VideoItem> videos = DatabasePatrol.get(this).getVideos(userData);
         Collections.reverse(videos);
         mAdapter = new VideoGridAdapter(videos, this);
         mRecyclerView.setAdapter(mAdapter);
@@ -226,6 +226,7 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
                 video.setLatitude(item.getLat());
                 video.setLongitude(item.getLon());
                 video.setState(VideoItem.State.SAVING);
+                video.setOwnerEmail(userData.getEmail());
 
                 DatabasePatrol.get(this).addVideo(video);
                 mAdapter.addItem(video);

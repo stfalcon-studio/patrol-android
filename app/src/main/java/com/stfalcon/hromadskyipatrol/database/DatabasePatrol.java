@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.stfalcon.hromadskyipatrol.models.UserItem;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
 
 import java.util.ArrayList;
@@ -36,24 +37,27 @@ public class DatabasePatrol
         values.put(Const.KEY_STATE, item.getState().value());
         values.put(Const.KEY_LON, item.getLongitude());
         values.put(Const.KEY_LAT, item.getLatitude());
+        values.put(Const.KEY_OWNER_EMAIL, item.getOwnerEmail());
 
         db.insert(Const.TABLE_VIDEOS, null, values);
         db.close();
     }
 
     @Override
-    public ArrayList<VideoItem> getVideos() {
+    public ArrayList<VideoItem> getVideos(UserItem user) {
         SQLiteDatabase db = helper.getReadableDatabase();
-        String selectQuery = "SELECT * FROM " + Const.TABLE_VIDEOS;
+        String selectQuery = "SELECT * FROM " + Const.TABLE_VIDEOS
+                + " WHERE " + Const.KEY_OWNER_EMAIL + " = '" + user.getEmail() + "'";
 
         return getVideos(db.rawQuery(selectQuery, null));
     }
 
     @Override
-    public ArrayList<VideoItem> getVideos(VideoItem.State state) {
+    public ArrayList<VideoItem> getVideos(VideoItem.State state, UserItem user) {
         SQLiteDatabase db = helper.getReadableDatabase();
         String selectQuery = "SELECT * FROM " + Const.TABLE_VIDEOS
-                + " WHERE " + state + " = '" + state.value() + "'";
+                + " WHERE " + Const.KEY_STATE + " = '" + state.value() + "'"
+                + " AND " + Const.KEY_OWNER_EMAIL + " = '" + user.getEmail() + "'";
 
         return getVideos(db.rawQuery(selectQuery, null));
     }
@@ -113,7 +117,8 @@ public class DatabasePatrol
                     cursor.getString(cursor.getColumnIndex(Const.KEY_URL)),
                     cursor.getInt(cursor.getColumnIndex(Const.KEY_STATE)),
                     cursor.getDouble(cursor.getColumnIndex(Const.KEY_LON)),
-                    cursor.getDouble(cursor.getColumnIndex(Const.KEY_LAT))
+                    cursor.getDouble(cursor.getColumnIndex(Const.KEY_LAT)),
+                    cursor.getString(cursor.getColumnIndex(Const.KEY_OWNER_EMAIL))
             );
         }
 
@@ -130,7 +135,8 @@ public class DatabasePatrol
                         cursor.getString(cursor.getColumnIndex(Const.KEY_URL)),
                         cursor.getInt(cursor.getColumnIndex(Const.KEY_STATE)),
                         cursor.getDouble(cursor.getColumnIndex(Const.KEY_LON)),
-                        cursor.getDouble(cursor.getColumnIndex(Const.KEY_LAT))
+                        cursor.getDouble(cursor.getColumnIndex(Const.KEY_LAT)),
+                        cursor.getString(cursor.getColumnIndex(Const.KEY_OWNER_EMAIL))
                 ));
             while (cursor.moveToNext());
         }

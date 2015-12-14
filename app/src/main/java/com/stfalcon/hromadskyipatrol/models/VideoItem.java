@@ -9,16 +9,19 @@ public class VideoItem {
     public VideoItem() {
     }
 
-    public VideoItem(String id, String videoURL, int state, double longitude, double latitude) {
-        this(id, videoURL, State.from(state), longitude, latitude);
+    public VideoItem(String id, String videoURL, int state, double longitude,
+                     double latitude, String ownerEmail) {
+        this(id, videoURL, State.from(state), longitude, latitude, ownerEmail);
     }
 
-    public VideoItem(String id, String videoURL, State state, double longitude, double latitude) {
+    public VideoItem(String id, String videoURL, State state, double longitude,
+                     double latitude, String ownerEmail) {
         this.id = id;
         this.videoURL = videoURL;
         this.state = state;
         this.longitude = longitude;
         this.latitude = latitude;
+        this.ownerEmail = ownerEmail;
     }
 
 //    @PrimaryKey
@@ -27,6 +30,7 @@ public class VideoItem {
     private State state;
     private double longitude;
     private double latitude;
+    private String ownerEmail;
 
     public void setState(int state) {
         this.state = State.from(state);
@@ -70,6 +74,14 @@ public class VideoItem {
 
     public void setLatitude(double latitude) {
         this.latitude = latitude;
+    }
+
+    public String getOwnerEmail() {
+        return ownerEmail;
+    }
+
+    public void setOwnerEmail(String ownerEmail) {
+        this.ownerEmail = ownerEmail;
     }
 
     public enum State {
