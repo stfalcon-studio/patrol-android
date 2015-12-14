@@ -29,7 +29,7 @@ public class FilesUtils {
 
 
     public static String storeThumb(Bitmap image) {
-        File pictureFile = getOutputInternalTumbFile();
+        File pictureFile = getOutputInternalThumbFile();
         if (pictureFile == null) {
             Log.d(TAG,
                     "Error creating media file, check storage permissions: ");// e.getMessage());
@@ -63,7 +63,7 @@ public class FilesUtils {
         return createFile(type, mediaStorageDir);
     }
 
-    public static File getOutputInternalTumbFile() {
+    public static File getOutputInternalThumbFile() {
         File mediaStorageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), VIDEO_THUMB_PATH);
         createMediaStorageDir(mediaStorageDir);
         return createFile(MEDIA_TYPE_IMAGE, mediaStorageDir);

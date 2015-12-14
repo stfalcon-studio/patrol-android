@@ -92,7 +92,7 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setItemAnimator(null);
 
-        ArrayList<VideoItem> videos = DatabasePatrol.get(this).getVideos();
+        ArrayList<VideoItem> videos = DatabasePatrol.get(this).getVideos(userData);
         Collections.reverse(videos);
         mAdapter = new VideoGridAdapter(videos, this);
         mRecyclerView.setAdapter(mAdapter);
@@ -219,6 +219,7 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
         Log.d(TAG, "startProcessVideoService");
         Intent processVideoIntent = new Intent(MainActivity.this, VideoProcessingService.class);
         processVideoIntent.putExtras(data.getExtras());
+        processVideoIntent.putExtra(Constants.EXTRAS_OWNER_EMAIL, userData.getEmail());
         startService(processVideoIntent);
     }
 
@@ -233,7 +234,6 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
             } else if (intent.getAction().equals(VideoProcessingService.ADD_VIDEO_UI)) {
                 String id = intent.getExtras().getString(Extras.ID);
                 mAdapter.addItem(DatabasePatrol.get(MainActivity.this).getVideo(id));
-                mRecyclerView.scrollTo(0, 0);
             }
         }
     };

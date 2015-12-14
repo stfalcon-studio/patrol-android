@@ -9,31 +9,31 @@ public class VideoItem {
     public VideoItem() {
     }
 
-
     public VideoItem(String id, String videoURL, int state, double longitude,
-                     double latitude, String videoPrevURL, String tumbURL) {
-        this(id, videoURL, State.from(state), longitude, latitude, videoPrevURL, tumbURL);
+                     double latitude, String ownerEmail, String videoPrevURL, String thumb) {
+        this(id, videoURL, State.from(state), longitude, latitude, ownerEmail, videoPrevURL, thumb);
     }
 
     public VideoItem(String id, String videoURL, State state, double longitude,
-                     double latitude, String videoPrevURL, String tumbURL) {
+                     double latitude, String ownerEmail, String videoPrevURL, String thumb) {
         this.id = id;
         this.videoURL = videoURL;
-        this.tumbURL = tumbURL;
+        this.thumb = thumb;
         this.state = state;
         this.longitude = longitude;
         this.latitude = latitude;
+        this.ownerEmail = ownerEmail;
         this.videoPrevURL = videoPrevURL;
     }
 
-    //    @PrimaryKey
     private String id;
     private String videoURL;
-    private String tumbURL;
+    private String thumb;
     private String videoPrevURL;
     private State state;
     private double longitude;
     private double latitude;
+    private String ownerEmail;
 
     public void setState(State state) {
         this.state = state;
@@ -55,12 +55,12 @@ public class VideoItem {
         return videoURL;
     }
 
-    public String getTumbURL() {
-        return tumbURL;
+    public String getThumb() {
+        return thumb;
     }
 
-    public void setTumbURL(String tumbURL) {
-        this.tumbURL = tumbURL;
+    public void setThumb(String thumb) {
+        this.thumb = thumb;
     }
 
     public void setId(String id) {
@@ -81,6 +81,14 @@ public class VideoItem {
 
     public void setLatitude(double latitude) {
         this.latitude = latitude;
+    }
+
+    public String getOwnerEmail() {
+        return ownerEmail;
+    }
+
+    public void setOwnerEmail(String ownerEmail) {
+        this.ownerEmail = ownerEmail;
     }
 
     public String getVideoPrevURL() {

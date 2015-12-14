@@ -7,8 +7,6 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -86,7 +84,7 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
     private void loginUser(String email) {
         loginButton.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
-        getSpiceManager().execute(new LoginTask(email), "localAPI", DurationInMillis.ONE_MINUTE, requestListener);
+        getSpiceManager().execute(new LoginTask(email), "localAPI", DurationInMillis.ALWAYS_EXPIRED, requestListener);
     }
 
 

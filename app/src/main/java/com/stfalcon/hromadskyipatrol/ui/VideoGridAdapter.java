@@ -26,6 +26,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit.http.HEAD;
+
 /**
  * Created by alexandr on 17/08/15.
  */
@@ -86,6 +88,13 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
                 viewHolder.imgState.setVisibility(View.GONE);
                 viewHolder.progressBar.setVisibility(View.VISIBLE);
                 viewHolder.upload();
+                if (!NetworkUtils.isConnectionAvailable(context)) {
+                    video.setState(VideoItem.State.ERROR);
+                    viewHolder.imgState.setImageResource(R.drawable.icon_repeat);
+                    viewHolder.noGPS.setVisibility(View.GONE);
+                    viewHolder.imgState.setVisibility(View.VISIBLE);
+                    viewHolder.progressBar.setVisibility(View.GONE);
+                }
                 break;
             case UPLOADED:
                 viewHolder.imgState.setImageResource(R.drawable.icon_done);
@@ -107,8 +116,7 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
                 viewHolder.progressBar.setVisibility(View.GONE);
                 break;
         }
-
-        File thumbFile = new File(mItems.get(i).getTumbURL());
+        File thumbFile = new File(mItems.get(i).getThumb());
         Picasso.with(context).load(thumbFile).into(viewHolder.imgThumbnail);
     }
 
