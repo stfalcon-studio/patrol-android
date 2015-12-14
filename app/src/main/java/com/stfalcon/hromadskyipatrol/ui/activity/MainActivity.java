@@ -28,8 +28,10 @@ import com.stfalcon.hromadskyipatrol.network.UploadService;
 import com.stfalcon.hromadskyipatrol.services.VideoProcessingService;
 import com.stfalcon.hromadskyipatrol.ui.VideoGridAdapter;
 import com.stfalcon.hromadskyipatrol.utils.CameraUtils;
+import com.stfalcon.hromadskyipatrol.utils.ProcessVideoUtils;
 import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import io.realm.Realm;
@@ -219,10 +221,11 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
         if (!violationItems.isEmpty()) {
             // Transactions give you easy thread-safety
             realm.beginTransaction();
-
+            int i = 0;
             for (ViolationItem item : violationItems) {
-                VideoItem video = Realm.getInstance(this).createObject(VideoItem.class);
-                video.setId(String.valueOf(System.currentTimeMillis()));
+                VideoItem video = realm.createObject(VideoItem.class);
+                video.setId(String.valueOf(System.currentTimeMillis() + i++));
+                video.setVideoPrevURL(item.videoUrlPrev);
                 video.setVideoURL(item.videoUrl);
                 video.setLatitude(item.getLat());
                 video.setLongitude(item.getLon());
@@ -231,8 +234,8 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
                 mAdapter.addItem(video);
             }
             realm.commitTransaction();
-
             setVideosListVisibility(true);
+            updateList();
         }
     }
 
@@ -246,11 +249,15 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(UploadService.UPDATE_VIDEO_UI)) {
-                RealmResults<VideoItem> videos = realm.where(VideoItem.class).findAll();
-                mAdapter.setItems(videos);
-                mAdapter.notifyDataSetChanged();
+                updateList();
             }
         }
     };
+
+    private void updateList() {
+        RealmResults<VideoItem> videos = realm.where(VideoItem.class).findAll();
+        mAdapter.setItems(videos);
+        mAdapter.notifyDataSetChanged();
+    }
 
 }

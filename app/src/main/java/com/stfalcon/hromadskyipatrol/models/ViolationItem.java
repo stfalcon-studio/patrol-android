@@ -8,12 +8,19 @@ import android.os.Parcelable;
  */
 public class ViolationItem implements Parcelable {
     public String videoUrl;
+    public String videoUrlPrev;
     public long violationTime;
     public double lat;
     public double lon;
 
     public ViolationItem(long violationTime, String videoUrl) {
         this.videoUrl = videoUrl;
+        this.violationTime = violationTime;
+    }
+
+    public ViolationItem(String videoUrl, String videoUrlPrev, long violationTime) {
+        this.videoUrl = videoUrl;
+        this.videoUrlPrev = videoUrlPrev;
         this.violationTime = violationTime;
     }
 
@@ -35,6 +42,7 @@ public class ViolationItem implements Parcelable {
 
     protected ViolationItem(Parcel in) {
         videoUrl = in.readString();
+        videoUrlPrev = in.readString();
         violationTime = in.readLong();
         lat = in.readDouble();
         lon = in.readDouble();
@@ -60,6 +68,7 @@ public class ViolationItem implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(videoUrl);
+        dest.writeString(videoUrlPrev);
         dest.writeLong(violationTime);
         dest.writeDouble(lat);
         dest.writeDouble(lon);

@@ -25,24 +25,28 @@ import com.googlecode.mp4parser.authoring.Movie;
 import com.googlecode.mp4parser.authoring.Track;
 import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
 import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
+import com.googlecode.mp4parser.authoring.tracks.AppendTrack;
 import com.googlecode.mp4parser.authoring.tracks.CroppedTrack;
 import com.googlecode.mp4parser.util.Matrix;
 import com.googlecode.mp4parser.util.Path;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Shortens/Crops a track
- */
-public class TrimVideoUtils {
-    private static final String TAG = TrimVideoUtils.class.getName();
 
+public class ProcessVideoUtils {
+    private static final String TAG = ProcessVideoUtils.class.getName();
+
+    /**
+     * Shortens/Crops a track
+     */
     public static boolean trimToLast20sec(File src, File dst) throws IOException {
+
         IsoFile isoFile = new IsoFile(src.getAbsolutePath());
         double duration = (double)
                 isoFile.getMovieBox().getMovieHeaderBox().getDuration() /
@@ -100,6 +104,67 @@ public class TrimVideoUtils {
             fc.close();
             fos.close();
             file.close();
+        }
+    }
+
+
+    public static boolean concatTwoVideos(File src1, File src2, File dst) {
+        try {
+            FileDataSourceImpl file1 = new FileDataSourceImpl(src1);
+            FileDataSourceImpl file2 = new FileDataSourceImpl(src2);
+            Movie result = new Movie();
+            Movie movie1 = MovieCreator.build(file1);
+            Movie movie2 = MovieCreator.build(file2);
+
+            Movie[] inMovies = new Movie[]{
+                    movie1, movie2
+            };
+
+            List<Track> videoTracks = new LinkedList<Track>();
+            List<Track> audioTracks = new LinkedList<Track>();
+
+            for (Movie m : inMovies) {
+                for (Track t : m.getTracks()) {
+                    if (t.getHandler().equals("soun")) {
+                        audioTracks.add(t);
+                    }
+                    if (t.getHandler().equals("vide")) {
+                        videoTracks.add(t);
+                    }
+                }
+            }
+
+            if (audioTracks.size() > 0) {
+
+                result.addTrack(new AppendTrack(audioTracks.toArray(new Track[audioTracks.size()])));
+
+            }
+            if (videoTracks.size() > 0) {
+
+                result.addTrack(new AppendTrack(videoTracks.toArray(new Track[videoTracks.size()])));
+
+            }
+
+            Container out = new DefaultMp4Builder().build(result);
+            MovieHeaderBox mvhd = Path.getPath(out, "moov/mvhd");
+            mvhd.setMatrix(Matrix.ROTATE_180);
+            if (!dst.exists()) {
+                dst.createNewFile();
+            }
+            FileOutputStream fos = new FileOutputStream(dst);
+            WritableByteChannel fc = fos.getChannel();
+            try {
+                out.writeContainer(fc);
+            } finally {
+                fc.close();
+                fos.close();
+                file1.close();
+                file2.close();
+            }
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }

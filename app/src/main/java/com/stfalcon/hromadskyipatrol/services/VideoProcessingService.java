@@ -9,7 +9,7 @@ import com.stfalcon.hromadskyipatrol.models.VideoItem;
 import com.stfalcon.hromadskyipatrol.network.UploadService;
 import com.stfalcon.hromadskyipatrol.utils.CameraUtils;
 import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
-import com.stfalcon.hromadskyipatrol.utils.TrimVideoUtils;
+import com.stfalcon.hromadskyipatrol.utils.ProcessVideoUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,35 +56,57 @@ public class VideoProcessingService extends IntentService {
         Log.d(TAG, "item: " + id);
         Log.d(TAG, "itemUrl: " + video.getVideoURL());
         File src = new File(video.getVideoURL());
+        String videoPrevURL = video.getVideoPrevURL();
+        File src2 = new File(videoPrevURL);
         File dst = new File(CameraUtils.getOutputInternalMediaFile_App(CameraUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
+        File result = new File(CameraUtils.getOutputInternalMediaFile_App(CameraUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
+        if (videoPrevURL != null && videoPrevURL.length() > 0) {
+            ProcessVideoUtils.concatTwoVideos(src2, src, result);
+        }
         Log.d(TAG, "dst: " + dst.getAbsolutePath());
         try {
             realm.beginTransaction();
-            if (TrimVideoUtils.trimToLast20sec(src, dst)) {
+            if (ProcessVideoUtils.trimToLast20sec(videoPrevURL != null && videoPrevURL.length() > 0 ? result : src, dst)) {
+                video.setVideoURL(dst.getAbsolutePath());
+            } else {
+                video.setVideoURL(src.getAbsolutePath());
+            }
+            /*if (ProcessVideoUtils.trimToLast20sec(video.getVideoPrevURL() != null ? result : src, dst)) {
                 video.setVideoURL(dst.getAbsolutePath());
                 try {
                     Log.d(TAG, "remove + src: " + src.getAbsolutePath());
                     src.delete();
+                    result.delete();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else {
+                video.setVideoURL(video.getVideoPrevURL() != null ? result.getAbsolutePath() : src.getAbsolutePath());
                 try {
                     Log.d(TAG, "remove + dst: " + dst.getAbsolutePath());
                     dst.delete();
+                    result.delete();
                 } catch (Exception e) {
+
                     e.printStackTrace();
                 }
-            }
+            }*/
+
+
             video.setState(VideoItem.STATE_READY_TO_SEND);
-            realm.commitTransaction();
-            updateUI(id);
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            realm.commitTransaction();
+            updateUI(id);
         }
 
         //try to process next video if present
-        tryToProcessVideo();
+        try {
+            tryToProcessVideo();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void updateUI(String id) {

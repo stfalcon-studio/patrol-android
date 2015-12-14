@@ -16,6 +16,7 @@ public class VideoItem extends RealmObject {
     @PrimaryKey
     private String id;
     private String videoURL;
+    private String videoPrevURL;
     private int state;
     private double longitude;
     private double latitude;
@@ -59,5 +60,13 @@ public class VideoItem extends RealmObject {
 
     public void setLatitude(double latitude) {
         this.latitude = latitude;
+    }
+
+    public String getVideoPrevURL() {
+        return videoPrevURL;
+    }
+
+    public void setVideoPrevURL(String videoPrevURL) {
+        this.videoPrevURL = videoPrevURL;
     }
 }
