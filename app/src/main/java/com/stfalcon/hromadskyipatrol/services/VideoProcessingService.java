@@ -83,7 +83,7 @@ public class VideoProcessingService extends IntentService {
     private void updateUI(String id) {
         Intent intent = new Intent(UploadService.UPDATE_VIDEO_UI);
         intent.putExtra("id", id);
-        intent.putExtra("state", VideoItem.State.READY_TO_SEND);
+        intent.putExtra("state", VideoItem.State.READY_TO_SEND.value());
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 }

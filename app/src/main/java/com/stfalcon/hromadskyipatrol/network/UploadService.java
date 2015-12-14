@@ -48,13 +48,10 @@ public class UploadService extends IntentService {
                 if (videoItem.getState() != VideoItem.State.UPLOADED) {
 
                     UserItem user = ProjectPreferencesManager.getUser(this);
-                    db.updateVideo(videoItem.getId(), VideoItem.State.SENDING);
-                    updateActivityUI(this);
+                    updateItem(this, videoItem.getId(), VideoItem.State.SENDING, db);
                     VideoAnswer answer = uploadImage(videoItem, user);
                     VideoItem videoInBase = db.getVideo(answer.getId());
-                    db.updateVideo(videoInBase.getId(), VideoItem.State.from(answer.getState()));
-
-                    updateActivityUI(this);
+                    updateItem(this, videoInBase.getId(), VideoItem.State.from(answer.getState()), db);
                 }
 
             } else {
@@ -76,21 +73,26 @@ public class UploadService extends IntentService {
             return;
         }
 
-        db.updateVideo(videoItem.getId(), VideoItem.State.SENDING);
-        updateActivityUI(this);
+        updateItem(this, videoItem.getId(), VideoItem.State.SENDING, db);
 
         VideoAnswer answer = uploadImage(videoItem, user);
         VideoItem videoInBase = db.getVideo(answer.getId());
-        db.updateVideo(videoInBase.getId(), VideoItem.State.from(answer.getState()));
-        updateActivityUI(this);
+        updateItem(this, videoInBase.getId(), VideoItem.State.from(answer.getState()), db);
 
         tryToSendVideo();
     }
 
 
-    public static void updateActivityUI(Context context) {
+    public static void updateActivityUI(Context context, String id, VideoItem.State state) {
         Intent intent = new Intent(UPDATE_VIDEO_UI);
+        intent.putExtra("id", id);
+        intent.putExtra("state", state.value());
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    }
+
+    private void updateItem(Context context, String id, VideoItem.State state, DatabasePatrol db) {
+        db.updateVideo(id, state);
+        updateActivityUI(this, id, state);
     }
 
     public static VideoAnswer uploadImage(VideoItem video, UserItem user) {

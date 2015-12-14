@@ -218,7 +218,6 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
                 = data.getParcelableArrayListExtra(VideoCaptureActivity.MOVIES_RESULT);
 
         if (!violationItems.isEmpty()) {
-            ArrayList<VideoItem> videos = new ArrayList<>();
 
             for (ViolationItem item : violationItems) {
                 VideoItem video = new VideoItem();
@@ -228,11 +227,10 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
                 video.setLongitude(item.getLon());
                 video.setState(VideoItem.State.SAVING);
 
-                videos.add(video);
+                DatabasePatrol.get(this).addVideo(video);
                 mAdapter.addItem(video);
             }
 
-            DatabasePatrol.get(this).addVideos(videos);
             setVideosListVisibility(true);
         }
     }
@@ -247,10 +245,9 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(UploadService.UPDATE_VIDEO_UI)) {
-                ArrayList<VideoItem> videos = DatabasePatrol.get(MainActivity.this).getVideos();
-                Collections.reverse(videos);
-                mAdapter.setItems(videos);
-                mAdapter.notifyDataSetChanged();
+                String id = intent.getExtras().getString("id");
+                VideoItem.State state = VideoItem.State.from(intent.getExtras().getInt("state"));
+                mAdapter.updateState(id, state);
             }
         }
     };
