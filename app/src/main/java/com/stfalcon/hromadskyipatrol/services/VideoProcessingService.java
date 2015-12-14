@@ -59,9 +59,9 @@ public class VideoProcessingService extends IntentService {
         Log.d(TAG, "dst: " + dst.getAbsolutePath());
         try {
             if (ProcessVideoUtils.trimToLast20sec(videoPrevURL != null && videoPrevURL.length() > 0 ? result : src, dst)) {
-                video.setVideoURL(dst.getAbsolutePath());
+                db.updateVideo(id, dst.getAbsolutePath());
             } else {
-                video.setVideoURL(src.getAbsolutePath());
+                db.updateVideo(id, src.getAbsolutePath());
             }
             /*if (ProcessVideoUtils.trimToLast20sec(video.getVideoPrevURL() != null ? result : src, dst)) {
                 video.setVideoURL(dst.getAbsolutePath());
