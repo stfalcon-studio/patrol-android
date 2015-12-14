@@ -8,7 +8,7 @@ import android.util.Log;
 import com.stfalcon.hromadskyipatrol.database.DatabasePatrol;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
 import com.stfalcon.hromadskyipatrol.network.UploadService;
-import com.stfalcon.hromadskyipatrol.utils.CameraUtils;
+import com.stfalcon.hromadskyipatrol.utils.FilesUtils;
 import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 import com.stfalcon.hromadskyipatrol.utils.TrimVideoUtils;
 
@@ -51,7 +51,7 @@ public class VideoProcessingService extends IntentService {
         Log.d(TAG, "item: " + id);
         Log.d(TAG, "itemUrl: " + video.getVideoURL());
         File src = new File(video.getVideoURL());
-        File dst = new File(CameraUtils.getOutputInternalMediaFile_App(CameraUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
+        File dst = new File(FilesUtils.getOutputInternalMediaFile_App(FilesUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
         Log.d(TAG, "dst: " + dst.getAbsolutePath());
         try {
             if (TrimVideoUtils.trimToLast20sec(src, dst)) {

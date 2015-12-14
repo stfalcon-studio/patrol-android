@@ -53,11 +53,10 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.stfalcon.hromadskyipatrol.R;
 import com.stfalcon.hromadskyipatrol.utils.AppUtilities;
-import com.stfalcon.hromadskyipatrol.utils.CameraUtils;
+import com.stfalcon.hromadskyipatrol.utils.FilesUtils;
 import com.stfalcon.hromadskyipatrol.utils.Constants;
 
 import java.io.File;
@@ -524,8 +523,8 @@ public class Camera2VideoFragment extends BaseCameraFragment
         mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        violationFileURI = CameraUtils.getOutputInternalMediaFile_App(
-                CameraUtils.MEDIA_TYPE_VIDEO).getAbsolutePath();
+        violationFileURI = FilesUtils.getOutputInternalMediaFile_App(
+                FilesUtils.MEDIA_TYPE_VIDEO).getAbsolutePath();
         mMediaRecorder.setOutputFile(violationFileURI);
         mMediaRecorder.setVideoEncodingBitRate(10000000);
         mMediaRecorder.setVideoFrameRate(30);
