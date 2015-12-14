@@ -28,6 +28,7 @@ import java.util.ArrayList;
 public class VideoProcessingService extends IntentService {
 
     private static final String TAG = VideoProcessingService.class.getName();
+    public static final String ADD_VIDEO_UI = "videoAdded";
 
     public VideoProcessingService() {
         super(VideoProcessingService.class.getName());
@@ -77,6 +78,8 @@ public class VideoProcessingService extends IntentService {
                 video.setTumbURL(tumbUrl);
 
                 db.addVideo(video);
+
+                addVideoToUI(video.getId());
             }
         }
     }
@@ -125,9 +128,9 @@ public class VideoProcessingService extends IntentService {
             }*/
 
             db.updateVideo(video.getId(), VideoItem.State.READY_TO_SEND);
-            updateUI(id);
         } catch (IOException e) {
             e.printStackTrace();
+            db.updateVideo(video.getId(), VideoItem.State.ERROR);
         } finally {
             updateUI(id);
         }
@@ -137,6 +140,12 @@ public class VideoProcessingService extends IntentService {
         Intent intent = new Intent(UploadService.UPDATE_VIDEO_UI);
         intent.putExtra("id", id);
         intent.putExtra("state", VideoItem.State.READY_TO_SEND.value());
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
+    private void addVideoToUI(String id) {
+        Intent intent = new Intent(ADD_VIDEO_UI);
+        intent.putExtra("id", id);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 }

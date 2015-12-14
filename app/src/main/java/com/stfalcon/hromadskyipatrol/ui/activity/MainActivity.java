@@ -56,8 +56,10 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
             openCamera();
         }
         initViews();
+        IntentFilter intentFilter = new IntentFilter(UploadService.UPDATE_VIDEO_UI);
+        intentFilter.addAction(VideoProcessingService.ADD_VIDEO_UI);
         LocalBroadcastManager.getInstance(this).registerReceiver(
-                mMessageReceiver, new IntentFilter(UploadService.UPDATE_VIDEO_UI));
+                mMessageReceiver, intentFilter);
     }
 
 
@@ -226,12 +228,12 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
                 String id = intent.getExtras().getString("id");
                 VideoItem.State state = VideoItem.State.from(intent.getExtras().getInt("state"));
                 mAdapter.updateState(id, state);
+            } else if (intent.getAction().equals(VideoProcessingService.ADD_VIDEO_UI)){
+                String id = intent.getExtras().getString("id");
+                mAdapter.addItem(DatabasePatrol.get(MainActivity.this).getVideo(id));
+                mRecyclerView.scrollBy(0, 0);
             }
         }
     };
-
-    private void updateList() {
-        mAdapter.notifyDataSetChanged();
-    }
 
 }

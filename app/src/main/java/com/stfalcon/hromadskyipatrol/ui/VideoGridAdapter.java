@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.squareup.picasso.Picasso;
 import com.stfalcon.hromadskyipatrol.R;
 import com.stfalcon.hromadskyipatrol.database.DatabasePatrol;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
@@ -107,8 +107,9 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
                 viewHolder.progressBar.setVisibility(View.GONE);
                 break;
         }
-        
-        ImageLoader.getInstance().displayImage(mItems.get(i).getTumbURL(), viewHolder.imgThumbnail);
+
+        File thumbFile = new File(mItems.get(i).getTumbURL());
+        Picasso.with(context).load(thumbFile).into(viewHolder.imgThumbnail);
     }
 
     @Override
