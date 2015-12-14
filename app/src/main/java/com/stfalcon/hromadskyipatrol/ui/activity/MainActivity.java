@@ -23,14 +23,13 @@ import com.stfalcon.hromadskyipatrol.database.DatabasePatrol;
 import com.stfalcon.hromadskyipatrol.location.LocationDialog;
 import com.stfalcon.hromadskyipatrol.models.UserItem;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
-import com.stfalcon.hromadskyipatrol.models.ViolationItem;
 import com.stfalcon.hromadskyipatrol.network.UploadService;
 import com.stfalcon.hromadskyipatrol.services.VideoProcessingService;
 import com.stfalcon.hromadskyipatrol.ui.VideoGridAdapter;
 import com.stfalcon.hromadskyipatrol.utils.Constants;
+import com.stfalcon.hromadskyipatrol.utils.Extras;
 import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -58,8 +57,10 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
             openCamera();
         }
         initViews();
+        IntentFilter intentFilter = new IntentFilter(UploadService.UPDATE_VIDEO_UI);
+        intentFilter.addAction(VideoProcessingService.ADD_VIDEO_UI);
         LocalBroadcastManager.getInstance(this).registerReceiver(
-                mMessageReceiver, new IntentFilter(UploadService.UPDATE_VIDEO_UI));
+                mMessageReceiver, intentFilter);
     }
 
 
@@ -89,8 +90,9 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
         // The number of Columns
         mLayoutManager = new GridLayoutManager(this, 2);
         mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setItemAnimator(null);
 
-        ArrayList<VideoItem> videos = DatabasePatrol.get(this).getVideos();
+        ArrayList<VideoItem> videos = DatabasePatrol.get(this).getVideos(userData);
         Collections.reverse(videos);
         mAdapter = new VideoGridAdapter(videos, this);
         mRecyclerView.setAdapter(mAdapter);
@@ -204,8 +206,7 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
 
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == Constants.REQUEST_CAMERA) {
-                onCaptureVideoResult(data);
-                startProcessVideoService();
+                startProcessVideoService(data);
             }
         } else if (requestCode == Constants.REQUEST_GPS_SETTINGS) {
             if (checkLocationManager()) {
@@ -214,33 +215,12 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
         }
     }
 
-    private void onCaptureVideoResult(Intent data) {
-        ArrayList<ViolationItem> violationItems
-                = data.getParcelableArrayListExtra(VideoCaptureActivity.MOVIES_RESULT);
-
-        if (!violationItems.isEmpty()) {
-            // Transactions give you easy thread-safety
-            int i = 0;
-            for (ViolationItem item : violationItems) {
-                VideoItem video = new VideoItem();
-                video.setId(String.valueOf(System.currentTimeMillis() + i++));
-                video.setVideoPrevURL(item.videoUrlPrev);
-                video.setVideoURL(item.videoUrl);
-                video.setLatitude(item.getLat());
-                video.setLongitude(item.getLon());
-                video.setState(VideoItem.State.SAVING);
-
-                DatabasePatrol.get(this).addVideo(video);
-                mAdapter.addItem(video);
-            }
-            setVideosListVisibility(true);
-            updateList();
-        }
-    }
-
-    private void startProcessVideoService() {
+    private void startProcessVideoService(Intent data) {
         Log.d(TAG, "startProcessVideoService");
-        startService(new Intent(MainActivity.this, VideoProcessingService.class));
+        Intent processVideoIntent = new Intent(MainActivity.this, VideoProcessingService.class);
+        processVideoIntent.putExtras(data.getExtras());
+        processVideoIntent.putExtra(Constants.EXTRAS_OWNER_EMAIL, userData.getEmail());
+        startService(processVideoIntent);
     }
 
 
@@ -248,18 +228,17 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(UploadService.UPDATE_VIDEO_UI)) {
-                String id = intent.getExtras().getString("id");
-                VideoItem.State state = VideoItem.State.from(intent.getExtras().getInt("state"));
+                String id = intent.getExtras().getString(Extras.ID);
+                VideoItem.State state = VideoItem.State.from(intent.getExtras().getInt(Extras.STATE));
                 mAdapter.updateState(id, state);
-                if (intent.hasExtra("url")) {
-                    mAdapter.updateUrl(id, intent.getExtras().getString("url"));
+                if (intent.hasExtra(Extras.URL)) {
+                    mAdapter.updateUrl(id, intent.getExtras().getString(Extras.URL));
                 }
+            } else if (intent.getAction().equals(VideoProcessingService.ADD_VIDEO_UI)) {
+                String id = intent.getExtras().getString(Extras.ID);
+                mAdapter.addItem(DatabasePatrol.get(MainActivity.this).getVideo(id));
             }
         }
     };
-
-    private void updateList() {
-        mAdapter.notifyDataSetChanged();
-    }
 
 }

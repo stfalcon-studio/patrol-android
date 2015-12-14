@@ -7,8 +7,6 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -86,7 +84,7 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
     private void loginUser(String email) {
         loginButton.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
-        getSpiceManager().execute(new LoginTask(email), "localAPI", DurationInMillis.ONE_MINUTE, requestListener);
+        getSpiceManager().execute(new LoginTask(email), "localAPI", DurationInMillis.ALWAYS_EXPIRED, requestListener);
     }
 
 
@@ -123,17 +121,27 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
 
         @Override
         public void onRequestFailure(SpiceException spiceException) {
-            loginButton.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.GONE);
 
-            String message;
-            if (NetworkUtils.getConnectivityStatus(LoginActivity.this) == NetworkUtils.NOT_CONNECTED) {
-                message = getString(R.string.error_no_connection);
+            UserItem user = ProjectPreferencesManager.getUser(LoginActivity.this);
+            if (user.getEmail().contentEquals(emailEditText.getText().toString())) {
+                user.setIsLogin(true);
+                ProjectPreferencesManager.setUser(LoginActivity.this, user);
+
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                finish();
             } else {
-                message = getString(R.string.error_server_connecting);
-            }
+                loginButton.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
 
-            AppUtilities.showToast(LoginActivity.this, message, false);
+                String message;
+                if (NetworkUtils.getConnectivityStatus(LoginActivity.this) == NetworkUtils.NOT_CONNECTED) {
+                    message = getString(R.string.error_no_connection);
+                } else {
+                    message = getString(R.string.error_server_connecting);
+                }
+
+                AppUtilities.showToast(LoginActivity.this, message, false);
+            }
         }
 
         @Override

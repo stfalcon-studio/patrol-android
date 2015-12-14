@@ -60,7 +60,7 @@ dependencies {
     compile 'io.realm:realm-android:0.83.0-SNAPSHOT'
     compile 'com.google.android.gms:play-services-analytics:8.3.0'
     compile 'com.google.android.gms:play-services-location:8.3.0'
-    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.3'
+    compile 'com.squareup.picasso:picasso:2.5.2'
     compile('com.crashlytics.sdk.android:crashlytics:2.5.1@aar') {
         transitive = true;
     }

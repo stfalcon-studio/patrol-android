@@ -9,9 +9,7 @@ import android.view.Surface;
 
 import com.stfalcon.hromadskyipatrol.camera.ICamera;
 import com.stfalcon.hromadskyipatrol.models.ViolationItem;
-import com.stfalcon.hromadskyipatrol.services.VideoProcessingService;
-import com.stfalcon.hromadskyipatrol.utils.CameraUtils;
-import com.stfalcon.hromadskyipatrol.utils.ProcessVideoUtils;
+import com.stfalcon.hromadskyipatrol.utils.FilesUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -176,9 +174,9 @@ public class BaseCameraFragment extends Fragment {
                         Log.d(TAG, "run: " + violationFileURI);
                         Log.d(TAG, "prev run: " + previousFileURI);
                         if (previousFileURI != null) {
-                            File prevVideo = new File(CameraUtils.getOutputInternalMediaFile_App(CameraUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
+                            File prevVideo = new File(FilesUtils.getOutputInternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
                             try {
-                                ProcessVideoUtils.copyFile(new File(previousFileURI), prevVideo);
+                                FilesUtils.copyFile(new File(previousFileURI), prevVideo);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }

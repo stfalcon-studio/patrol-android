@@ -18,7 +18,7 @@ import android.view.ViewGroup;
 
 import com.stfalcon.hromadskyipatrol.R;
 import com.stfalcon.hromadskyipatrol.camera.CameraHelper;
-import com.stfalcon.hromadskyipatrol.utils.CameraUtils;
+import com.stfalcon.hromadskyipatrol.utils.FilesUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -191,8 +191,8 @@ public class CameraVideoFragment extends BaseCameraFragment implements View.OnCl
         mMediaRecorder.setProfile(profile);
 
         // Step 4: Set output file
-        violationFileURI = CameraUtils.getOutputInternalMediaFile_App(
-                CameraUtils.MEDIA_TYPE_VIDEO).getAbsolutePath();
+        violationFileURI = FilesUtils.getOutputInternalMediaFile(
+                FilesUtils.MEDIA_TYPE_VIDEO).getAbsolutePath();
 
         mMediaRecorder.setOutputFile(violationFileURI);
         // END_INCLUDE (configure_media_recorder)

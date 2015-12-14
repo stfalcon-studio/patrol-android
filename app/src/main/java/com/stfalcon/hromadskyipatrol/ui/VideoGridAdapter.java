@@ -3,9 +3,6 @@ package com.stfalcon.hromadskyipatrol.ui;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.media.ThumbnailUtils;
-import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.stfalcon.hromadskyipatrol.R;
 import com.stfalcon.hromadskyipatrol.database.DatabasePatrol;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
@@ -27,6 +25,8 @@ import com.stfalcon.hromadskyipatrol.utils.StringUtilities;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit.http.HEAD;
 
 /**
  * Created by alexandr on 17/08/15.
@@ -49,7 +49,7 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
 
     public void updateState(String id, VideoItem.State state) {
         int position = -1;
-        for (int i = 0 ; i < mItems.size(); i++) {
+        for (int i = 0; i < mItems.size(); i++) {
             VideoItem item = mItems.get(i);
             if (item.getId().contentEquals(id)) {
                 item.setState(state);
@@ -103,6 +103,13 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
                 viewHolder.imgState.setVisibility(View.GONE);
                 viewHolder.progressBar.setVisibility(View.VISIBLE);
                 viewHolder.upload();
+                if (!NetworkUtils.isConnectionAvailable(context)) {
+                    video.setState(VideoItem.State.ERROR);
+                    viewHolder.imgState.setImageResource(R.drawable.icon_repeat);
+                    viewHolder.noGPS.setVisibility(View.GONE);
+                    viewHolder.imgState.setVisibility(View.VISIBLE);
+                    viewHolder.progressBar.setVisibility(View.GONE);
+                }
                 break;
             case UPLOADED:
                 viewHolder.imgState.setImageResource(R.drawable.icon_done);
@@ -124,13 +131,8 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
                 viewHolder.progressBar.setVisibility(View.GONE);
                 break;
         }
-
-        Bitmap thumb = ThumbnailUtils.createVideoThumbnail(mItems.get(i).getVideoURL(),
-                MediaStore.Images.Thumbnails.MINI_KIND);
-        viewHolder.imgThumbnail.setImageBitmap(thumb);
-
-//        ImageLoader.getInstance().displayImage(
-//                ImageDownloader.Scheme.FILE.wrap(mItems.get(i).getVideoURL()), viewHolder.imgThumbnail);
+        File thumbFile = new File(mItems.get(i).getThumb());
+        Picasso.with(context).load(thumbFile).into(viewHolder.imgThumbnail);
     }
 
     @Override

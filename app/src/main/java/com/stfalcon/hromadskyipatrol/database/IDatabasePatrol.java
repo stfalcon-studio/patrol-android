@@ -1,5 +1,6 @@
 package com.stfalcon.hromadskyipatrol.database;
 
+import com.stfalcon.hromadskyipatrol.models.UserItem;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
 
 import java.util.ArrayList;
@@ -11,8 +12,8 @@ public interface IDatabasePatrol {
 
     void addVideo(VideoItem item);
 
-    ArrayList<VideoItem> getVideos();
-    ArrayList<VideoItem> getVideos(VideoItem.State state);
+    ArrayList<VideoItem> getVideos(UserItem user);
+    ArrayList<VideoItem> getVideos(VideoItem.State state, UserItem user);
     VideoItem getVideo(VideoItem.State state);
     VideoItem getVideo(String id);
 
