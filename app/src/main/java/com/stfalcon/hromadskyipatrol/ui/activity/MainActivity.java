@@ -89,6 +89,7 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
         // The number of Columns
         mLayoutManager = new GridLayoutManager(this, 2);
         mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setItemAnimator(null);
 
         ArrayList<VideoItem> videos = DatabasePatrol.get(this).getVideos();
         Collections.reverse(videos);

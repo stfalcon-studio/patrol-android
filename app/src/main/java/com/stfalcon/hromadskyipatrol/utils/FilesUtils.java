@@ -28,7 +28,7 @@ public class FilesUtils {
     public static final int MEDIA_TYPE_VIDEO = 1;
 
 
-    public static String storeTumb(Bitmap image) {
+    public static String storeThumb(Bitmap image) {
         File pictureFile = getOutputInternalTumbFile();
         if (pictureFile == null) {
             Log.d(TAG,
@@ -43,6 +43,7 @@ public class FilesUtils {
             Log.d(TAG, "File not found: " + e.getMessage());
         } catch (IOException e) {
             Log.d(TAG, "Error accessing file: " + e.getMessage());
+        } catch (Exception ignore) {
         }
         return null;
     }

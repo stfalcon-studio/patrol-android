@@ -72,7 +72,7 @@ public class VideoProcessingService extends IntentService {
                 video.setLongitude(item.getLon());
                 video.setState(VideoItem.State.SAVING);
 
-                String tumbUrl = VideoTumbUtils.makeTumb(ThumbnailUtils.createVideoThumbnail(video.getVideoURL(),
+                String tumbUrl = VideoTumbUtils.makeThumb(ThumbnailUtils.createVideoThumbnail(video.getVideoURL(),
                         MediaStore.Images.Thumbnails.MINI_KIND));
 
                 video.setTumbURL(tumbUrl);
