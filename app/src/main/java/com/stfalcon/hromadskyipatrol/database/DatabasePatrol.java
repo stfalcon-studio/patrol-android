@@ -57,7 +57,7 @@ public class DatabasePatrol
     public ArrayList<VideoItem> getVideos(VideoItem.State state) {
         SQLiteDatabase db = helper.getReadableDatabase();
         String selectQuery = "SELECT * FROM " + Const.TABLE_VIDEOS
-                + " WHERE " + state + " = '" + state.value() + "'";
+                + " WHERE " + Const.KEY_STATE + " = '" + state.value() + "'";
 
         return getVideos(db.rawQuery(selectQuery, null));
     }
