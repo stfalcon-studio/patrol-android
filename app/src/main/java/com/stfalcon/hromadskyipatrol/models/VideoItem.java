@@ -9,30 +9,31 @@ public class VideoItem {
     public VideoItem() {
     }
 
-    public VideoItem(String id, String videoURL, String tumbURL, int state, double longitude, double latitude) {
-        this(id, videoURL, tumbURL, State.from(state), longitude, latitude);
+
+    public VideoItem(String id, String videoURL, int state, double longitude,
+                     double latitude, String videoPrevURL, String tumbURL) {
+        this(id, videoURL, State.from(state), longitude, latitude, videoPrevURL, tumbURL);
     }
 
-    public VideoItem(String id, String videoURL, String tumbURL, State state, double longitude, double latitude) {
+    public VideoItem(String id, String videoURL, State state, double longitude,
+                     double latitude, String videoPrevURL, String tumbURL) {
         this.id = id;
         this.videoURL = videoURL;
         this.tumbURL = tumbURL;
         this.state = state;
         this.longitude = longitude;
         this.latitude = latitude;
+        this.videoPrevURL = videoPrevURL;
     }
 
-//    @PrimaryKey
+    //    @PrimaryKey
     private String id;
     private String videoURL;
     private String tumbURL;
+    private String videoPrevURL;
     private State state;
     private double longitude;
     private double latitude;
-
-    public void setState(int state) {
-        this.state = State.from(state);
-    }
 
     public void setState(State state) {
         this.state = state;
@@ -82,6 +83,14 @@ public class VideoItem {
         this.latitude = latitude;
     }
 
+    public String getVideoPrevURL() {
+        return videoPrevURL;
+    }
+
+    public void setVideoPrevURL(String videoPrevURL) {
+        this.videoPrevURL = videoPrevURL;
+    }
+
     public enum State {
         UNDEFINED(-1), SAVING(1), READY_TO_SEND(2), SENDING(3), UPLOADED(4), ERROR(5);
 
@@ -96,7 +105,7 @@ public class VideoItem {
         }
 
         public static State from(int value) {
-            for (State my: State.values())
+            for (State my : State.values())
                 if (my.value == value) return my;
             return null;
         }

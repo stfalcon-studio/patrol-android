@@ -13,6 +13,7 @@ public final class Const {
 
     public static final String KEY_ID = "_id";
     public static final String KEY_URL = "url";
+    public static final String KEY_PREV_URL = "prev_url";
     public static final String KEY_STATE = "state";
     public static final String KEY_LON = "lon";
     public static final String KEY_LAT = "lat";
@@ -20,6 +21,7 @@ public final class Const {
     public static final String CREATE_VIDEOS_TABLE = "CREATE TABLE " + TABLE_VIDEOS + "("
             + Const.KEY_ID + " TEXT PRIMARY KEY, "
             + Const.KEY_URL + " TEXT, "
+            + Const.KEY_PREV_URL + " TEXT, "
             + Const.KEY_STATE + " INTEGER, "
             + Const.KEY_LON + " REAL, "
             + Const.KEY_LAT + " REAL"

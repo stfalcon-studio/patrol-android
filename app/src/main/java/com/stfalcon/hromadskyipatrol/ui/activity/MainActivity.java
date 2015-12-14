@@ -30,6 +30,7 @@ import com.stfalcon.hromadskyipatrol.ui.VideoGridAdapter;
 import com.stfalcon.hromadskyipatrol.utils.Constants;
 import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -218,10 +219,12 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
                 = data.getParcelableArrayListExtra(VideoCaptureActivity.MOVIES_RESULT);
 
         if (!violationItems.isEmpty()) {
-
+            // Transactions give you easy thread-safety
+            int i = 0;
             for (ViolationItem item : violationItems) {
                 VideoItem video = new VideoItem();
-                video.setId(String.valueOf(System.currentTimeMillis()));
+                video.setId(String.valueOf(System.currentTimeMillis() + i++));
+                video.setVideoPrevURL(item.videoUrlPrev);
                 video.setVideoURL(item.videoUrl);
                 video.setLatitude(item.getLat());
                 video.setLongitude(item.getLon());
@@ -230,8 +233,8 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
                 DatabasePatrol.get(this).addVideo(video);
                 mAdapter.addItem(video);
             }
-
             setVideosListVisibility(true);
+            updateList();
         }
     }
 
@@ -251,5 +254,9 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
             }
         }
     };
+
+    private void updateList() {
+        mAdapter.notifyDataSetChanged();
+    }
 
 }
