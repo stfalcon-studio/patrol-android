@@ -4,6 +4,8 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import com.stfalcon.hromadskyipatrol.models.VideoItem;
+
 /**
  * Created by TROY!379 on 21.08.15.
  */
@@ -42,5 +44,13 @@ public final class NetworkUtils {
             }
 
         return (isCanUpload && connectivityStatus != NetworkUtils.NOT_CONNECTED);
+    }
+
+    public static boolean isCanLoadItem(VideoItem.State state) {
+        return state == VideoItem.State.READY_TO_SEND || state == VideoItem.State.ERROR;
+    }
+
+    public static boolean isCanDelete(VideoItem.State state) {
+        return state != VideoItem.State.SAVING && state != VideoItem.State.SENDING;
     }
 }

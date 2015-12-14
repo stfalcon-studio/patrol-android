@@ -24,7 +24,8 @@
             android:name="com.stfalcon.hromadskyipatrol.ui.activity.LoginActivity"
             android:label="@string/app_name"
             android:keepScreenOn="true"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -41,7 +42,6 @@
 
         <service android:name="com.stfalcon.hromadskyipatrol.network.PatrolSpiceService"/>
         <service android:name="com.stfalcon.hromadskyipatrol.network.UploadService"/>
-        <service android:name=".services.WaitLocationService"/>
         <service android:name=".services.VideoProcessingService"/>
 
         <receiver

@@ -28,7 +28,7 @@
         android:layout_alignParentRight="true"
         android:layout_margin="16dp"
         android:clickable="true"
-        android:src="@drawable/icon_camera"
+        android:src="@drawable/ic_video_white_24dp"
         app:backgroundTint="@color/primaryColor"
         app:borderWidth="0dp"
         app:elevation="6dp"
@@ -56,7 +56,7 @@
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
                 android:paddingLeft="8dp"
-                android:text="User name"
+                tools:text="User name"
                 android:layout_marginTop="10dp"
                 android:layout_alignParentLeft="true"/>
 

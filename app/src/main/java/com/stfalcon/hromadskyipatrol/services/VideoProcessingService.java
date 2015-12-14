@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.stfalcon.hromadskyipatrol.database.DatabasePatrol;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
 import com.stfalcon.hromadskyipatrol.network.UploadService;
 import com.stfalcon.hromadskyipatrol.utils.CameraUtils;
@@ -13,9 +14,8 @@ import com.stfalcon.hromadskyipatrol.utils.ProcessVideoUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
-import io.realm.Realm;
-import io.realm.RealmResults;
 
 /**
  * Created by Anton Bevza on 12/1/15.
@@ -30,42 +30,34 @@ public class VideoProcessingService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-
-        RealmResults<VideoItem> videoList;
+        DatabasePatrol db = DatabasePatrol.get(this);
 
         Log.d(TAG, "onHandleIntent: start process video service");
+        ArrayList<VideoItem> videoItems = db.getVideos(VideoItem.State.SAVING);
+        for (int i = 0; i < videoItems.size(); i++) {
+            tryToProcessVideo(videoItems.get(i), db);
+        }
 
-        tryToProcessVideo();
         if (ProjectPreferencesManager.getAutoUploadMode(getApplicationContext())) {
             startService(new Intent(VideoProcessingService.this, UploadService.class));
         }
     }
 
-    private void tryToProcessVideo() {
-        Realm realm = Realm.getInstance(this);
-        VideoItem video = realm.where((VideoItem.class))
-                .equalTo("state", VideoItem.STATE_SAVING)
-                .findFirst();
-
-        if (video == null) {
-            return;
-        }
-
+    private void tryToProcessVideo(VideoItem video, DatabasePatrol db) {
         String id = video.getId();
-
         Log.d(TAG, "item: " + id);
         Log.d(TAG, "itemUrl: " + video.getVideoURL());
         File src = new File(video.getVideoURL());
         String videoPrevURL = video.getVideoPrevURL();
-        File src2 = new File(videoPrevURL);
-        File dst = new File(CameraUtils.getOutputInternalMediaFile_App(CameraUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
-        File result = new File(CameraUtils.getOutputInternalMediaFile_App(CameraUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
-        if (videoPrevURL != null && videoPrevURL.length() > 0) {
+        File result = null;
+        if (videoPrevURL != null) {
+            File src2 = new File(videoPrevURL);
+            result = new File(CameraUtils.getOutputInternalMediaFile_App(CameraUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
             ProcessVideoUtils.concatTwoVideos(src2, src, result);
         }
+        File dst = new File(CameraUtils.getOutputInternalMediaFile_App(CameraUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
         Log.d(TAG, "dst: " + dst.getAbsolutePath());
         try {
-            realm.beginTransaction();
             if (ProcessVideoUtils.trimToLast20sec(videoPrevURL != null && videoPrevURL.length() > 0 ? result : src, dst)) {
                 video.setVideoURL(dst.getAbsolutePath());
             } else {
@@ -92,27 +84,19 @@ public class VideoProcessingService extends IntentService {
                 }
             }*/
 
-
-            video.setState(VideoItem.STATE_READY_TO_SEND);
+            db.updateVideo(video.getId(), VideoItem.State.READY_TO_SEND);
+            updateUI(id);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            realm.commitTransaction();
             updateUI(id);
-        }
-
-        //try to process next video if present
-        try {
-            tryToProcessVideo();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
     private void updateUI(String id) {
         Intent intent = new Intent(UploadService.UPDATE_VIDEO_UI);
         intent.putExtra("id", id);
-        intent.putExtra("state", VideoItem.STATE_READY_TO_SEND);
+        intent.putExtra("state", VideoItem.State.READY_TO_SEND.value());
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 }

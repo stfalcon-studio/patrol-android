@@ -19,7 +19,7 @@ public class LocationActivity extends AppCompatActivity implements MyLocationLis
         locationApi = new PlayServicesLocationApi();
         locationApi.init(this);
         locationApi.setLocationListener(this);
-        locationApi.createLocationRequest(LocationApi.LOW_ACCURACY_LOCATION);
+        locationApi.createLocationRequest(LocationApi.HIGH_ACCURACY_LOCATION);
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -28,7 +28,7 @@ public class LocationActivity extends AppCompatActivity implements MyLocationLis
                     locationApi = new LocationManagerApi();
                     locationApi.init(LocationActivity.this);
                     locationApi.setLocationListener(LocationActivity.this);
-                    locationApi.createLocationRequest(LocationApi.LOW_ACCURACY_LOCATION);
+                    locationApi.createLocationRequest(LocationApi.HIGH_ACCURACY_LOCATION);
                 }
 
                 userLastLocation = locationApi.getPreviousLocation();

@@ -1,6 +1,6 @@
 package com.stfalcon.hromadskyipatrol.ui;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -16,41 +16,50 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.stfalcon.hromadskyipatrol.R;
+import com.stfalcon.hromadskyipatrol.database.DatabasePatrol;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
 import com.stfalcon.hromadskyipatrol.network.UploadService;
+import com.stfalcon.hromadskyipatrol.utils.AppUtilities;
 import com.stfalcon.hromadskyipatrol.utils.IntentUtilities;
+import com.stfalcon.hromadskyipatrol.utils.NetworkUtils;
 import com.stfalcon.hromadskyipatrol.utils.StringUtilities;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-
-import io.realm.Realm;
-import io.realm.RealmResults;
 
 /**
  * Created by alexandr on 17/08/15.
  */
 public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.ViewHolder> {
 
-    private List<VideoItem> mItems = new ArrayList<VideoItem>();
-    private Context context;
+    private List<VideoItem> mItems = new ArrayList<>();
+    private Activity context;
 
-    public VideoGridAdapter(RealmResults<VideoItem> photos, Context context) {
+    public VideoGridAdapter(ArrayList<VideoItem> videos, Activity context) {
         super();
         this.context = context;
-        mItems.addAll(photos);
-        Collections.reverse(mItems);
+        mItems = videos;
     }
 
-    public void addItem(VideoItem photo) {
-        try {
-            mItems.add(0, photo);
-        } catch (Exception e) {
-            e.printStackTrace();
+    public void addItem(VideoItem video) {
+        mItems.add(0, video);
+        notifyItemInserted(0);
+    }
+
+    public void updateState(String id, VideoItem.State state) {
+        int position = -1;
+        for (int i = 0 ; i < mItems.size(); i++) {
+            VideoItem item = mItems.get(i);
+            if (item.getId().contentEquals(id)) {
+                item.setState(state);
+                position = i;
+                break;
+            }
         }
-        notifyDataSetChanged();
+        if (position >= 0) {
+            notifyItemChanged(position);
+        }
     }
 
     @Override
@@ -66,39 +75,34 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
         VideoItem video = mItems.get(i);
         viewHolder.video = video;
 
-        //check location in item
-        /*if (video.getState() == VideoItem.STATE_SAVING
-                && video.getLatitude() == 0){
-            video.setState(VideoItem.STATE_NO_GPS);
-        }*/
-
         switch (video.getState()) {
-            case VideoItem.STATE_READY_TO_SEND:
+            case READY_TO_SEND:
                 viewHolder.imgState.setImageResource(R.drawable.icon_upload);
                 viewHolder.noGPS.setVisibility(View.GONE);
                 viewHolder.imgState.setVisibility(View.VISIBLE);
                 viewHolder.progressBar.setVisibility(View.GONE);
                 break;
-            case VideoItem.STATE_SENDING:
-                viewHolder.imgState.setImageResource(R.drawable.icon_camera);
+            case SENDING:
+                viewHolder.imgState.setImageResource(R.drawable.ic_video_white_24dp);
                 viewHolder.noGPS.setVisibility(View.GONE);
                 viewHolder.imgState.setVisibility(View.GONE);
                 viewHolder.progressBar.setVisibility(View.VISIBLE);
+                viewHolder.upload();
                 break;
-            case VideoItem.STATE_UPLOADED:
+            case UPLOADED:
                 viewHolder.imgState.setImageResource(R.drawable.icon_done);
                 viewHolder.noGPS.setVisibility(View.GONE);
                 viewHolder.imgState.setVisibility(View.VISIBLE);
                 viewHolder.progressBar.setVisibility(View.GONE);
                 break;
-            case VideoItem.STATE_ERROR:
+            case ERROR:
                 viewHolder.imgState.setImageResource(R.drawable.icon_repeat);
                 viewHolder.noGPS.setVisibility(View.GONE);
                 viewHolder.imgState.setVisibility(View.VISIBLE);
                 viewHolder.progressBar.setVisibility(View.GONE);
                 break;
 
-            case VideoItem.STATE_SAVING:
+            case SAVING:
                 viewHolder.noGPS.setText(R.string.saving);
                 viewHolder.noGPS.setVisibility(View.VISIBLE);
                 viewHolder.imgState.setVisibility(View.GONE);
@@ -117,10 +121,6 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
     @Override
     public int getItemCount() {
         return mItems.size();
-    }
-
-    public void setItems(List<VideoItem> mItems) {
-        this.mItems = mItems;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder
@@ -149,33 +149,31 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
         }
 
         private void upload() {
-            Intent intent = new Intent(context, UploadService.class);
-            intent.putExtra(IntentUtilities.VIDEO_ID, video.getId());
-            context.startService(intent);
+            if (NetworkUtils.isConnectionAvailable(context)) {
+                Intent intent = new Intent(context, UploadService.class);
+                intent.putExtra(IntentUtilities.VIDEO_ID, video.getId());
+                context.startService(intent);
+            } else {
+                AppUtilities.showToast(context, R.string.error_no_connection, false);
+            }
         }
 
         private void delete() {
-            Realm realm = Realm.getInstance(context);
             try {
                 new File(video.getVideoURL()).delete();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            realm.beginTransaction();
-            video.removeFromRealm();
-            realm.commitTransaction();
+            DatabasePatrol.get(context).deleteVideo(video.getId());
 
-            try {
-                mItems.remove(video);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            mItems.remove(video);
             notifyItemRemoved(getAdapterPosition());
         }
 
         private void showDialog() {
-            final boolean isLoaded = video.getState() == VideoItem.STATE_UPLOADED;
-            ArrayList<String> options = StringUtilities.getOptions(context, isLoaded);
+            final boolean isCanDelete = NetworkUtils.isCanDelete(video.getState());
+            final boolean isCanLoad = NetworkUtils.isCanLoadItem(video.getState());
+            ArrayList<String> options = StringUtilities.getOptions(context, isCanLoad, isCanDelete);
 
             new AlertDialog.Builder(context)
                     .setItems(
@@ -188,8 +186,8 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
                                             IntentUtilities.openVideo(context, mItems.get(getAdapterPosition()).getVideoURL());
                                             break;
                                         case 1:
-                                            if (isLoaded) delete();
-                                            else upload();
+                                            if (isCanLoad) upload();
+                                            else delete();
                                             break;
                                         case 2:
                                             delete();

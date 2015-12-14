@@ -1,16 +1,12 @@
 package com.stfalcon.hromadskyipatrol.models;
 
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
-
 /**
  * Created by alexandr on 19/08/15.
  */
-public class UserItem extends RealmObject {
+public class UserItem {
 
     private boolean isLogin;
     private int id;
-    @PrimaryKey
     private String email;
 
     public void setEmail(String email) {
