@@ -523,7 +523,7 @@ public class Camera2VideoFragment extends BaseCameraFragment
         mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        violationFileURI = FilesUtils.getOutputInternalMediaFile_App(
+        violationFileURI = FilesUtils.getOutputInternalMediaFile(
                 FilesUtils.MEDIA_TYPE_VIDEO).getAbsolutePath();
         mMediaRecorder.setOutputFile(violationFileURI);
         mMediaRecorder.setVideoEncodingBitRate(10000000);

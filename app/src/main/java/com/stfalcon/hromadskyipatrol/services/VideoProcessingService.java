@@ -51,7 +51,7 @@ public class VideoProcessingService extends IntentService {
         Log.d(TAG, "item: " + id);
         Log.d(TAG, "itemUrl: " + video.getVideoURL());
         File src = new File(video.getVideoURL());
-        File dst = new File(FilesUtils.getOutputInternalMediaFile_App(FilesUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
+        File dst = new File(FilesUtils.getOutputInternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
         Log.d(TAG, "dst: " + dst.getAbsolutePath());
         try {
             if (TrimVideoUtils.trimToLast20sec(src, dst)) {
