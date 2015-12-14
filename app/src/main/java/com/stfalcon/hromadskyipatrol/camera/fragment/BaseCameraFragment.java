@@ -9,9 +9,6 @@ import android.view.Surface;
 
 import com.stfalcon.hromadskyipatrol.camera.ICamera;
 import com.stfalcon.hromadskyipatrol.models.ViolationItem;
-import com.stfalcon.hromadskyipatrol.services.VideoProcessingService;
-import com.stfalcon.hromadskyipatrol.utils.CameraUtils;
-import com.stfalcon.hromadskyipatrol.utils.ProcessVideoUtils;
 
 import java.io.File;
 import java.util.Timer;
