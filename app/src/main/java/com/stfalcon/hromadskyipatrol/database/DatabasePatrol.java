@@ -19,13 +19,15 @@ public class DatabasePatrol
 
     private static DatabasePatrol instance;
     private static DatabaseHelper helper;
+
     public static synchronized DatabasePatrol get(Context context) {
         if (instance == null) instance = new DatabasePatrol();
         if (helper == null) helper = new DatabaseHelper(context);
         return instance;
     }
 
-    private DatabasePatrol() { }
+    private DatabasePatrol() {
+    }
 
     @Override
     public void addVideo(VideoItem item) {
@@ -33,7 +35,9 @@ public class DatabasePatrol
 
         ContentValues values = new ContentValues();
         values.put(Const.KEY_ID, item.getId());
+        values.put(Const.KEY_THUMB, item.getThumb());
         values.put(Const.KEY_URL, item.getVideoURL());
+        values.put(Const.KEY_PREV_URL, item.getVideoPrevURL());
         values.put(Const.KEY_STATE, item.getState().value());
         values.put(Const.KEY_LON, item.getLongitude());
         values.put(Const.KEY_LAT, item.getLatitude());
@@ -118,7 +122,9 @@ public class DatabasePatrol
                     cursor.getInt(cursor.getColumnIndex(Const.KEY_STATE)),
                     cursor.getDouble(cursor.getColumnIndex(Const.KEY_LON)),
                     cursor.getDouble(cursor.getColumnIndex(Const.KEY_LAT)),
-                    cursor.getString(cursor.getColumnIndex(Const.KEY_OWNER_EMAIL))
+                    cursor.getString(cursor.getColumnIndex(Const.KEY_OWNER_EMAIL)),
+                    cursor.getString(cursor.getColumnIndex(Const.KEY_PREV_URL)),
+                    cursor.getString(cursor.getColumnIndex(Const.KEY_THUMB))
             );
         }
 
@@ -136,7 +142,9 @@ public class DatabasePatrol
                         cursor.getInt(cursor.getColumnIndex(Const.KEY_STATE)),
                         cursor.getDouble(cursor.getColumnIndex(Const.KEY_LON)),
                         cursor.getDouble(cursor.getColumnIndex(Const.KEY_LAT)),
-                        cursor.getString(cursor.getColumnIndex(Const.KEY_OWNER_EMAIL))
+                        cursor.getString(cursor.getColumnIndex(Const.KEY_OWNER_EMAIL)),
+                        cursor.getString(cursor.getColumnIndex(Const.KEY_PREV_URL)),
+                        cursor.getString(cursor.getColumnIndex(Const.KEY_THUMB))
                 ));
             while (cursor.moveToNext());
         }

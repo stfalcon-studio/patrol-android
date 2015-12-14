@@ -10,31 +10,30 @@ public class VideoItem {
     }
 
     public VideoItem(String id, String videoURL, int state, double longitude,
-                     double latitude, String ownerEmail) {
-        this(id, videoURL, State.from(state), longitude, latitude, ownerEmail);
+                     double latitude, String ownerEmail, String videoPrevURL, String thumb) {
+        this(id, videoURL, State.from(state), longitude, latitude, ownerEmail, videoPrevURL, thumb);
     }
 
     public VideoItem(String id, String videoURL, State state, double longitude,
-                     double latitude, String ownerEmail) {
+                     double latitude, String ownerEmail, String videoPrevURL, String thumb) {
         this.id = id;
         this.videoURL = videoURL;
+        this.thumb = thumb;
         this.state = state;
         this.longitude = longitude;
         this.latitude = latitude;
         this.ownerEmail = ownerEmail;
+        this.videoPrevURL = videoPrevURL;
     }
 
-//    @PrimaryKey
     private String id;
     private String videoURL;
+    private String thumb;
+    private String videoPrevURL;
     private State state;
     private double longitude;
     private double latitude;
     private String ownerEmail;
-
-    public void setState(int state) {
-        this.state = State.from(state);
-    }
 
     public void setState(State state) {
         this.state = state;
@@ -54,6 +53,14 @@ public class VideoItem {
 
     public String getVideoURL() {
         return videoURL;
+    }
+
+    public String getThumb() {
+        return thumb;
+    }
+
+    public void setThumb(String thumb) {
+        this.thumb = thumb;
     }
 
     public void setId(String id) {
@@ -84,6 +91,14 @@ public class VideoItem {
         this.ownerEmail = ownerEmail;
     }
 
+    public String getVideoPrevURL() {
+        return videoPrevURL;
+    }
+
+    public void setVideoPrevURL(String videoPrevURL) {
+        this.videoPrevURL = videoPrevURL;
+    }
+
     public enum State {
         UNDEFINED(-1), SAVING(1), READY_TO_SEND(2), SENDING(3), UPLOADED(4), ERROR(5);
 
@@ -98,7 +113,7 @@ public class VideoItem {
         }
 
         public static State from(int value) {
-            for (State my: State.values())
+            for (State my : State.values())
                 if (my.value == value) return my;
             return null;
         }

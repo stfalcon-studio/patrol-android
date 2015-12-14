@@ -22,6 +22,7 @@ public class BaseCameraFragment extends Fragment {
     private static final String TAG = BaseCameraFragment.class.getName();
     private long detectViolationTime;
     public String violationFileURI;
+    public String previousFileURI;
 
     private int TIME_RECORD_AFTER_TAP = 10 * 1000; //10sec
     //private int TIME_RECORD_SEGMENT = 2 * 60 * 1000;  //2 min
@@ -145,7 +146,10 @@ public class BaseCameraFragment extends Fragment {
         public void run() {
             if (!violationRecording && mIsRecordingVideo) {
                 onStopRecord();
-                new File(violationFileURI).delete();
+                if (previousFileURI != null) {
+                    new File(previousFileURI).delete();
+                }
+                previousFileURI = violationFileURI;
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -166,11 +170,18 @@ public class BaseCameraFragment extends Fragment {
                 public void run() {
                     if (callback != null) {
                         Log.d(TAG, "run: " + violationFileURI);
-                        callback.onVideoPrepared(new ViolationItem(detectViolationTime, violationFileURI));
+                        Log.d(TAG, "prev run: " + previousFileURI);
+                        if (previousFileURI != null) {
+                            callback.onVideoPrepared(new ViolationItem(violationFileURI, previousFileURI, detectViolationTime));
+                        } else {
+                            callback.onVideoPrepared(new ViolationItem(detectViolationTime, violationFileURI));
+                        }
+                        previousFileURI = violationFileURI;
                     }
                 }
             });
             if (violationRecording && mIsRecordingVideo) {
+
                 onStopRecord();
                 getActivity().runOnUiThread(new Runnable() {
                     @Override

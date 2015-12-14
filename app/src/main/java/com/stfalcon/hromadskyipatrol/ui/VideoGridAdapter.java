@@ -3,9 +3,6 @@ package com.stfalcon.hromadskyipatrol.ui;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.media.ThumbnailUtils;
-import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.stfalcon.hromadskyipatrol.R;
 import com.stfalcon.hromadskyipatrol.database.DatabasePatrol;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
@@ -49,7 +47,7 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
 
     public void updateState(String id, VideoItem.State state) {
         int position = -1;
-        for (int i = 0 ; i < mItems.size(); i++) {
+        for (int i = 0; i < mItems.size(); i++) {
             VideoItem item = mItems.get(i);
             if (item.getId().contentEquals(id)) {
                 item.setState(state);
@@ -116,13 +114,8 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
                 viewHolder.progressBar.setVisibility(View.GONE);
                 break;
         }
-
-        Bitmap thumb = ThumbnailUtils.createVideoThumbnail(mItems.get(i).getVideoURL(),
-                MediaStore.Images.Thumbnails.MINI_KIND);
-        viewHolder.imgThumbnail.setImageBitmap(thumb);
-
-//        ImageLoader.getInstance().displayImage(
-//                ImageDownloader.Scheme.FILE.wrap(mItems.get(i).getVideoURL()), viewHolder.imgThumbnail);
+        
+        ImageLoader.getInstance().displayImage(mItems.get(i).getTumbURL(), viewHolder.imgThumbnail);
     }
 
     @Override

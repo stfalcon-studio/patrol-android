@@ -1,10 +1,13 @@
 package com.stfalcon.hromadskyipatrol.utils;
 
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,12 +18,33 @@ import java.util.Date;
 /**
  * Created by alexandr on 18/08/15.
  */
-public class CameraUtils {
+public class FilesUtils {
+    private static String TAG = FilesUtils.class.getSimpleName();
+
+    private static String APP_CONTENT_PATH = "DPatrul";
+    private static String VIDEO_TUMB_PATH = APP_CONTENT_PATH + "/tumbs";
+
     public static final int MEDIA_TYPE_IMAGE = 0;
     public static final int MEDIA_TYPE_VIDEO = 1;
 
-    public static Uri getOutputMediaFileUri(int type) {
-        return Uri.fromFile(getOutputMediaFile(type));
+
+    public static String storeTumb(Bitmap image) {
+        File pictureFile = getOutputInternalTumbFile();
+        if (pictureFile == null) {
+            Log.d(TAG,
+                    "Error creating media file, check storage permissions: ");// e.getMessage());
+        }
+        try {
+            FileOutputStream fos = new FileOutputStream(pictureFile);
+            image.compress(Bitmap.CompressFormat.PNG, 90, fos);
+            fos.close();
+            return pictureFile.getAbsolutePath();
+        } catch (FileNotFoundException e) {
+            Log.d(TAG, "File not found: " + e.getMessage());
+        } catch (IOException e) {
+            Log.d(TAG, "Error accessing file: " + e.getMessage());
+        }
+        return null;
     }
 
 
@@ -32,10 +56,16 @@ public class CameraUtils {
     }
 
 
-    public static File getOutputInternalMediaFile_App(int type) {
-        File mediaStorageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "DPatrul");
+    public static File getOutputInternalMediaFile(int type) {
+        File mediaStorageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), APP_CONTENT_PATH);
         createMediaStorageDir(mediaStorageDir);
         return createFile(type, mediaStorageDir);
+    }
+
+    public static File getOutputInternalTumbFile() {
+        File mediaStorageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), VIDEO_TUMB_PATH);
+        createMediaStorageDir(mediaStorageDir);
+        return createFile(MEDIA_TYPE_IMAGE, mediaStorageDir);
     }
 
 
@@ -51,7 +81,7 @@ public class CameraUtils {
         File mediaFile = null;
         if (type == MEDIA_TYPE_IMAGE) {
             mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                    "IMG_" + timeStamp + ".jpg");
+                    "IMG_" + timeStamp + ".png");
         } else if (type == MEDIA_TYPE_VIDEO) {
             mediaFile = new File(mediaStorageDir.getPath() + File.separator +
                     "VID_" + timeStamp + ".mp4");
@@ -65,7 +95,7 @@ public class CameraUtils {
         OutputStream out = null;
 
         File sourceExternalImageFile = new File(tempUri.getPath());
-        File destinationInternalImageFile = new File(getOutputInternalMediaFile_App(type).getPath());
+        File destinationInternalImageFile = new File(getOutputInternalMediaFile(type).getPath());
 
         try {
             destinationInternalImageFile.createNewFile();
@@ -95,5 +125,9 @@ public class CameraUtils {
             }
         }
         return destinationInternalImageFile.getAbsolutePath();
+    }
+
+    public static void removeFile(String url) {
+        new File(url).delete();
     }
 }
