@@ -35,10 +35,12 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
 
     private List<VideoItem> mItems = new ArrayList<>();
     private Activity context;
+    private VideosListener listener;
 
-    public VideoGridAdapter(ArrayList<VideoItem> videos, Activity context) {
+    public VideoGridAdapter(ArrayList<VideoItem> videos, Activity context, VideosListener listener) {
         super();
         this.context = context;
+        this.listener = listener;
         mItems = videos;
     }
 
@@ -135,6 +137,10 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
         Picasso.with(context).load(thumbFile).into(viewHolder.imgThumbnail);
     }
 
+    public interface VideosListener {
+        void onVideosEmpty();
+    }
+
     @Override
     public int getItemCount() {
         return mItems.size();
@@ -185,6 +191,10 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
 
             mItems.remove(video);
             notifyItemRemoved(getAdapterPosition());
+
+            if (mItems.size() == 0 && listener != null) {
+                listener.onVideosEmpty();
+            }
         }
 
         private void showDialog() {
