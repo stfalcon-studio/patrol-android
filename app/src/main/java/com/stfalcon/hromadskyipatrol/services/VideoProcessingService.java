@@ -42,20 +42,21 @@ public class VideoProcessingService extends IntentService {
         // add new video to db if need
         if (intent.hasExtra(VideoCaptureActivity.MOVIES_RESULT)) {
             addVideo(intent);
+        } else {
+            ArrayList<VideoItem> videoItems = db.getVideos(
+                    VideoItem.State.SAVING,
+                    ProjectPreferencesManager.getUser(this));
+
+            if (!videoItems.isEmpty()) {
+                for (VideoItem item : videoItems) {
+                    tryToProcessVideo(item, db);
+                }
+            }
         }
 
-        ArrayList<VideoItem> videoItems = db.getVideos(
-                VideoItem.State.SAVING,
-                ProjectPreferencesManager.getUser(this));
-
-        if (!videoItems.isEmpty()) {
-            for (VideoItem item : videoItems) {
-                tryToProcessVideo(item, db);
-            }
-            // start auto upload service if need
-            if (ProjectPreferencesManager.getAutoUploadMode(getApplicationContext())) {
-                startService(new Intent(VideoProcessingService.this, UploadService.class));
-            }
+        // start auto upload service if need
+        if (ProjectPreferencesManager.getAutoUploadMode(getApplicationContext())) {
+            startService(new Intent(VideoProcessingService.this, UploadService.class));
         }
     }
 

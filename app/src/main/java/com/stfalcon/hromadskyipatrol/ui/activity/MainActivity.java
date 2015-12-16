@@ -221,6 +221,7 @@ public class MainActivity extends BaseSpiceActivity
 
         if (resultCode == Activity.RESULT_OK) {
             initGrid();
+            startService(new Intent(MainActivity.this, VideoProcessingService.class));
         } else if (requestCode == Constants.REQUEST_GPS_SETTINGS) {
             if (checkLocationManager()) {
                 openCamera();
