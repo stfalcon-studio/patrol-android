@@ -12,10 +12,15 @@ public interface IDatabasePatrol {
 
     void addVideo(VideoItem item);
 
-    ArrayList<VideoItem> getVideos(UserItem user);
-    ArrayList<VideoItem> getVideos(VideoItem.State state, UserItem user);
+    ArrayList<VideoItem> getVideos();
+    ArrayList<VideoItem> getVideos(VideoItem.State state);
     VideoItem getVideo(VideoItem.State state);
     VideoItem getVideo(String id);
+
+    ArrayList<VideoItem> getVideos(UserItem user);
+    ArrayList<VideoItem> getVideos(VideoItem.State state, UserItem user);
+    VideoItem getVideo(VideoItem.State state, UserItem user);
+    VideoItem getVideo(String id, UserItem user);
 
     void updateVideo(String id, VideoItem.State state);
     void updateVideo(String id, String url);

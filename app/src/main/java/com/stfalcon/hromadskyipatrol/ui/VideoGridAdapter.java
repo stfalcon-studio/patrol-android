@@ -130,17 +130,26 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
                 viewHolder.progressBar.setVisibility(View.GONE);
                 break;
         }
-        File thumbFile = new File(mItems.get(i).getThumb());
-        Picasso.with(context).load(thumbFile).into(viewHolder.imgThumbnail);
+
+        loadThumb(viewHolder);
+    }
+
+    @Override
+    public int getItemCount() {
+        return mItems.size();
     }
 
     public interface VideosListener {
         void onVideosEmpty();
     }
 
-    @Override
-    public int getItemCount() {
-        return mItems.size();
+    private void loadThumb(ViewHolder holder) {
+        String thumb = holder.video.getThumb();
+        if (thumb != null && !thumb.isEmpty()) {
+            File thumbFile = new File(thumb);
+            Picasso.with(context).load(thumbFile).into(holder.imgThumbnail);
+        }
+
     }
 
     class ViewHolder extends RecyclerView.ViewHolder
@@ -165,7 +174,9 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
 
         @Override
         public void onClick(View view) {
-            showDialog();
+            if (video.getState() != VideoItem.State.SAVING) {
+                showDialog();
+            }
         }
 
         private void upload() {

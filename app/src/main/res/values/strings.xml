@@ -18,7 +18,7 @@
     <string name="logout">Вийти</string>
     <string name="no_gps">Відсутні GPS \nкоординати</string>
     <string name="email_hint">Ваша електронна пошта</string>
-    <string name="saving">Збереження...</string>
+    <string name="saving">Збереження…</string>
     <string name="record">Record</string>
     <string name="stop">Stop</string>
     <string name="description_info">Iнформація</string>
