@@ -142,7 +142,7 @@ public class DatabasePatrol
         SQLiteDatabase db = helper.getReadableDatabase();
         String selectQuery = "SELECT * FROM " + Const.TABLE_VIDEOS
                 + " WHERE " + state + " = '" + value + "'"
-                + " WHERE " + Const.KEY_OWNER_EMAIL + " = '" + user.getEmail() + "'";
+                + " END " + Const.KEY_OWNER_EMAIL + " = '" + user.getEmail() + "'";
         VideoItem item = null;
 
         Cursor cursor = db.rawQuery(selectQuery, null);
