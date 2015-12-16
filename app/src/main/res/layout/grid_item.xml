@@ -25,16 +25,21 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:padding="8dp" />
+        android:padding="8dp"/>
 
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="8dp" />
+        android:padding="5dp">
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="24dp"
+            android:layout_height="24dp" />
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/gps"

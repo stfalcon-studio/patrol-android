@@ -100,7 +100,6 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
                 viewHolder.progressBar.setVisibility(View.GONE);
                 break;
             case SENDING:
-                viewHolder.imgState.setImageResource(R.drawable.ic_video_white_24dp);
                 viewHolder.noGPS.setVisibility(View.GONE);
                 viewHolder.imgState.setVisibility(View.GONE);
                 viewHolder.progressBar.setVisibility(View.VISIBLE);

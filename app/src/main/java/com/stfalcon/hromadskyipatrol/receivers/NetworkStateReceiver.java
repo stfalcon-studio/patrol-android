@@ -14,7 +14,7 @@ public class NetworkStateReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         int connectivityStatus = NetworkUtils.getConnectivityStatus(context);
-        boolean isCanUpload = true;
+        boolean isCanUpload = ProjectPreferencesManager.getAutoUploadMode(context);
 
         if (ProjectPreferencesManager.getUploadWifiOnlyMode(context))
             if (connectivityStatus != NetworkUtils.CONNECTION_WIFI)
