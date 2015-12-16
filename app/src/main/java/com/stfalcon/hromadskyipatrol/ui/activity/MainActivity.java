@@ -23,7 +23,7 @@ import com.stfalcon.hromadskyipatrol.database.DatabasePatrol;
 import com.stfalcon.hromadskyipatrol.location.LocationDialog;
 import com.stfalcon.hromadskyipatrol.models.UserItem;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
-import com.stfalcon.hromadskyipatrol.network.UploadService;
+import com.stfalcon.hromadskyipatrol.services.UploadService;
 import com.stfalcon.hromadskyipatrol.services.VideoProcessingService;
 import com.stfalcon.hromadskyipatrol.ui.VideoGridAdapter;
 import com.stfalcon.hromadskyipatrol.utils.Constants;

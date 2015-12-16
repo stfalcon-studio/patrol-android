@@ -1,23 +1,22 @@
-package com.stfalcon.hromadskyipatrol.network;
+package com.stfalcon.hromadskyipatrol.services;
 
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.stfalcon.hromadskyipatrol.BuildConfig;
 import com.stfalcon.hromadskyipatrol.database.DatabasePatrol;
+import com.stfalcon.hromadskyipatrol.models.UserItem;
 import com.stfalcon.hromadskyipatrol.models.VideoAnswer;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
-import com.stfalcon.hromadskyipatrol.models.UserItem;
+import com.stfalcon.hromadskyipatrol.utils.Extras;
 import com.stfalcon.hromadskyipatrol.utils.IntentUtilities;
 import com.stfalcon.hromadskyipatrol.utils.MultipartUtility;
 import com.stfalcon.hromadskyipatrol.utils.NetworkUtils;
 import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -35,58 +34,48 @@ public class UploadService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         if (NetworkUtils.isConnectionAvailable(this)) {
-            Bundle extras = intent.getExtras();
-            String videoId = null;
-            DatabasePatrol db = DatabasePatrol.get(this);
-            if (extras != null) {
-                videoId = extras.getString(IntentUtilities.VIDEO_ID);
-            }
-
-
-            if (videoId != null) {
+            if (intent.hasExtra(IntentUtilities.VIDEO_ID)) {
+                DatabasePatrol db = DatabasePatrol.get(this);
+                String videoId = intent.getStringExtra(IntentUtilities.VIDEO_ID);
                 VideoItem videoItem = db.getVideo(videoId);
-                if (videoItem.getState() != VideoItem.State.UPLOADED) {
 
+                if (videoItem.getState() != VideoItem.State.UPLOADED) {
                     UserItem user = ProjectPreferencesManager.getUser(this);
                     updateItem(this, videoItem.getId(), VideoItem.State.SENDING, db);
-                    VideoAnswer answer = uploadImage(videoItem, user);
+                    VideoAnswer answer = uploadVideo(videoItem, user);
                     VideoItem videoInBase = db.getVideo(answer.getId());
                     updateItem(this, videoInBase.getId(), VideoItem.State.from(answer.getState()), db);
                 }
 
             } else {
-                tryToSendVideo();
+                tryToSendAllVideo();
             }
         }
     }
 
-    public void tryToSendVideo() {
-        //init objects
+    public void tryToSendAllVideo() {
         DatabasePatrol db = DatabasePatrol.get(this);
         UserItem user = ProjectPreferencesManager.getUser(this);
 
-        VideoItem videoItem = db.getVideo(VideoItem.State.READY_TO_SEND);
-        if (videoItem == null) db.getVideo(VideoItem.State.ERROR);
+        List<VideoItem> videoToSend = db.getVideos(VideoItem.State.READY_TO_SEND, user);
+        List<VideoItem> videoToResend = db.getVideos(VideoItem.State.ERROR, user);
 
+        if (!videoToResend.isEmpty()) videoToSend.addAll(videoToResend);
 
-        if (videoItem == null) {
-            return;
+        for (VideoItem item : videoToSend) {
+            updateItem(this, item.getId(), VideoItem.State.SENDING, db);
+
+            VideoAnswer answer = uploadVideo(item, user);
+            VideoItem videoInBase = db.getVideo(answer.getId());
+            updateItem(this, videoInBase.getId(), VideoItem.State.from(answer.getState()), db);
         }
-
-        updateItem(this, videoItem.getId(), VideoItem.State.SENDING, db);
-
-        VideoAnswer answer = uploadImage(videoItem, user);
-        VideoItem videoInBase = db.getVideo(answer.getId());
-        updateItem(this, videoInBase.getId(), VideoItem.State.from(answer.getState()), db);
-
-        tryToSendVideo();
     }
 
 
     public static void updateActivityUI(Context context, String id, VideoItem.State state) {
         Intent intent = new Intent(UPDATE_VIDEO_UI);
-        intent.putExtra("id", id);
-        intent.putExtra("state", state.value());
+        intent.putExtra(Extras.ID, id);
+        intent.putExtra(Extras.STATE, state.value());
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
@@ -95,12 +84,12 @@ public class UploadService extends IntentService {
         updateActivityUI(this, id, state);
     }
 
-    public static VideoAnswer uploadImage(VideoItem video, UserItem user) {
-        return uploadImage(video.getVideoURL(), String.valueOf(user.getId()),
+    public static VideoAnswer uploadVideo(VideoItem video, UserItem user) {
+        return uploadVideo(video.getVideoURL(), String.valueOf(user.getId()),
                 video.getId(), video.getLatitude(), video.getLongitude());
     }
 
-    public static VideoAnswer uploadImage(String fileUrl, String userID, String videoID, double latitude, double longitude) {
+    public static VideoAnswer uploadVideo(String fileUrl, String userID, String videoID, double latitude, double longitude) {
         String charset = "UTF-8";
         File file = new File(fileUrl);
         String requestURL = BuildConfig.BASE_URL + UPLOAD_URL.replace("{userID}", userID);
@@ -123,7 +112,7 @@ public class UploadService extends IntentService {
             }
             serverAnswer.setState(VideoItem.State.UPLOADED.value());
 
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             System.err.println(ex);
             serverAnswer.setState(VideoItem.State.ERROR.value());
         }

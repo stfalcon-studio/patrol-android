@@ -16,7 +16,7 @@ import com.squareup.picasso.Picasso;
 import com.stfalcon.hromadskyipatrol.R;
 import com.stfalcon.hromadskyipatrol.database.DatabasePatrol;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
-import com.stfalcon.hromadskyipatrol.network.UploadService;
+import com.stfalcon.hromadskyipatrol.services.UploadService;
 import com.stfalcon.hromadskyipatrol.utils.AppUtilities;
 import com.stfalcon.hromadskyipatrol.utils.IntentUtilities;
 import com.stfalcon.hromadskyipatrol.utils.NetworkUtils;
@@ -25,8 +25,6 @@ import com.stfalcon.hromadskyipatrol.utils.StringUtilities;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import retrofit.http.HEAD;
 
 /**
  * Created by alexandr on 17/08/15.

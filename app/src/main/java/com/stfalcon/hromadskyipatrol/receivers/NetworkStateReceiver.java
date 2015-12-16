@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.stfalcon.hromadskyipatrol.network.UploadService;
+import com.stfalcon.hromadskyipatrol.services.UploadService;
 import com.stfalcon.hromadskyipatrol.utils.NetworkUtils;
 import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 
