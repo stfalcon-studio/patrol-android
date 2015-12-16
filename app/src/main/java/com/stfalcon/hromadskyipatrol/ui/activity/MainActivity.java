@@ -36,7 +36,9 @@ import java.util.Collections;
 /**
  * Created by alexandr on 17/08/15.
  */
-public class MainActivity extends BaseSpiceActivity implements View.OnClickListener {
+public class MainActivity extends BaseSpiceActivity
+        implements View.OnClickListener, VideoGridAdapter.VideosListener {
+
     private static final String TAG = BaseSpiceActivity.class.getName();
 
     private TextView noVideosTextView;
@@ -94,7 +96,7 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
 
         ArrayList<VideoItem> videos = DatabasePatrol.get(this).getVideos(userData);
         Collections.reverse(videos);
-        mAdapter = new VideoGridAdapter(videos, this);
+        mAdapter = new VideoGridAdapter(videos, this, this);
         mRecyclerView.setAdapter(mAdapter);
         setVideosListVisibility(videos.size() > 0);
     }
@@ -223,6 +225,10 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
         startService(processVideoIntent);
     }
 
+    @Override
+    public void onVideosEmpty() {
+        setVideosListVisibility(false);
+    }
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -237,6 +243,7 @@ public class MainActivity extends BaseSpiceActivity implements View.OnClickListe
             } else if (intent.getAction().equals(VideoProcessingService.ADD_VIDEO_UI)) {
                 String id = intent.getExtras().getString(Extras.ID);
                 mAdapter.addItem(DatabasePatrol.get(MainActivity.this).getVideo(id));
+                setVideosListVisibility(true);
             }
         }
     };

@@ -123,12 +123,14 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
         public void onRequestFailure(SpiceException spiceException) {
 
             UserItem user = ProjectPreferencesManager.getUser(LoginActivity.this);
-            if (user.getEmail().contentEquals(emailEditText.getText().toString())) {
-                user.setIsLogin(true);
-                ProjectPreferencesManager.setUser(LoginActivity.this, user);
+            if (user != null) {
+                if (user.getEmail().contentEquals(emailEditText.getText().toString())) {
+                    user.setIsLogin(true);
+                    ProjectPreferencesManager.setUser(LoginActivity.this, user);
 
-                startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                finish();
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    finish();
+                }
             } else {
                 loginButton.setVisibility(View.VISIBLE);
                 progressBar.setVisibility(View.GONE);
