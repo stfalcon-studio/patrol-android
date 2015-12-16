@@ -10,7 +10,9 @@ import com.stfalcon.hromadskyipatrol.models.VideoItem;
  * Created by TROY!379 on 21.08.15.
  */
 public final class NetworkUtils {
-    private NetworkUtils() { throw new AssertionError(); }
+    private NetworkUtils() {
+        throw new AssertionError();
+    }
 
     public static final int CONNECTION_WIFI = 1;
     public static final int CONNECTION_MOBILE = 2;
@@ -51,6 +53,6 @@ public final class NetworkUtils {
     }
 
     public static boolean isCanDelete(VideoItem.State state) {
-        return state != VideoItem.State.SENDING;
+        return state != VideoItem.State.SAVING && state != VideoItem.State.SENDING;
     }
 }

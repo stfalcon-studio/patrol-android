@@ -62,9 +62,9 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
         }
     }
 
-    public void updateUrl(String id, String url){
+    public void updateUrl(String id, String url) {
         int position = -1;
-        for (int i = 0 ; i < mItems.size(); i++) {
+        for (int i = 0; i < mItems.size(); i++) {
             VideoItem item = mItems.get(i);
             if (item.getId().contentEquals(id)) {
                 item.setVideoURL(url);

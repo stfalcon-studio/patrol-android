@@ -166,28 +166,32 @@ public class BaseCameraFragment extends Fragment {
 
         @Override
         public void run() {
-            getActivity().runOnUiThread(new Runnable() {
-
-                @Override
-                public void run() {
-                    if (callback != null) {
-                        Log.d(TAG, "run: " + violationFileURI);
-                        Log.d(TAG, "prev run: " + previousFileURI);
-                        if (previousFileURI != null) {
-                            File prevVideo = new File(FilesUtils.getOutputInternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
-                            try {
-                                FilesUtils.copyFile(new File(previousFileURI), prevVideo);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            callback.onVideoPrepared(new ViolationItem(violationFileURI, prevVideo.getAbsolutePath(), detectViolationTime));
-                        } else {
+            if (callback != null) {
+                Log.d(TAG, "run: " + violationFileURI);
+                Log.d(TAG, "prev run: " + previousFileURI);
+                if (previousFileURI != null) {
+                    File prevVideo = new File(FilesUtils.getOutputInternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
+                    try {
+                        FilesUtils.copyFile(new File(previousFileURI), prevVideo);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onVideoPrepared(new ViolationItem(violationFileURI, previousFileURI, detectViolationTime));
+                        }
+                    });
+                } else {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
                             callback.onVideoPrepared(new ViolationItem(detectViolationTime, violationFileURI));
                         }
-                        previousFileURI = violationFileURI;
-                    }
+                    });
                 }
-            });
+                previousFileURI = violationFileURI;
+            }
             if (violationRecording && mIsRecordingVideo) {
 
                 onStopRecord();
