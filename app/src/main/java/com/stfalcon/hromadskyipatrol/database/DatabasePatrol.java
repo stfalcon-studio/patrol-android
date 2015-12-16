@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.stfalcon.hromadskyipatrol.models.UserItem;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
+import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 
 import java.util.ArrayList;
 
@@ -19,16 +20,19 @@ public class DatabasePatrol
 
     private static DatabasePatrol instance;
     private static DatabaseHelper helper;
+    private Context context;
 
     public static synchronized DatabasePatrol get(Context context) {
         if (instance == null) instance = new DatabasePatrol();
         if (helper == null) helper = new DatabaseHelper(context);
+        instance.context = context;
         return instance;
     }
 
-    private DatabasePatrol() {
-    }
+    private DatabasePatrol() { }
 
+
+    /*    CREATE   */
     @Override
     public void addVideo(VideoItem item) {
         SQLiteDatabase db = helper.getWritableDatabase();
@@ -45,6 +49,18 @@ public class DatabasePatrol
 
         db.insert(Const.TABLE_VIDEOS, null, values);
         db.close();
+    }
+
+
+    /*    READ   */
+    @Override
+    public ArrayList<VideoItem> getVideos() {
+        return getVideos(ProjectPreferencesManager.getUser(context));
+    }
+
+    @Override
+    public ArrayList<VideoItem> getVideos(VideoItem.State state) {
+        return getVideos(state, ProjectPreferencesManager.getUser(context));
     }
 
     @Override
@@ -68,14 +84,26 @@ public class DatabasePatrol
 
     @Override
     public VideoItem getVideo(VideoItem.State state) {
-        return getVideoWhere(Const.KEY_STATE, state.value());
+        return getVideo(state, ProjectPreferencesManager.getUser(context));
     }
 
     @Override
     public VideoItem getVideo(String id) {
-        return getVideoWhere(Const.KEY_ID, id);
+        return getVideo(id, ProjectPreferencesManager.getUser(context));
     }
 
+    @Override
+    public VideoItem getVideo(VideoItem.State state, UserItem user) {
+        return getVideoWhere(Const.KEY_STATE, state.value(), user);
+    }
+
+    @Override
+    public VideoItem getVideo(String id, UserItem user) {
+        return getVideoWhere(Const.KEY_ID, id, user);
+    }
+
+
+    /*    UPDATE   */
     @Override
     public void updateVideo(String id, VideoItem.State state) {
         SQLiteDatabase db = helper.getWritableDatabase();
@@ -94,6 +122,8 @@ public class DatabasePatrol
         db.close();
     }
 
+
+    /*    DELETE   */
     @Override
     public void deleteVideo(String id) {
         SQLiteDatabase db = helper.getWritableDatabase();
@@ -104,14 +134,15 @@ public class DatabasePatrol
 
     /*      PRIVATE     */
 
-    private VideoItem getVideoWhere(String state, int value) {
-        return getVideoWhere(state, Integer.toString(value));
+    private VideoItem getVideoWhere(String state, int value, UserItem user) {
+        return getVideoWhere(state, Integer.toString(value), user);
     }
 
-    private VideoItem getVideoWhere(String state, String value) {
+    private VideoItem getVideoWhere(String state, String value, UserItem user) {
         SQLiteDatabase db = helper.getReadableDatabase();
         String selectQuery = "SELECT * FROM " + Const.TABLE_VIDEOS
-                + " WHERE " + state + " = '" + value + "'";
+                + " WHERE " + state + " = '" + value + "'"
+                + " WHERE " + Const.KEY_OWNER_EMAIL + " = '" + user.getEmail() + "'";
         VideoItem item = null;
 
         Cursor cursor = db.rawQuery(selectQuery, null);
