@@ -16,10 +16,10 @@ import com.stfalcon.hromadskyipatrol.camera.fragment.Camera2VideoFragment;
 import com.stfalcon.hromadskyipatrol.camera.fragment.CameraVideoFragment;
 import com.stfalcon.hromadskyipatrol.location.LocationActivity;
 import com.stfalcon.hromadskyipatrol.models.ViolationItem;
+import com.stfalcon.hromadskyipatrol.services.VideoProcessingService;
 import com.stfalcon.hromadskyipatrol.utils.AnimationUtils;
 
 import java.io.File;
-import java.util.ArrayList;
 
 public class VideoCaptureActivity extends LocationActivity implements ICamera, View.OnClickListener {
 
@@ -28,7 +28,6 @@ public class VideoCaptureActivity extends LocationActivity implements ICamera, V
     private TextView message;
     private TextView time;
     private ImageButton mainMenu;
-    private ArrayList<ViolationItem> violationItems;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,8 +43,6 @@ public class VideoCaptureActivity extends LocationActivity implements ICamera, V
         if (null == savedInstanceState) {
             initCameraFragmentForAPIVersion(Build.VERSION.SDK_INT);
         }
-
-        violationItems = new ArrayList<ViolationItem>();
     }
 
     private void initViews() {
@@ -105,7 +102,10 @@ public class VideoCaptureActivity extends LocationActivity implements ICamera, V
             violationItem.setLat(location.getLatitude());
             violationItem.setLon(location.getLongitude());
         }
-        violationItems.add(violationItem);
+
+        Intent intent = new Intent(VideoCaptureActivity.this, VideoProcessingService.class);
+        intent.putExtra(MOVIES_RESULT, violationItem);
+        startService(intent);
     }
 
     @Override
@@ -133,13 +133,7 @@ public class VideoCaptureActivity extends LocationActivity implements ICamera, V
             e.printStackTrace();
         }
 
-        if (!violationItems.isEmpty()) {
-            Intent intent = new Intent();
-            intent.putParcelableArrayListExtra(MOVIES_RESULT, violationItems);
-            setResult(RESULT_OK, intent);
-        } else {
-            setResult(RESULT_CANCELED, null);
-        }
+        setResult(RESULT_OK);
         finish();
     }
 

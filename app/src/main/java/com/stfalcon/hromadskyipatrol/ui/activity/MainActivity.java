@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
@@ -59,12 +58,26 @@ public class MainActivity extends BaseSpiceActivity
             openCamera();
         }
         initViews();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        initUIReceiver();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+    }
+
+    private void initUIReceiver() {
         IntentFilter intentFilter = new IntentFilter(UploadService.UPDATE_VIDEO_UI);
         intentFilter.addAction(VideoProcessingService.ADD_VIDEO_UI);
         LocalBroadcastManager.getInstance(this).registerReceiver(
                 mMessageReceiver, intentFilter);
     }
-
 
     private boolean checkLocationManager() {
         if (!((LocationManager) getSystemService(Context.LOCATION_SERVICE))
@@ -207,22 +220,12 @@ public class MainActivity extends BaseSpiceActivity
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == Constants.REQUEST_CAMERA) {
-                startProcessVideoService(data);
-            }
+            initGrid();
         } else if (requestCode == Constants.REQUEST_GPS_SETTINGS) {
             if (checkLocationManager()) {
                 openCamera();
             }
         }
-    }
-
-    private void startProcessVideoService(Intent data) {
-        Log.d(TAG, "startProcessVideoService");
-        Intent processVideoIntent = new Intent(MainActivity.this, VideoProcessingService.class);
-        processVideoIntent.putExtras(data.getExtras());
-        processVideoIntent.putExtra(Constants.EXTRAS_OWNER_EMAIL, userData.getEmail());
-        startService(processVideoIntent);
     }
 
     @Override

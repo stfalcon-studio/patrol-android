@@ -12,14 +12,12 @@ import com.stfalcon.hromadskyipatrol.database.DatabasePatrol;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
 import com.stfalcon.hromadskyipatrol.models.ViolationItem;
 import com.stfalcon.hromadskyipatrol.utils.Extras;
-import com.stfalcon.hromadskyipatrol.utils.Constants;
 import com.stfalcon.hromadskyipatrol.utils.FilesUtils;
 import com.stfalcon.hromadskyipatrol.utils.ProcessVideoUtils;
 import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 import com.stfalcon.hromadskyipatrol.utils.VideoThumbUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -43,7 +41,7 @@ public class VideoProcessingService extends IntentService {
 
         // add new video to db if need
         if (intent.hasExtra(VideoCaptureActivity.MOVIES_RESULT)) {
-            addVideos(intent);
+            addVideo(intent);
         }
 
         ArrayList<VideoItem> videoItems = db.getVideos(
@@ -61,36 +59,28 @@ public class VideoProcessingService extends IntentService {
         }
     }
 
-    private void addVideos(Intent data) {
-
+    private void addVideo(Intent data) {
         DatabasePatrol db = DatabasePatrol.get(this);
 
-        ArrayList<ViolationItem> violationItems
-                = data.getParcelableArrayListExtra(VideoCaptureActivity.MOVIES_RESULT);
-        String ownerEmail = data.getStringExtra(Constants.EXTRAS_OWNER_EMAIL);
+        ViolationItem violationItem
+                = data.getParcelableExtra(VideoCaptureActivity.MOVIES_RESULT);
 
-        if (!violationItems.isEmpty()) {
-            int i = 0;
-            for (ViolationItem item : violationItems) {
-                VideoItem video = new VideoItem();
-                video.setId(String.valueOf(System.currentTimeMillis() + i++));
-                video.setVideoPrevURL(item.videoUrlPrev);
-                video.setVideoURL(item.videoUrl);
-                video.setLatitude(item.getLat());
-                video.setLongitude(item.getLon());
-                video.setState(VideoItem.State.SAVING);
-                video.setOwnerEmail(ownerEmail);
+        String thumbUrl = VideoThumbUtils.makeThumb(ThumbnailUtils.createVideoThumbnail(violationItem.videoUrl,
+                MediaStore.Images.Thumbnails.MINI_KIND));
 
-                String thumbUrl = VideoThumbUtils.makeThumb(ThumbnailUtils.createVideoThumbnail(video.getVideoURL(),
-                        MediaStore.Images.Thumbnails.MINI_KIND));
+        VideoItem video = new VideoItem();
+        video.setId(String.valueOf(System.currentTimeMillis()));
+        video.setVideoPrevURL(violationItem.videoUrlPrev);
+        video.setVideoURL(violationItem.videoUrl);
+        video.setLatitude(violationItem.getLat());
+        video.setLongitude(violationItem.getLon());
+        video.setState(VideoItem.State.SAVING);
+        video.setOwnerEmail(ProjectPreferencesManager.getUser(this).getEmail());
+        video.setThumb(thumbUrl);
 
-                video.setThumb(thumbUrl);
+        db.addVideo(video);
 
-                db.addVideo(video);
-
-                addVideoToUI(video.getId());
-            }
-        }
+        addVideoToUI(video.getId());
     }
 
     private void tryToProcessVideo(VideoItem video, DatabasePatrol db) {

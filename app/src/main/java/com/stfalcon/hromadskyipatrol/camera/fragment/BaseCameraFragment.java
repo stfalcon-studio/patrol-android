@@ -104,7 +104,7 @@ public class BaseCameraFragment extends Fragment {
     }
 
 
-    protected void createNewVideFile() {
+    protected void createNewVideoFile() {
     }
 
     private void updateTimerView(int sec) {

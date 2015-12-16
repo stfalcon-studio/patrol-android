@@ -58,9 +58,6 @@ public class UploadService extends IntentService {
         UserItem user = ProjectPreferencesManager.getUser(this);
 
         List<VideoItem> videoToSend = db.getVideos(VideoItem.State.READY_TO_SEND, user);
-        List<VideoItem> videoToResend = db.getVideos(VideoItem.State.ERROR, user);
-
-        if (!videoToResend.isEmpty()) videoToSend.addAll(videoToResend);
 
         for (VideoItem item : videoToSend) {
             updateItem(this, item.getId(), VideoItem.State.SENDING, db);
