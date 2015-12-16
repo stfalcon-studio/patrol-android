@@ -11,7 +11,6 @@ import com.stfalcon.hromadskyipatrol.camera.VideoCaptureActivity;
 import com.stfalcon.hromadskyipatrol.database.DatabasePatrol;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
 import com.stfalcon.hromadskyipatrol.models.ViolationItem;
-import com.stfalcon.hromadskyipatrol.network.UploadService;
 import com.stfalcon.hromadskyipatrol.utils.Extras;
 import com.stfalcon.hromadskyipatrol.utils.Constants;
 import com.stfalcon.hromadskyipatrol.utils.FilesUtils;
@@ -20,11 +19,7 @@ import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 import com.stfalcon.hromadskyipatrol.utils.VideoThumbUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 
 

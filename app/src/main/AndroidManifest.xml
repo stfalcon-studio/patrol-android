@@ -41,7 +41,7 @@
             android:screenOrientation="landscape"/>
 
         <service android:name="com.stfalcon.hromadskyipatrol.network.PatrolSpiceService"/>
-        <service android:name="com.stfalcon.hromadskyipatrol.network.UploadService"/>
+        <service android:name=".services.UploadService"/>
         <service android:name=".services.VideoProcessingService"/>
 
         <receiver
