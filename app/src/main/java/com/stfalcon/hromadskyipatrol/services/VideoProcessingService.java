@@ -37,6 +37,8 @@ public class VideoProcessingService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Log.d(TAG, "onHandleIntent: start process video service");
+
         DatabasePatrol db = DatabasePatrol.get(this);
 
         // add new video to db if need
@@ -44,17 +46,18 @@ public class VideoProcessingService extends IntentService {
             addVideos(intent);
         }
 
-        Log.d(TAG, "onHandleIntent: start process video service");
         ArrayList<VideoItem> videoItems = db.getVideos(
                 VideoItem.State.SAVING,
-                ProjectPreferencesManager.getUser(this)
-        );
-        for (int i = 0; i < videoItems.size(); i++) {
-            tryToProcessVideo(videoItems.get(i), db);
-        }
+                ProjectPreferencesManager.getUser(this));
 
-        if (ProjectPreferencesManager.getAutoUploadMode(getApplicationContext())) {
-            startService(new Intent(VideoProcessingService.this, UploadService.class));
+        if (!videoItems.isEmpty()) {
+            for (VideoItem item : videoItems) {
+                tryToProcessVideo(item, db);
+            }
+            // start auto upload service if need
+            if (ProjectPreferencesManager.getAutoUploadMode(getApplicationContext())) {
+                startService(new Intent(VideoProcessingService.this, UploadService.class));
+            }
         }
     }
 
@@ -119,7 +122,7 @@ public class VideoProcessingService extends IntentService {
             db.updateVideo(id, video.getVideoURL());
             db.updateVideo(video.getId(), VideoItem.State.READY_TO_SEND);
             updateUI(id, video.getVideoURL());
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             db.updateVideo(video.getId(), VideoItem.State.ERROR);
         }
