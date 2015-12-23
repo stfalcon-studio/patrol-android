@@ -250,7 +250,7 @@ public class Camera2VideoFragment extends BaseCameraFragment
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.texture: {
-                if (mIsRecordingVideo) {
+                if (mIsRecordingVideo && !violationRecording) {
                     startViolationRecording();
                 }
                 break;

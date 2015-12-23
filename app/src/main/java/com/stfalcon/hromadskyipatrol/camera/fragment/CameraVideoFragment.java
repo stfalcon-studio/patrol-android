@@ -95,7 +95,7 @@ public class CameraVideoFragment extends BaseCameraFragment implements View.OnCl
      * it prepares the {@link android.media.MediaRecorder} and starts recording.
      */
     public void onCaptureClick() {
-        if (mIsRecordingVideo) {
+        if (mIsRecordingVideo && !violationRecording) {
             startViolationRecording();
         }
     }
