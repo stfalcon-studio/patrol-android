@@ -66,6 +66,8 @@ public class VideoProcessingService extends IntentService {
         ViolationItem violationItem
                 = data.getParcelableExtra(VideoCaptureActivity.MOVIES_RESULT);
 
+        checkIfFileExist(violationItem.videoUrl);
+
         String thumbUrl = VideoThumbUtils.makeThumb(ThumbnailUtils.createVideoThumbnail(violationItem.videoUrl,
                 MediaStore.Images.Thumbnails.MINI_KIND));
 
@@ -82,6 +84,22 @@ public class VideoProcessingService extends IntentService {
         db.addVideo(video);
 
         addVideoToUI(video.getId());
+    }
+
+    private void checkIfFileExist(String fileUri) {
+        for (int existRetry = 0; existRetry < 3; existRetry++) {
+            boolean isFileExist = new File(fileUri).exists();
+            if (!isFileExist) {
+                existRetry++;
+                try {
+                    Thread.sleep(3000);   //wait file saving in media store
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                break;
+            }
+        }
     }
 
     private void tryToProcessVideo(VideoItem video, DatabasePatrol db) {

@@ -2,7 +2,7 @@ package com.stfalcon.hromadskyipatrol.camera.fragment;
 
 
 import android.app.Fragment;
-import android.os.Handler;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.Surface;
@@ -13,8 +13,6 @@ import com.stfalcon.hromadskyipatrol.utils.FilesUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by alex on 08.11.15.
@@ -26,7 +24,7 @@ public class BaseCameraFragment extends Fragment {
     public String violationFileURI;
     public String previousFileURI;
 
-    private int TIME_RECORD_AFTER_TAP = 10 * 1000; //10sec
+    private int TIME_RECORD_AFTER_TAP = 12 * 1000; //10sec
     //private int TIME_RECORD_SEGMENT = 2 * 60 * 1000;  //2 min
     private int TIME_RECORD_SEGMENT = 30 * 1000;// 30sec
 
@@ -40,21 +38,6 @@ public class BaseCameraFragment extends Fragment {
     }
 
     public ICamera callback;
-    private Handler handler;
-    private Timer segmentTimer;
-    private Timer violationTimer;
-    private StopRecordSegmentTask stopRecordSegmentTask;
-    private StopRecordViolationTask stopRecordViolationTask;
-
-
-    private Runnable updateTimerRunnable = new Runnable() {
-        public void run() {
-            updateTimerView((int) (System.currentTimeMillis() - detectViolationTime) / 1000);
-            if (violationRecording) {
-                handler.postDelayed(updateTimerRunnable, 1000);
-            }
-        }
-    };
 
     public boolean violationRecording = false;
     public boolean mIsRecordingVideo = false;
@@ -67,15 +50,11 @@ public class BaseCameraFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        handler = new Handler();
-        segmentTimer = new Timer();
-        violationTimer = new Timer();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        handler.removeCallbacks(updateTimerRunnable);
         prepareTimer();
         onStopRecord();
     }
@@ -97,7 +76,6 @@ public class BaseCameraFragment extends Fragment {
 
     protected void onStopRecord() {
         violationRecording = false;
-        handler.removeCallbacks(updateTimerRunnable);
         if (callback != null) {
             callback.onStopRecord();
         }
@@ -120,88 +98,104 @@ public class BaseCameraFragment extends Fragment {
         violationRecording = true;
         detectViolationTime = System.currentTimeMillis();
 
-        stopRecordSegmentTask.cancel();
-        stopRecordViolationTask = new StopRecordViolationTask();
-        violationTimer.schedule(stopRecordViolationTask, TIME_RECORD_AFTER_TAP);
-        handler.postDelayed(updateTimerRunnable, 1000);
+        recordSegmentCountDownTimer.cancel();
+        violationCountDownTimer.start();
     }
 
 
     public void startRecordSegment() {
         onStartRecord();
-        stopRecordSegmentTask = new StopRecordSegmentTask();
-        segmentTimer.schedule(stopRecordSegmentTask, TIME_RECORD_SEGMENT);
+        recordSegmentCountDownTimer.start();
     }
 
     private void prepareTimer() {
         try {
-            segmentTimer.cancel();
-            violationTimer.cancel();
+            recordSegmentCountDownTimer.cancel();
+            violationCountDownTimer.cancel();
         } catch (IllegalStateException e) {
         }
     }
 
 
-    class StopRecordSegmentTask extends TimerTask {
+    private CountDownTimer violationCountDownTimer = new CountDownTimer(TIME_RECORD_AFTER_TAP, 1000) {
+        @Override
+        public void onFinish() {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (callback != null) {
+                        Log.d(TAG, "run: " + violationFileURI);
+                        Log.d(TAG, "prev run: " + previousFileURI);
+                        if (previousFileURI != null) {
+                            File prevVideo = new File(FilesUtils.getOutputInternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
+                            try {
+                                FilesUtils.copyFile(new File(previousFileURI), prevVideo);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    callback.onVideoPrepared(new ViolationItem(violationFileURI, previousFileURI, detectViolationTime));
+                                }
+                            });
+                        } else {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    callback.onVideoPrepared(new ViolationItem(detectViolationTime, violationFileURI));
+                                }
+                            });
+                        }
+                        previousFileURI = violationFileURI;
+                    }
+                    if (violationRecording && mIsRecordingVideo) {
+
+                        onStopRecord();
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                initCamera();
+                            }
+                        });
+                    }
+                }
+            });
+        }
 
         @Override
-        public void run() {
-            if (!violationRecording && mIsRecordingVideo) {
-                onStopRecord();
-                if (previousFileURI != null) {
-                    new File(previousFileURI).delete();
-                }
-                previousFileURI = violationFileURI;
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        initCamera();
-                    }
-                });
-            }
+        public void onTick(long millisUntilFinished) {
+            updateTimerView((int) (System.currentTimeMillis() - detectViolationTime) / 1000);
         }
-    }
+    };
 
-    class StopRecordViolationTask extends TimerTask {
+
+    private CountDownTimer recordSegmentCountDownTimer = new CountDownTimer(TIME_RECORD_SEGMENT, 1000) {
+        @Override
+        public void onFinish() {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (!violationRecording && mIsRecordingVideo) {
+                        onStopRecord();
+                        if (previousFileURI != null) {
+                            new File(previousFileURI).delete();
+                        }
+                        previousFileURI = violationFileURI;
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                initCamera();
+                            }
+                        });
+                    }
+                }
+            });
+        }
 
         @Override
-        public void run() {
-            if (callback != null) {
-                Log.d(TAG, "run: " + violationFileURI);
-                Log.d(TAG, "prev run: " + previousFileURI);
-                if (previousFileURI != null) {
-                    File prevVideo = new File(FilesUtils.getOutputInternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
-                    try {
-                        FilesUtils.copyFile(new File(previousFileURI), prevVideo);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onVideoPrepared(new ViolationItem(violationFileURI, previousFileURI, detectViolationTime));
-                        }
-                    });
-                } else {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onVideoPrepared(new ViolationItem(detectViolationTime, violationFileURI));
-                        }
-                    });
-                }
-                previousFileURI = violationFileURI;
-            }
-            if (violationRecording && mIsRecordingVideo) {
-
-                onStopRecord();
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        initCamera();
-                    }
-                });
-            }
+        public void onTick(long millisUntilFinished) {
         }
-    }
+    };
+
 }

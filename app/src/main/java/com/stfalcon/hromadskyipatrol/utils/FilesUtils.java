@@ -81,10 +81,10 @@ public class FilesUtils {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         File mediaFile = null;
         if (type == MEDIA_TYPE_IMAGE) {
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+            mediaFile = new File(mediaStorageDir.getAbsolutePath() + File.separator +
                     "IMG_" + timeStamp + ".png");
         } else if (type == MEDIA_TYPE_VIDEO) {
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+            mediaFile = new File(mediaStorageDir.getAbsolutePath() + File.separator +
                     "VID_" + timeStamp + ".mp4");
         }
         return mediaFile;
