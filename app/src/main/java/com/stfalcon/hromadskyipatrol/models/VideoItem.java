@@ -100,7 +100,7 @@ public class VideoItem {
     }
 
     public enum State {
-        UNDEFINED(-1), SAVING(1), READY_TO_SEND(2), SENDING(3), UPLOADED(4), ERROR(5);
+        UNDEFINED(-1), SAVING(1), READY_TO_SEND(2), SENDING(3), UPLOADED(4), ERROR(5), BROKEN_FILE(6);
 
         private final int value;
 

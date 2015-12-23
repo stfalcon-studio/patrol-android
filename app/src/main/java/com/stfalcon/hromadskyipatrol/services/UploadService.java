@@ -17,6 +17,7 @@ import com.stfalcon.hromadskyipatrol.utils.NetworkUtils;
 import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.List;
 
 /**
@@ -39,12 +40,14 @@ public class UploadService extends IntentService {
                 String videoId = intent.getStringExtra(IntentUtilities.VIDEO_ID);
                 VideoItem videoItem = db.getVideo(videoId);
 
-                if (videoItem.getState() != VideoItem.State.UPLOADED) {
-                    UserItem user = ProjectPreferencesManager.getUser(this);
-                    updateItem(this, videoItem.getId(), VideoItem.State.SENDING, db);
-                    VideoAnswer answer = uploadVideo(videoItem, user);
-                    VideoItem videoInBase = db.getVideo(answer.getId());
-                    updateItem(this, videoInBase.getId(), VideoItem.State.from(answer.getState()), db);
+                if (videoItem != null) {
+                    if (videoItem.getState() != VideoItem.State.UPLOADED) {
+                        UserItem user = ProjectPreferencesManager.getUser(this);
+                        updateItem(this, videoItem.getId(), VideoItem.State.SENDING, db);
+                        VideoAnswer answer = uploadVideo(videoItem, user);
+                        VideoItem videoInBase = db.getVideo(answer.getId());
+                        updateItem(this, videoInBase.getId(), VideoItem.State.from(answer.getState()), db);
+                    }
                 }
 
             } else {
@@ -109,6 +112,9 @@ public class UploadService extends IntentService {
             }
             serverAnswer.setState(VideoItem.State.UPLOADED.value());
 
+        } catch (FileNotFoundException ex) {
+            System.err.println(ex);
+            serverAnswer.setState(VideoItem.State.BROKEN_FILE.value());
         } catch (Exception ex) {
             System.err.println(ex);
             serverAnswer.setState(VideoItem.State.ERROR.value());
