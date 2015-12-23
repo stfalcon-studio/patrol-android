@@ -3,13 +3,13 @@ package com.stfalcon.hromadskyipatrol.ui;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -95,45 +95,39 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
                 viewHolder.imgState.setImageResource(R.drawable.icon_upload);
                 viewHolder.noGPS.setVisibility(View.GONE);
                 viewHolder.imgState.setVisibility(View.VISIBLE);
-                viewHolder.progressBar.setVisibility(View.GONE);
                 break;
             case SENDING:
                 viewHolder.noGPS.setVisibility(View.GONE);
-                viewHolder.imgState.setVisibility(View.GONE);
-                viewHolder.progressBar.setVisibility(View.VISIBLE);
+                viewHolder.imgState.setImageResource((android.R.drawable.stat_sys_upload));
+                ((AnimationDrawable) viewHolder.imgState.getDrawable()).start();
                 if (!NetworkUtils.isConnectionAvailable(context)) {
                     video.setState(VideoItem.State.ERROR);
                     viewHolder.imgState.setImageResource(R.drawable.icon_repeat);
                     viewHolder.noGPS.setVisibility(View.GONE);
                     viewHolder.imgState.setVisibility(View.VISIBLE);
-                    viewHolder.progressBar.setVisibility(View.GONE);
                 }
                 break;
             case UPLOADED:
                 viewHolder.imgState.setImageResource(R.drawable.icon_done);
                 viewHolder.noGPS.setVisibility(View.GONE);
                 viewHolder.imgState.setVisibility(View.VISIBLE);
-                viewHolder.progressBar.setVisibility(View.GONE);
                 break;
             case ERROR:
                 viewHolder.imgState.setImageResource(R.drawable.icon_repeat);
                 viewHolder.noGPS.setVisibility(View.GONE);
                 viewHolder.imgState.setVisibility(View.VISIBLE);
-                viewHolder.progressBar.setVisibility(View.GONE);
                 break;
 
             case BROKEN_FILE:
                 viewHolder.imgState.setImageResource(R.drawable.icon_broken);
                 viewHolder.noGPS.setVisibility(View.GONE);
                 viewHolder.imgState.setVisibility(View.VISIBLE);
-                viewHolder.progressBar.setVisibility(View.GONE);
                 break;
 
             case SAVING:
                 viewHolder.noGPS.setText(R.string.saving);
                 viewHolder.noGPS.setVisibility(View.VISIBLE);
                 viewHolder.imgState.setVisibility(View.GONE);
-                viewHolder.progressBar.setVisibility(View.GONE);
                 break;
         }
 
@@ -166,7 +160,6 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
         public ImageView imgThumbnail;
         public ImageView imgState;
         public TextView noGPS;
-        public ProgressBar progressBar;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -175,7 +168,6 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
             imgThumbnail = (ImageView) itemView.findViewById(R.id.img_thumbnail);
             imgState = (ImageView) itemView.findViewById(R.id.img_state);
             noGPS = (TextView) itemView.findViewById(R.id.gps);
-            progressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar);
         }
 
         @Override

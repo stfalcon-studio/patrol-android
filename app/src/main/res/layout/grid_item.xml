@@ -33,12 +33,6 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:padding="5dp">
-
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            android:layout_width="24dp"
-            android:layout_height="24dp" />
-
     </LinearLayout>
 
     <TextView
