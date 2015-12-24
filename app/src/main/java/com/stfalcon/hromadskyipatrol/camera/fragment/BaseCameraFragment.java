@@ -25,7 +25,7 @@ public class BaseCameraFragment extends Fragment {
     public String previousFileURI;
 
     private int TIME_RECORD_AFTER_TAP = 12 * 1000; //10sec
-    private int TIME_RECORD_SEGMENT = 2 * 60 * 1000;  //2 min
+    private int TIME_RECORD_SEGMENT = 1 * 60 * 1000;  //1 min
     //private int TIME_RECORD_SEGMENT = 30 * 1000;// 30sec
 
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
