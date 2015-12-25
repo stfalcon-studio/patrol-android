@@ -23,7 +23,7 @@ import java.io.File;
 
 public class VideoCaptureActivity extends LocationActivity implements ICamera, View.OnClickListener {
 
-    public static final String MOVIES_RESULT = "moviesUrls";
+    public static final String MOVIES_TO_SAVE = "moviesUrls";
     private BaseCameraFragment cameraFragment;
     private TextView message;
     private TextView time;
@@ -104,7 +104,7 @@ public class VideoCaptureActivity extends LocationActivity implements ICamera, V
         }
 
         Intent intent = new Intent(VideoCaptureActivity.this, VideoProcessingService.class);
-        intent.putExtra(MOVIES_RESULT, violationItem);
+        intent.putExtra(MOVIES_TO_SAVE, violationItem);
         startService(intent);
     }
 

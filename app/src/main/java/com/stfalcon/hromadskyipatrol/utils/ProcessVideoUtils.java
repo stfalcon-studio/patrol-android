@@ -31,12 +31,8 @@ import com.googlecode.mp4parser.util.Matrix;
 import com.googlecode.mp4parser.util.Path;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.channels.WritableByteChannel;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,7 +44,7 @@ public class ProcessVideoUtils {
     /**
      * Shortens/Crops a track
      */
-    public static boolean trimToLast20sec(File src, File dst) throws IOException {
+    public static String trimToLast20sec(File src) throws IOException {
 
         IsoFile isoFile = new IsoFile(src.getAbsolutePath());
         double duration = (double)
@@ -57,10 +53,13 @@ public class ProcessVideoUtils {
         Log.d(TAG, "trimToLast20sec: " + duration);
         if (duration > 20) {
             double startTime = duration - 20;
+            File dst = new File(FilesUtils.getOutputInternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
+            Log.d(TAG, "dst: " + dst.getAbsolutePath());
             startTrim(src, dst, startTime, duration);
-            return true;
+            FilesUtils.removeFile(src.getAbsolutePath());
+            return dst.getAbsolutePath();
         }
-        return false;
+        return null;
     }
 
     public static void startTrim(File src, File dst, double startTime, double endTime) throws IOException {
