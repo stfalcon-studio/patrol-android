@@ -120,7 +120,7 @@ public class VideoProcessingService extends IntentService {
         File dst = new File(FilesUtils.getOutputInternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
 
         Log.d(TAG, "dst: " + dst.getAbsolutePath());
-        try {
+        try {//TODO fix problem with exception and wrong video url
             if (ProcessVideoUtils.trimToLast20sec(src, dst)) {
                 deleteFile(src);
                 video.setVideoURL(dst.getAbsolutePath());
@@ -130,16 +130,17 @@ public class VideoProcessingService extends IntentService {
             }
             db.updateVideo(id, video.getVideoURL());
             db.updateVideo(video.getId(), VideoItem.State.READY_TO_SEND);
-            updateUI(id, video.getVideoURL());
         } catch (Exception e) {
             e.printStackTrace();
             db.updateVideo(video.getId(), VideoItem.State.ERROR);
         }
+        updateUI(id, video.getVideoURL());
     }
 
     private void deleteFile(File file) {
         try {
             file.delete();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
