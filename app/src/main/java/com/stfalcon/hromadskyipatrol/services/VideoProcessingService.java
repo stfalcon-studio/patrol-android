@@ -40,7 +40,7 @@ public class VideoProcessingService extends IntentService {
         DatabasePatrol db = DatabasePatrol.get(this);
 
         // add new video to db if need
-        if (intent.hasExtra(VideoCaptureActivity.MOVIES_RESULT)) {
+        if (intent.hasExtra(VideoCaptureActivity.MOVIES_TO_SAVE)) {
             addVideo(intent);
         } else {
             ArrayList<VideoItem> videoItems = db.getVideos(
@@ -64,7 +64,7 @@ public class VideoProcessingService extends IntentService {
         DatabasePatrol db = DatabasePatrol.get(this);
 
         ViolationItem violationItem
-                = data.getParcelableExtra(VideoCaptureActivity.MOVIES_RESULT);
+                = data.getParcelableExtra(VideoCaptureActivity.MOVIES_TO_SAVE);
 
         checkIfFileExist(violationItem.videoUrl);
 
@@ -102,7 +102,7 @@ public class VideoProcessingService extends IntentService {
         }
     }
 
-    private void tryToProcessVideo(VideoItem video, DatabasePatrol db) {
+    private void tryToProcessVideo(final VideoItem video, DatabasePatrol db) {
         String id = video.getId();
         Log.d(TAG, "item: " + id);
         Log.d(TAG, "itemUrl: " + video.getVideoURL());
@@ -117,22 +117,19 @@ public class VideoProcessingService extends IntentService {
             deleteFile(src2);
             src = result;
         }
-        File dst = new File(FilesUtils.getOutputInternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
 
-        Log.d(TAG, "dst: " + dst.getAbsolutePath());
-        try {//TODO fix problem with exception and wrong video url
-            if (ProcessVideoUtils.trimToLast20sec(src, dst)) {
-                deleteFile(src);
-                video.setVideoURL(dst.getAbsolutePath());
-            } else {
-                deleteFile(dst);
-                video.setVideoURL(src.getAbsolutePath());
+        try {
+            String trimResultUrl = ProcessVideoUtils.trimToLast20sec(src);
+            if (trimResultUrl != null) {
+                video.setVideoURL(trimResultUrl);
             }
+
             db.updateVideo(id, video.getVideoURL());
             db.updateVideo(video.getId(), VideoItem.State.READY_TO_SEND);
+
         } catch (Exception e) {
             e.printStackTrace();
-            db.updateVideo(video.getId(), VideoItem.State.ERROR);
+            db.updateVideo(video.getId(), VideoItem.State.BROKEN_FILE);
         }
         updateUI(id, video.getVideoURL());
     }
