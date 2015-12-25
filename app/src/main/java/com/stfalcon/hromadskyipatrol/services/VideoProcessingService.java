@@ -113,8 +113,8 @@ public class VideoProcessingService extends IntentService {
             File src2 = new File(videoPrevURL);
             File result = new File(FilesUtils.getOutputInternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
             ProcessVideoUtils.concatTwoVideos(src2, src, result);
-            deleteFile(src);
-            deleteFile(src2);
+            FilesUtils.removeFile(src.getAbsolutePath());
+            FilesUtils.removeFile(src2.getAbsolutePath());
             src = result;
         }
 
@@ -132,15 +132,6 @@ public class VideoProcessingService extends IntentService {
             db.updateVideo(video.getId(), VideoItem.State.BROKEN_FILE);
         }
         updateUI(id, video.getVideoURL());
-    }
-
-    private void deleteFile(File file) {
-        try {
-            file.delete();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private void updateUI(String id, String url) {
