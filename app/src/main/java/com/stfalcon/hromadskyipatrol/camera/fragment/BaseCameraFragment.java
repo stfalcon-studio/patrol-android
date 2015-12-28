@@ -127,7 +127,7 @@ public class BaseCameraFragment extends Fragment {
                         Log.d(TAG, "run: " + violationFileURI);
                         Log.d(TAG, "prev run: " + previousFileURI);
                         if (previousFileURI != null) {
-                            File prevVideo = new File(FilesUtils.getOutputInternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
+                            final File prevVideo = new File(FilesUtils.getOutputInternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
                             try {
                                 FilesUtils.copyFile(new File(previousFileURI), prevVideo);
                             } catch (IOException e) {
@@ -136,7 +136,7 @@ public class BaseCameraFragment extends Fragment {
                             getActivity().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    callback.onVideoPrepared(new ViolationItem(violationFileURI, previousFileURI, detectViolationTime));
+                                    callback.onVideoPrepared(new ViolationItem(detectViolationTime, violationFileURI, prevVideo.getAbsolutePath()));
                                 }
                             });
                         } else {

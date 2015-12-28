@@ -18,7 +18,7 @@ public class ViolationItem implements Parcelable {
         this.violationTime = violationTime;
     }
 
-    public ViolationItem(String videoUrl, String videoUrlPrev, long violationTime) {
+    public ViolationItem(long violationTime, String videoUrl, String videoUrlPrev) {
         this.videoUrl = videoUrl;
         this.videoUrlPrev = videoUrlPrev;
         this.violationTime = violationTime;
