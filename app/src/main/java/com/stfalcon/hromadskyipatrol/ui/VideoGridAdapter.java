@@ -190,6 +190,7 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
         private void delete() {
             try {
                 new File(video.getVideoURL()).delete();
+                new File(video.getThumb()).delete();
             } catch (Exception e) {
                 e.printStackTrace();
             }
