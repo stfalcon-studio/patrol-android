@@ -10,11 +10,11 @@
     <string name="message_invalid_email">Невірна пошта</string>
     <string name="login_button">Авторизуватися</string>
     <string name="gps_dialog_title">Налаштування GPS</string>
-    <string name="gps_dialog_text">Для можливості знімати відео, будь ласка, увімкніть датчик GPS.</string>
+    <string name="gps_dialog_text">Для можливості знімати відео, будь ласка, увімкніть датчик GPS</string>
     <string name="gps_turn_on">Увімкнути</string>
-    <string name="no_photos_message">Ви ще не зробили жодного відеозапису.</string>
+    <string name="no_photos_message">Ви ще не зробили жодного відеозапису</string>
     <string name="upload_only_wifi">Відправка відео лише по Wi-Fi</string>
-    <string name="upload_automatically">Завантажувати файли автоматично</string>
+    <string name="upload_automatically">Автоматична відправка відео</string>
     <string name="logout">Вийти</string>
     <string name="no_gps">Відсутні GPS \nкоординати</string>
     <string name="email_hint">Ваша електронна пошта</string>
@@ -22,7 +22,7 @@
     <string name="record">Record</string>
     <string name="stop">Stop</string>
     <string name="description_info">Iнформація</string>
-    <string name="permission_request">Необхідний дозвіл для запису аудіо та відео.</string>
+    <string name="permission_request">Необхідний дозвіл для запису аудіо та відео</string>
     <string name="camera_error">Ваш пристрій не підтримує Camera2 API.</string>
     <string name="view_video">Переглянути відео</string>
     <string name="upload_video">Завантажити одне відео</string>

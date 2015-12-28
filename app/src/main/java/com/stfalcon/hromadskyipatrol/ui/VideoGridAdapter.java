@@ -14,10 +14,11 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.stfalcon.hromadskyipatrol.R;
-import com.stfalcon.hromadskyipatrol.database.DatabasePatrol;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
 import com.stfalcon.hromadskyipatrol.services.UploadService;
+import com.stfalcon.hromadskyipatrol.services.VideoProcessingService;
 import com.stfalcon.hromadskyipatrol.utils.AppUtilities;
+import com.stfalcon.hromadskyipatrol.utils.Extras;
 import com.stfalcon.hromadskyipatrol.utils.IntentUtilities;
 import com.stfalcon.hromadskyipatrol.utils.NetworkUtils;
 import com.stfalcon.hromadskyipatrol.utils.StringUtilities;
@@ -188,13 +189,8 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
         }
 
         private void delete() {
-            try {
-                new File(video.getVideoURL()).delete();
-                new File(video.getThumb()).delete();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            DatabasePatrol.get(context).deleteVideo(video.getId());
+            context.startService(new Intent(context,
+                    VideoProcessingService.class).putExtra(VideoProcessingService.DELETE_MOVIE, video.getId()));
 
             mItems.remove(video);
             notifyItemRemoved(getAdapterPosition());

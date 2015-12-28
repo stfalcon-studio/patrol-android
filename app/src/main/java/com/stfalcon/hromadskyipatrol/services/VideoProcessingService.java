@@ -28,6 +28,7 @@ public class VideoProcessingService extends IntentService {
 
     private static final String TAG = VideoProcessingService.class.getName();
     public static final String ADD_VIDEO_UI = "videoAdded";
+    public static final String DELETE_MOVIE = "delete_movie";
 
     public VideoProcessingService() {
         super(VideoProcessingService.class.getName());
@@ -42,7 +43,15 @@ public class VideoProcessingService extends IntentService {
         // add new video to db if need
         if (intent.hasExtra(VideoCaptureActivity.MOVIES_TO_SAVE)) {
             addVideo(intent);
-        } else {
+        }
+
+        //delete video
+        else if (intent.hasExtra(DELETE_MOVIE)) {
+            deleteVideo(intent);
+        }
+
+        //process all videos
+        else {
             ArrayList<VideoItem> videoItems = db.getVideos(
                     VideoItem.State.SAVING,
                     ProjectPreferencesManager.getUser(this));
@@ -58,6 +67,15 @@ public class VideoProcessingService extends IntentService {
         if (ProjectPreferencesManager.getAutoUploadMode(getApplicationContext())) {
             startService(new Intent(VideoProcessingService.this, UploadService.class));
         }
+    }
+
+    private void deleteVideo(Intent intent) {
+        String id = intent.getStringExtra(DELETE_MOVIE);
+        DatabasePatrol db = DatabasePatrol.get(this);
+        VideoItem video = db.getVideo(id);
+        FilesUtils.removeFile(video.getVideoURL());
+        FilesUtils.removeFile(video.getThumb());
+        DatabasePatrol.get(this).deleteVideo(id);
     }
 
     private void addVideo(Intent data) {
