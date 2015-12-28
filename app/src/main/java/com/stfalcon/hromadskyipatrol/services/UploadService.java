@@ -45,8 +45,7 @@ public class UploadService extends IntentService {
                         UserItem user = ProjectPreferencesManager.getUser(this);
                         updateItem(this, videoItem.getId(), VideoItem.State.SENDING, db);
                         VideoAnswer answer = uploadVideo(videoItem, user);
-                        VideoItem videoInBase = db.getVideo(answer.getId());
-                        updateItem(this, videoInBase.getId(), VideoItem.State.from(answer.getState()), db);
+                        updateItem(this, answer.getId(), VideoItem.State.from(answer.getState()), db);
                     }
                 }
 
@@ -66,8 +65,7 @@ public class UploadService extends IntentService {
             updateItem(this, item.getId(), VideoItem.State.SENDING, db);
 
             VideoAnswer answer = uploadVideo(item, user);
-            VideoItem videoInBase = db.getVideo(answer.getId());
-            updateItem(this, videoInBase.getId(), VideoItem.State.from(answer.getState()), db);
+            updateItem(this, answer.getId(), VideoItem.State.from(answer.getState()), db);
         }
     }
 
