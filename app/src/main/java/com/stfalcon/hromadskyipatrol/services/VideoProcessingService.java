@@ -91,6 +91,7 @@ public class VideoProcessingService extends IntentService {
 
         VideoItem video = new VideoItem();
         video.setId(String.valueOf(System.currentTimeMillis()));
+        video.setDate(violationItem.getViolationTime());
         video.setVideoPrevURL(violationItem.videoUrlPrev);
         video.setVideoURL(violationItem.videoUrl);
         video.setLatitude(violationItem.getLat());

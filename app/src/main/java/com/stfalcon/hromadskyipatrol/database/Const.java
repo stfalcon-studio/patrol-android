@@ -12,6 +12,7 @@ final class Const {
     public static final String TABLE_VIDEOS= "videos";
 
     public static final String KEY_ID = "_id";
+    public static final String KEY_DATE = "_date";
     public static final String KEY_THUMB = "thumb";
     public static final String KEY_URL = "url";
     public static final String KEY_PREV_URL = "prev_url";
@@ -22,6 +23,7 @@ final class Const {
 
     public static final String CREATE_VIDEOS_TABLE = "CREATE TABLE " + TABLE_VIDEOS + "("
             + Const.KEY_ID + " TEXT PRIMARY KEY, "
+            + Const.KEY_DATE + " REAL, "
             + Const.KEY_THUMB + " TEXT, "
             + Const.KEY_URL + " TEXT, "
             + Const.KEY_PREV_URL + " TEXT, "

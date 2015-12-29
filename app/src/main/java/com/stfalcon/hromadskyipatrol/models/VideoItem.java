@@ -9,14 +9,15 @@ public class VideoItem {
     public VideoItem() {
     }
 
-    public VideoItem(String id, String videoURL, int state, double longitude,
+    public VideoItem(String id, long date, String videoURL, int state, double longitude,
                      double latitude, String ownerEmail, String videoPrevURL, String thumb) {
-        this(id, videoURL, State.from(state), longitude, latitude, ownerEmail, videoPrevURL, thumb);
+        this(id, date, videoURL, State.from(state), longitude, latitude, ownerEmail, videoPrevURL, thumb);
     }
 
-    public VideoItem(String id, String videoURL, State state, double longitude,
+    public VideoItem(String id, long date, String videoURL, State state, double longitude,
                      double latitude, String ownerEmail, String videoPrevURL, String thumb) {
         this.id = id;
+        this.date = date ;
         this.videoURL = videoURL;
         this.thumb = thumb;
         this.state = state;
@@ -27,6 +28,7 @@ public class VideoItem {
     }
 
     private String id;
+    private long date;
     private String videoURL;
     private String thumb;
     private String videoPrevURL;
@@ -34,6 +36,14 @@ public class VideoItem {
     private double longitude;
     private double latitude;
     private String ownerEmail;
+
+    public long getDate() {
+        return date;
+    }
+
+    public void setDate(long date) {
+        this.date = date;
+    }
 
     public void setState(State state) {
         this.state = state;

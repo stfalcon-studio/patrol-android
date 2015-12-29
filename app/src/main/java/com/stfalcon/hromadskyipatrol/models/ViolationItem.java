@@ -24,6 +24,10 @@ public class ViolationItem implements Parcelable {
         this.violationTime = violationTime;
     }
 
+    public long getViolationTime() {
+        return violationTime;
+    }
+
     public double getLat() {
         return lat;
     }

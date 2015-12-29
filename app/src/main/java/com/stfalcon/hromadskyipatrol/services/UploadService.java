@@ -84,10 +84,11 @@ public class UploadService extends IntentService {
 
     public static VideoAnswer uploadVideo(VideoItem video, UserItem user) {
         return uploadVideo(video.getVideoURL(), String.valueOf(user.getId()),
-                video.getId(), video.getLatitude(), video.getLongitude());
+                video.getId(), video.getDate(), video.getLatitude(), video.getLongitude());
     }
 
-    public static VideoAnswer uploadVideo(String fileUrl, String userID, String videoID, double latitude, double longitude) {
+    public static VideoAnswer uploadVideo(String fileUrl, String userID, String videoID,
+                                          long date, double latitude, double longitude) {
         String charset = "UTF-8";
         File file = new File(fileUrl);
         String requestURL = BuildConfig.BASE_URL + UPLOAD_URL.replace("{userID}", userID);
@@ -101,6 +102,7 @@ public class UploadService extends IntentService {
             multipart.addFilePart("video", file);
             multipart.addFormField("latitude", String.valueOf(latitude));
             multipart.addFormField("longitude", String.valueOf(longitude));
+            multipart.addFormField("date", String.valueOf(date));
 
             //logs
             List<String> response = multipart.finish();

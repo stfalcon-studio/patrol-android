@@ -39,6 +39,7 @@ public class DatabasePatrol
 
         ContentValues values = new ContentValues();
         values.put(Const.KEY_ID, item.getId());
+        values.put(Const.KEY_DATE, item.getDate());
         values.put(Const.KEY_THUMB, item.getThumb());
         values.put(Const.KEY_URL, item.getVideoURL());
         values.put(Const.KEY_PREV_URL, item.getVideoPrevURL());
@@ -149,6 +150,7 @@ public class DatabasePatrol
         if (cursor.moveToFirst()) {
             item = new VideoItem(
                     cursor.getString(cursor.getColumnIndex(Const.KEY_ID)),
+                    cursor.getLong(cursor.getColumnIndex(Const.KEY_DATE)),
                     cursor.getString(cursor.getColumnIndex(Const.KEY_URL)),
                     cursor.getInt(cursor.getColumnIndex(Const.KEY_STATE)),
                     cursor.getDouble(cursor.getColumnIndex(Const.KEY_LON)),
@@ -169,6 +171,7 @@ public class DatabasePatrol
             do
                 items.add(new VideoItem(
                         cursor.getString(cursor.getColumnIndex(Const.KEY_ID)),
+                        cursor.getLong(cursor.getColumnIndex(Const.KEY_DATE)),
                         cursor.getString(cursor.getColumnIndex(Const.KEY_URL)),
                         cursor.getInt(cursor.getColumnIndex(Const.KEY_STATE)),
                         cursor.getDouble(cursor.getColumnIndex(Const.KEY_LON)),
