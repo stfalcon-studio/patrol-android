@@ -18,6 +18,8 @@ import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -93,16 +95,17 @@ public class UploadService extends IntentService {
         File file = new File(fileUrl);
         String requestURL = BuildConfig.BASE_URL + UPLOAD_URL.replace("{userID}", userID);
         VideoAnswer serverAnswer = new VideoAnswer(videoID, VideoItem.State.SENDING.value());
+        String violationDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(date));
+
         try {
             MultipartUtility multipart = new MultipartUtility(requestURL, charset);
-
             multipart.addHeaderField("Content-Type", "multipart/form-data");
             multipart.addHeaderField("Accept", "application/json");
             multipart.addHeaderField("Accept-Encoding", "gzip, deflate");
             multipart.addFilePart("video", file);
             multipart.addFormField("latitude", String.valueOf(latitude));
             multipart.addFormField("longitude", String.valueOf(longitude));
-            multipart.addFormField("date", String.valueOf(date));
+            multipart.addFormField("date", violationDate);
 
             //logs
             List<String> response = multipart.finish();
