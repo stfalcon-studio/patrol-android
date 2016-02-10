@@ -35,4 +35,15 @@
     <string name="error_server_connecting">Неможливо з\'єднатися з сервером</string>
     <string name="error_camera_access_denied">Неможливо відкрити камеру</string>
     <string name="hint_date">yyyy.mm.dd</string>
+    <string name="notification_fail_upload_title">Помилка завантаження</string>
+    <string name="notification_fail_upload_body">При завантаженні на сервер відбулась помилка</string>
+    <string name="notification_fail_upload_textTicker">Помилка завантаження...</string>
+
+    <string name="notification_start_upload_title">Завантаження відео</string>
+    <string name="notification_start_upload_body">Завантаження відео на сервер розпочато</string>
+    <string name="notification_start_upload_textTicker">Розпочато завантаження відео</string>
+
+    <string name="notification_end_upload_title">Завантаження відео</string>
+    <string name="notification_end_upload_body">Завантаження успішно завершено</string>
+    <string name="notification_end_upload_textTicker">Завантаження успішно завершено</string>
 </resources>
