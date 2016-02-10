@@ -30,7 +30,7 @@ public class NotificationUtils {
         notification(context, context.getString(R.string.notification_start_upload_title),
                 context.getString(R.string.notification_start_upload_body),
                 context.getString(R.string.notification_start_upload_textTicker),
-                R.drawable.ic_launcher, R.drawable.icon_upload);
+                R.drawable.ic_launcher, android.R.drawable.stat_sys_upload);
     }
 
     public static void notificationSuccesLoad (Context context){

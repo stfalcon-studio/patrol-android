@@ -15,6 +15,7 @@ import com.stfalcon.hromadskyipatrol.utils.Extras;
 import com.stfalcon.hromadskyipatrol.utils.IntentUtilities;
 import com.stfalcon.hromadskyipatrol.utils.MultipartUtility;
 import com.stfalcon.hromadskyipatrol.utils.NetworkUtils;
+import com.stfalcon.hromadskyipatrol.utils.NotificationUtils;
 import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 
 import java.io.File;
@@ -157,16 +158,15 @@ public class UploadService extends IntentService {
     public void uploadVideo(String fileUrl, String userID, Date date) {
         String requestURL = BuildConfig.BASE_URL + UPLOAD_URL.replace("{userID}", userID);
         try {
+            NotificationUtils.notificationStartLoad(this);
             MultipartUtility multipart = makeMultipart(requestURL, fileUrl, date, 0, 0);
             multipart.finish();
-        } catch (FileNotFoundException ex) {
-            System.err.println(ex);
-            //notification();
         } catch (Exception ex) {
             System.err.println(ex);
-            //notification();
+            NotificationUtils.notificationFailLoad(this);
+            return;
         }
-        //notification();
+        NotificationUtils.notificationSuccesLoad(this);
     }
 
 
