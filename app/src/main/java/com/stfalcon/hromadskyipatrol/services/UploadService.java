@@ -31,7 +31,6 @@ public class UploadService extends IntentService {
 
     public static final String UPDATE_VIDEO_UI = "videoExceeded";
     private static final String UPLOAD_URL = "/api/{userID}/violation-video/create";
-    private static final int NOTIFY_ID = 101;
 
     public UploadService() {
         super(UploadService.class.getName());

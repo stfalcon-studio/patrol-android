@@ -33,12 +33,12 @@ public class UploadVideoActivity extends BaseSpiceActivity {
 
     private static final int PICKED_VIDEO = 15;
 
-    EditText date;
-    ImageView imageView;
-    TextWatcher textWatcher;
-    ImageButton btnDone;
-    Uri selectedImageUri;
-    String mUri;
+    private EditText date;
+    private ImageView imageView;
+    private TextWatcher textWatcher;
+    private ImageButton btnDone;
+    private Uri selectedImageUri;
+    private String mUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +100,7 @@ public class UploadVideoActivity extends BaseSpiceActivity {
                         uploadIntent.putExtra(Extras.ID, userId);
                         uploadIntent.putExtra(Extras.URL_VIDEO, mUri);
                         startService(uploadIntent);
+                        finish();
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
