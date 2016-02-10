@@ -8,8 +8,11 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 
 import com.stfalcon.hromadskyipatrol.R;
+import com.stfalcon.hromadskyipatrol.database.DatabasePatrol;
+import com.stfalcon.hromadskyipatrol.models.VideoItem;
 import com.stfalcon.hromadskyipatrol.utils.Extras;
 import com.stfalcon.hromadskyipatrol.utils.FilesUtils;
+import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,15 +22,15 @@ import java.io.IOException;
  */
 public class VideoModeActivity extends BaseSpiceActivity {
 
-    static final int REQUEST_VIDEO_CAPTURE = 1;
-    static final String VIDEO_CAPTURE = "video";
+    public static final int REQUEST_VIDEO_CAPTURE = 1;
+    public static final String VIDEO_CAPTURE = "video";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_videomode);
 
-        if (getIntent().hasExtra(Extras.VIDEO)){
+        if (getIntent().hasExtra(Extras.VIDEO)) {
             dispatchTakeVideoIntent();
         }
 
@@ -41,14 +44,20 @@ public class VideoModeActivity extends BaseSpiceActivity {
             File src = new File(realPath);
             Bitmap thumb = ThumbnailUtils.createVideoThumbnail(realPath, MediaStore.Video.Thumbnails.MINI_KIND);
             try {
-                String url = FilesUtils.storeThumb(thumb);
+                String thumbUrl = FilesUtils.storeThumb(thumb);
                 File dist = FilesUtils.getOutputInternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO);
                 FilesUtils.copyFile(src, dist);
+                FilesUtils.removeFile(src.getAbsolutePath());
+                addVideo(thumbUrl, dist);
+                setResult(RESULT_OK);
+                finish();
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
         }
+        setResult(RESULT_CANCELED);
+        finish();
     }
 
     private void dispatchTakeVideoIntent() {
@@ -56,5 +65,22 @@ public class VideoModeActivity extends BaseSpiceActivity {
         if (takeVideoIntent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE);
         }
+    }
+
+
+    private void addVideo(String bitmapUrl, File videoFile) {
+        DatabasePatrol db = DatabasePatrol.get(this);
+
+        VideoItem video = new VideoItem();
+        video.setId(String.valueOf(System.currentTimeMillis()));
+        video.setDate(System.currentTimeMillis());
+        video.setVideoURL(videoFile.getAbsolutePath());
+        video.setLatitude(0);
+        video.setLongitude(0);
+        video.setState(VideoItem.State.READY_TO_SEND);
+        video.setOwnerEmail(ProjectPreferencesManager.getUser(this).getEmail());
+        video.setThumb(bitmapUrl);
+
+        db.addVideo(video);
     }
 }

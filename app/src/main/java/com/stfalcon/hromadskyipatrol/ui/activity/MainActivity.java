@@ -204,7 +204,10 @@ public class MainActivity extends BaseSpiceActivity
                 startActivity(new Intent(MainActivity.this, UploadVideoActivity.class));
                 break;
             case R.id.snapVideo:
-                startActivity(new Intent(MainActivity.this, VideoModeActivity.class).putExtra(Extras.VIDEO, VideoModeActivity.VIDEO_CAPTURE));
+                startActivityForResult(
+                        new Intent(MainActivity.this, VideoModeActivity.class)
+                                .putExtra(Extras.VIDEO, VideoModeActivity.VIDEO_CAPTURE),
+                        VideoModeActivity.REQUEST_VIDEO_CAPTURE);
                 break;
         }
     }
