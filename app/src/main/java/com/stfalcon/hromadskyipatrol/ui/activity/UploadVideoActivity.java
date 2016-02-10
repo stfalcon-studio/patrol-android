@@ -46,7 +46,7 @@ public class UploadVideoActivity extends BaseSpiceActivity {
         setContentView(R.layout.activity_upload_video);
 
         initView();
-        initTextWatcer();
+        initTextWatcher();
         date.addTextChangedListener(textWatcher);
 
         //Use MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
@@ -89,24 +89,17 @@ public class UploadVideoActivity extends BaseSpiceActivity {
                 UserItem user = ProjectPreferencesManager.getUser(UploadVideoActivity.this);
                 String userId = String.valueOf(user.getId());
                 String violationDate = date.getText().toString();
-                if (violationDate.contains("Y")){
+                if (violationDate.contains("Y")) {
                     date.setError("Введіть коректну дату");
                 } else {
                     SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
                     try {
                         Date datePast = format.parse(violationDate);
-                        android.text.format.DateFormat dateFormat = new android.text.format.DateFormat();
-                        String violationDateSend = (String) dateFormat.format("yyyy-MM-dd HH:mm:ss", datePast);
                         Intent uploadIntent = new Intent(UploadVideoActivity.this, UploadService.class);
-                        uploadIntent.putExtra(Extras.DATE, violationDateSend);
+                        uploadIntent.putExtra(Extras.DATE, datePast);
                         uploadIntent.putExtra(Extras.ID, userId);
                         uploadIntent.putExtra(Extras.URL_VIDEO, mUri);
-                        if (violationDateSend.contains("Y")){
-                            date.setError("Введіть коректну дату");
-                        } else {
-                            startService(uploadIntent);
-                        }
-
+                        startService(uploadIntent);
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
@@ -115,7 +108,7 @@ public class UploadVideoActivity extends BaseSpiceActivity {
         });
     }
 
-    private void initTextWatcer() {
+    private void initTextWatcher() {
         textWatcher = new TextWatcher() {
             private String current = "";
             private String ddmmyyyy = "DDMMYYYY";
@@ -140,25 +133,25 @@ public class UploadVideoActivity extends BaseSpiceActivity {
                     //Fix for pressing delete next to a forward slash
                     if (clean.equals(cleanC)) sel--;
 
-                    if (clean.length() < 8){
+                    if (clean.length() < 8) {
                         clean = clean + ddmmyyyy.substring(clean.length());
-                    }else{
+                    } else {
                         //This part makes sure that when we finish entering numbers
                         //the date is correct, fixing it otherwise
-                        int day  = Integer.parseInt(clean.substring(0,2));
-                        int mon  = Integer.parseInt(clean.substring(2,4));
-                        int year = Integer.parseInt(clean.substring(4,8));
+                        int day = Integer.parseInt(clean.substring(0, 2));
+                        int mon = Integer.parseInt(clean.substring(2, 4));
+                        int year = Integer.parseInt(clean.substring(4, 8));
 
-                        if(mon > 12) mon = 12;
-                        cal.set(Calendar.MONTH, mon-1);
-                        year = (year<1900)?1900:(year>2100)?2100:year;
+                        if (mon > 12) mon = 12;
+                        cal.set(Calendar.MONTH, mon - 1);
+                        year = (year < 1900) ? 1900 : (year > 2100) ? 2100 : year;
                         cal.set(Calendar.YEAR, year);
                         // ^ first set year for the line below to work correctly
                         //with leap years - otherwise, date e.g. 29/02/2012
                         //would be automatically corrected to 28/02/2012
 
-                        day = (day > cal.getActualMaximum(Calendar.DATE))? cal.getActualMaximum(Calendar.DATE):day;
-                        clean = String.format("%02d%02d%02d",day, mon, year);
+                        day = (day > cal.getActualMaximum(Calendar.DATE)) ? cal.getActualMaximum(Calendar.DATE) : day;
+                        clean = String.format("%02d%02d%02d", day, mon, year);
                     }
 
                     clean = String.format("%s-%s-%s", clean.substring(0, 2),

@@ -11,4 +11,5 @@ public final class Constants {
     public static final int REQUEST_VIDEO_PERMISSIONS = 12;
 
     public static final String EXTRAS_OWNER_EMAIL = "extras_owner_email";
+    public static final String SERVER_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 }
