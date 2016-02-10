@@ -42,6 +42,8 @@
 
         <activity android:name=".ui.activity.UploadVideoActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".ui.activity.VideoModeActivity"
+            android:screenOrientation="portrait"/>
 
         <service android:name="com.stfalcon.hromadskyipatrol.network.PatrolSpiceService"/>
         <service android:name=".services.UploadService"/>

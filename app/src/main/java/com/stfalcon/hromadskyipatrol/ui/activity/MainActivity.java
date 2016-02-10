@@ -120,6 +120,7 @@ public class MainActivity extends BaseSpiceActivity
         findViewById(R.id.snap).setOnClickListener(this);
         findViewById(R.id.logout).setOnClickListener(this);
         findViewById(R.id.bt_add_video).setOnClickListener(this);
+        findViewById(R.id.snapVideo).setOnClickListener(this);
 
         onlyWiFiCheckBox = (CheckBox) findViewById(R.id.onlyWiFiCheckBox);
         onlyWiFiCheckBox.setOnClickListener(this);
@@ -201,6 +202,9 @@ public class MainActivity extends BaseSpiceActivity
                 break;
             case R.id.bt_add_video:
                 startActivity(new Intent(MainActivity.this, UploadVideoActivity.class));
+                break;
+            case R.id.snapVideo:
+                startActivity(new Intent(MainActivity.this, VideoModeActivity.class).putExtra(Extras.VIDEO, VideoModeActivity.VIDEO_CAPTURE));
                 break;
         }
     }
