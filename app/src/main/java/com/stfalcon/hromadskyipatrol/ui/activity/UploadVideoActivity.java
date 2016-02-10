@@ -1,6 +1,7 @@
 package com.stfalcon.hromadskyipatrol.ui.activity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,13 +15,14 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.stfalcon.hromadskyipatrol.R;
+import com.stfalcon.hromadskyipatrol.database.DatabasePatrol;
 import com.stfalcon.hromadskyipatrol.models.UserItem;
-import com.stfalcon.hromadskyipatrol.services.UploadService;
-import com.stfalcon.hromadskyipatrol.utils.Extras;
+import com.stfalcon.hromadskyipatrol.models.VideoItem;
 import com.stfalcon.hromadskyipatrol.utils.FilesUtils;
 import com.stfalcon.hromadskyipatrol.utils.IntentUtilities;
 import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -32,6 +34,7 @@ import java.util.Date;
 public class UploadVideoActivity extends BaseSpiceActivity {
 
     private static final int PICKED_VIDEO = 15;
+    public static final int UPLOAD_VIDEO = 30;
 
     private EditText date;
     private ImageView imageView;
@@ -66,6 +69,7 @@ public class UploadVideoActivity extends BaseSpiceActivity {
                 imageView.setImageBitmap(ThumbnailUtils.createVideoThumbnail(
                         mUri, MediaStore.Video.Thumbnails.FULL_SCREEN_KIND));
             } else {
+                setResult(RESULT_CANCELED);
                 finish();
             }
         }
@@ -92,14 +96,19 @@ public class UploadVideoActivity extends BaseSpiceActivity {
                 if (violationDate.contains("Y")) {
                     date.setError("Введіть коректну дату");
                 } else {
+                    Bitmap thumb = ThumbnailUtils.createVideoThumbnail(mUri, MediaStore.Video.Thumbnails.MINI_KIND);
+                    String thumbUrl = FilesUtils.storeThumb(thumb);
+                    File video = new File(mUri);
                     SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
                     try {
                         Date datePast = format.parse(violationDate);
-                        Intent uploadIntent = new Intent(UploadVideoActivity.this, UploadService.class);
-                        uploadIntent.putExtra(Extras.DATE, datePast);
-                        uploadIntent.putExtra(Extras.ID, userId);
-                        uploadIntent.putExtra(Extras.URL_VIDEO, mUri);
-                        startService(uploadIntent);
+//                        Intent uploadIntent = new Intent(UploadVideoActivity.this, UploadService.class);
+//                        uploadIntent.putExtra(Extras.DATE, datePast);
+//                        uploadIntent.putExtra(Extras.ID, userId);
+//                        uploadIntent.putExtra(Extras.URL_VIDEO, mUri);
+//                        startService(uploadIntent);
+                        addVideo(thumbUrl, video, datePast);
+                        setResult(RESULT_OK);
                         finish();
                     } catch (ParseException e) {
                         e.printStackTrace();
@@ -173,4 +182,26 @@ public class UploadVideoActivity extends BaseSpiceActivity {
         };
     }
 
+    private void addVideo(String bitmapUrl, File videoFile, Date date) {
+        DatabasePatrol db = DatabasePatrol.get(this);
+
+        VideoItem video = new VideoItem();
+        video.setId(String.valueOf(System.currentTimeMillis()));
+        video.setDate(date.getTime());
+        video.setVideoURL(videoFile.getAbsolutePath());
+        video.setLatitude(0);
+        video.setLongitude(0);
+        video.setState(VideoItem.State.READY_TO_SEND);
+        video.setOwnerEmail(ProjectPreferencesManager.getUser(this).getEmail());
+        video.setThumb(bitmapUrl);
+
+        db.addVideo(video);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        setResult(RESULT_CANCELED);
+        finish();
+    }
 }
