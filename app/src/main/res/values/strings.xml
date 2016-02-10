@@ -34,4 +34,5 @@
     <string name="error_no_connection">Будь ласка, перевіте ваше з\'єднання та спробуйте ще раз</string>
     <string name="error_server_connecting">Неможливо з\'єднатися з сервером</string>
     <string name="error_camera_access_denied">Неможливо відкрити камеру</string>
+    <string name="hint_date">yyyy.mm.dd</string>
 </resources>

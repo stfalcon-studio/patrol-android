@@ -1,15 +1,22 @@
 package com.stfalcon.hromadskyipatrol.services;
 
 import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.BitmapFactory;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.stfalcon.hromadskyipatrol.BuildConfig;
+import com.stfalcon.hromadskyipatrol.R;
 import com.stfalcon.hromadskyipatrol.database.DatabasePatrol;
 import com.stfalcon.hromadskyipatrol.models.UserItem;
 import com.stfalcon.hromadskyipatrol.models.VideoAnswer;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
+import com.stfalcon.hromadskyipatrol.ui.activity.MainActivity;
 import com.stfalcon.hromadskyipatrol.utils.Extras;
 import com.stfalcon.hromadskyipatrol.utils.IntentUtilities;
 import com.stfalcon.hromadskyipatrol.utils.MultipartUtility;
@@ -29,6 +36,7 @@ public class UploadService extends IntentService {
 
     public static final String UPDATE_VIDEO_UI = "videoExceeded";
     private static final String UPLOAD_URL = "/api/{userID}/violation-video/create";
+    private static final int NOTIFY_ID = 101;
 
     public UploadService() {
         super(UploadService.class.getName());
@@ -53,6 +61,13 @@ public class UploadService extends IntentService {
 
             } else {
                 tryToSendAllVideo();
+            }
+
+            if (intent.hasExtra(Extras.ID) && intent.hasExtra(Extras.URL_VIDEO) && intent.hasExtra(Extras.DATE)){
+                String date = intent.getStringExtra(Extras.DATE);
+                String urlVideo = intent.getStringExtra(Extras.URL_VIDEO);
+                String id = intent.getStringExtra(Extras.ID);
+                uploadVideo(urlVideo, id, date);
             }
         }
     }
@@ -123,5 +138,75 @@ public class UploadService extends IntentService {
             serverAnswer.setState(VideoItem.State.ERROR.value());
         }
         return serverAnswer;
+    }
+
+    public boolean uploadVideo(String fileUrl, String userID, String date) {
+        String charset = "UTF-8";
+        File file = new File(fileUrl);
+        String requestURL = BuildConfig.BASE_URL + UPLOAD_URL.replace("{userID}", userID);
+        String violationDate = date;
+        boolean isUploaded;
+
+        try {
+            MultipartUtility multipart = new MultipartUtility(requestURL, charset);
+            multipart.addHeaderField("Content-Type", "multipart/form-data");
+            multipart.addHeaderField("Accept", "application/json");
+            multipart.addHeaderField("Accept-Encoding", "gzip, deflate");
+            multipart.addFilePart("video", file);
+            multipart.addFormField("latitude", String.valueOf(0)); //TODO Hardcode geodata
+            multipart.addFormField("longitude", String.valueOf(0));
+            multipart.addFormField("date", violationDate);
+
+            //logs
+            List<String> response = multipart.finish();
+            System.out.println("SERVER REPLIED:");
+            for (String line : response) {
+                System.out.println(line);
+            }
+
+            isUploaded = true;
+
+        } catch (FileNotFoundException ex) {
+            System.err.println(ex);
+            isUploaded = false;
+            notification();
+        } catch (Exception ex) {
+            System.err.println(ex);
+            isUploaded = false;
+            notification();
+        }
+        return isUploaded;
+    }
+
+    private void notification(){
+        Context context = getApplicationContext();
+
+        Intent notificationIntent = new Intent(context, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(context,
+                0, notificationIntent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
+
+        Resources res = context.getResources();
+        Notification.Builder builder = new Notification.Builder(context);
+
+        builder.setContentIntent(contentIntent)
+                .setSmallIcon(R.drawable.icon_broken)
+                .setLargeIcon(BitmapFactory.decodeResource(res, R.drawable.ic_settings))
+                .setTicker("Відправка відео")
+                .setWhen(System.currentTimeMillis())
+                .setAutoCancel(true)
+                .setContentTitle("Патруль")
+                .setContentText("Відео не відправилось");
+
+        Notification notification = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            notification = builder.build();
+        } else {
+            notification = builder.getNotification();
+        }
+
+        NotificationManager notificationManager = (NotificationManager) context
+                .getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(NOTIFY_ID, notification);
     }
 }

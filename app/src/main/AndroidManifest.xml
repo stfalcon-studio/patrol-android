@@ -40,6 +40,9 @@
             android:keepScreenOn="true"
             android:screenOrientation="landscape"/>
 
+        <activity android:name=".ui.activity.UploadVideoActivity"
+            android:screenOrientation="portrait"/>
+
         <service android:name="com.stfalcon.hromadskyipatrol.network.PatrolSpiceService"/>
         <service android:name=".services.UploadService"/>
         <service android:name=".services.VideoProcessingService"/>
