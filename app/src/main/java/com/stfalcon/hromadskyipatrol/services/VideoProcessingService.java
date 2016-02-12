@@ -74,7 +74,9 @@ public class VideoProcessingService extends IntentService {
         DatabasePatrol db = DatabasePatrol.get(this);
         VideoItem video = db.getVideo(id);
         FilesUtils.removeFile(video.getVideoURL());
-        FilesUtils.removeFile(video.getThumb());
+        if (video.getThumb() != null) {
+            FilesUtils.removeFile(video.getThumb());
+        }
         DatabasePatrol.get(this).deleteVideo(id);
     }
 

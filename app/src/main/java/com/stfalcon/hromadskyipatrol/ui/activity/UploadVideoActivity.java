@@ -2,6 +2,7 @@ package com.stfalcon.hromadskyipatrol.ui.activity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,13 +17,14 @@ import android.widget.ImageView;
 
 import com.stfalcon.hromadskyipatrol.R;
 import com.stfalcon.hromadskyipatrol.database.DatabasePatrol;
-import com.stfalcon.hromadskyipatrol.models.UserItem;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
+import com.stfalcon.hromadskyipatrol.utils.Constants;
 import com.stfalcon.hromadskyipatrol.utils.FilesUtils;
 import com.stfalcon.hromadskyipatrol.utils.IntentUtilities;
 import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -40,8 +42,9 @@ public class UploadVideoActivity extends BaseSpiceActivity {
     private ImageView imageView;
     private TextWatcher textWatcher;
     private ImageButton btnDone;
-    private Uri selectedImageUri;
-    private String mUri;
+    private Uri selectedVideoUri;
+    private String videoRealPath;
+    private String locationNotFormated;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,10 +67,30 @@ public class UploadVideoActivity extends BaseSpiceActivity {
 
         if (requestCode == PICKED_VIDEO) {
             if (resultCode == RESULT_OK) {
-                selectedImageUri = data.getData();
-                mUri = FilesUtils.getRealPathFromURI(this, selectedImageUri, "VIDEO");
+                selectedVideoUri = data.getData();
+                videoRealPath = FilesUtils.getRealPathFromURI(this, selectedVideoUri, "VIDEO");
                 imageView.setImageBitmap(ThumbnailUtils.createVideoThumbnail(
-                        mUri, MediaStore.Video.Thumbnails.FULL_SCREEN_KIND));
+                        videoRealPath, MediaStore.Video.Thumbnails.FULL_SCREEN_KIND));
+
+                MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+                retriever.setDataSource(this, selectedVideoUri);
+
+                String dateNotFormated = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DATE);
+                locationNotFormated = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_LOCATION);
+                SimpleDateFormat formatReceived = new SimpleDateFormat(Constants.VIDEO_DATE_MASK);
+                SimpleDateFormat formatWanted = new SimpleDateFormat(Constants.EDIT_TEXT_MASK);
+                Log.i("TAG", "onActivityResult: " + locationNotFormated);
+                retriever.release();
+                Date received;
+                if (dateNotFormated != null) {
+                    try {
+                        received = formatReceived.parse(dateNotFormated);
+                        String output = formatWanted.format(received);
+                        date.setText(output);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
             } else {
                 setResult(RESULT_CANCELED);
                 finish();
@@ -82,37 +105,50 @@ public class UploadVideoActivity extends BaseSpiceActivity {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                IntentUtilities.openVideo(UploadVideoActivity.this, mUri);
+                IntentUtilities.openVideo(UploadVideoActivity.this, videoRealPath);
             }
         });
 
         btnDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("TAG", "onClick: pressed");
-                UserItem user = ProjectPreferencesManager.getUser(UploadVideoActivity.this);
-                String userId = String.valueOf(user.getId());
                 String violationDate = date.getText().toString();
+
                 if (violationDate.contains("Y")) {
-                    date.setError("Введіть коректну дату");
+                    date.setError(getString(R.string.error_incorect_date));
                 } else {
-                    Bitmap thumb = ThumbnailUtils.createVideoThumbnail(mUri, MediaStore.Video.Thumbnails.MINI_KIND);
+                    Bitmap thumb = ThumbnailUtils.createVideoThumbnail(videoRealPath, MediaStore.Video.Thumbnails.MINI_KIND);
                     String thumbUrl = FilesUtils.storeThumb(thumb);
-                    File video = new File(mUri);
-                    SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+                    File video = new File(videoRealPath);
+                    SimpleDateFormat format = new SimpleDateFormat(Constants.EDIT_TEXT_MASK);
+                    File dist = FilesUtils.getOutputInternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO);
+
                     try {
                         Date datePast = format.parse(violationDate);
+                        FilesUtils.copyFile(video, dist);
+//                        FilesUtils.removeFile(video.getAbsolutePath());
 //                        Intent uploadIntent = new Intent(UploadVideoActivity.this, UploadService.class);
 //                        uploadIntent.putExtra(Extras.DATE, datePast);
 //                        uploadIntent.putExtra(Extras.ID, userId);
-//                        uploadIntent.putExtra(Extras.URL_VIDEO, mUri);
+//                        uploadIntent.putExtra(Extras.URL_VIDEO, videoRealPath);
 //                        startService(uploadIntent);
-                        addVideo(thumbUrl, video, datePast);
+                        if (locationNotFormated != null) {
+                            String[] geodata = locationNotFormated.substring(1).split("[+]"); //TODO Caution hard divide by +
+                            double lat = Double.valueOf(geodata[0]);
+                            double lon = Double.valueOf(geodata[1]);
+                            addVideo(thumbUrl, dist, datePast, lat, lon);
+                        } else {
+                            addVideo(thumbUrl, dist, datePast, 0, 0);
+                        }
+
                         setResult(RESULT_OK);
                         finish();
                     } catch (ParseException e) {
                         e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
+
                 }
             }
         });
@@ -182,15 +218,15 @@ public class UploadVideoActivity extends BaseSpiceActivity {
         };
     }
 
-    private void addVideo(String bitmapUrl, File videoFile, Date date) {
+    private void addVideo(String bitmapUrl, File videoFile, Date date, double lat, double lon) {
         DatabasePatrol db = DatabasePatrol.get(this);
 
         VideoItem video = new VideoItem();
         video.setId(String.valueOf(System.currentTimeMillis()));
         video.setDate(date.getTime());
         video.setVideoURL(videoFile.getAbsolutePath());
-        video.setLatitude(0);
-        video.setLongitude(0);
+        video.setLatitude(lat);
+        video.setLongitude(lon);
         video.setState(VideoItem.State.READY_TO_SEND);
         video.setOwnerEmail(ProjectPreferencesManager.getUser(this).getEmail());
         video.setThumb(bitmapUrl);

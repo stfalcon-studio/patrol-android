@@ -12,4 +12,6 @@ public final class Constants {
 
     public static final String EXTRAS_OWNER_EMAIL = "extras_owner_email";
     public static final String SERVER_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    public static final String VIDEO_DATE_MASK = "yyyyMMdd'T'hhmmss.SSS'Z'";
+    public static final String EDIT_TEXT_MASK = "dd-MM-yyyy";
 }
