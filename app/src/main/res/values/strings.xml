@@ -46,5 +46,5 @@
     <string name="notification_end_upload_title">Завантаження відео</string>
     <string name="notification_end_upload_body">Завантаження успішно завершено</string>
     <string name="notification_end_upload_textTicker">Завантаження успішно завершено</string>
-    <string name="error_incorect_date">Введіть коректну дату</string>
+    <string name="error_incorrect_date">Введіть коректну дату</string>
 </resources>

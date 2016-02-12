@@ -115,7 +115,7 @@ public class UploadVideoActivity extends BaseSpiceActivity {
                 String violationDate = date.getText().toString();
 
                 if (violationDate.contains("Y")) {
-                    date.setError(getString(R.string.error_incorect_date));
+                    date.setError(getString(R.string.error_incorrect_date));
                 } else {
                     Bitmap thumb = ThumbnailUtils.createVideoThumbnail(videoRealPath, MediaStore.Video.Thumbnails.MINI_KIND);
                     String thumbUrl = FilesUtils.storeThumb(thumb);
