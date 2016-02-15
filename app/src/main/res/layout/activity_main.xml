@@ -9,45 +9,55 @@
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="48dp"/>
+        android:layout_above="@+id/bottomMenu"
+        android:layout_marginTop="48dp" />
 
     <TextView
         android:id="@+id/noVideosTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/no_photos_message"
         android:layout_centerInParent="true"
-        android:visibility="gone"/>
+        android:text="@string/no_photos_message"
+        android:visibility="gone" />
 
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/snap"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <RelativeLayout
+        android:id="@+id/bottomMenu"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_margin="16dp"
-        android:clickable="true"
-        android:src="@drawable/ic_video_white_24dp"
-        app:backgroundTint="@color/primaryColor"
-        app:borderWidth="0dp"
-        app:elevation="6dp"
-        app:fabSize="normal"/>
+        android:background="@color/primaryColor">
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/snapVideo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_above="@+id/snap"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="0dp"
-        android:clickable="true"
-        android:src="@drawable/ic_video_white_24dp"
-        app:backgroundTint="@color/red"
-        app:borderWidth="0dp"
-        app:elevation="6dp"
-        app:fabSize="normal"/>
+        <ImageButton
+            android:id="@+id/snapVideo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="16dp"
+            android:background="@null"
+            android:src="@drawable/ic_videocam_white_48dp" />
+
+        <ImageButton
+            android:id="@+id/bt_add_video"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="16dp"
+            android:background="@null"
+            android:src="@drawable/ic_attachment_white_48dp" />
+
+    </RelativeLayout>
+
+    <ImageButton
+        android:id="@+id/snap"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_above="@+id/bottomMenu"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="-28dp"
+        android:background="@drawable/bg_round"
+        android:src="@drawable/ic_video_white_24dp" />
 
     <android.support.design.widget.CollapsingToolbarLayout
         android:id="@+id/my_awesome_toolbar"
@@ -68,41 +78,30 @@
                 android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginTop="10dp"
+                android:paddingLeft="8dp"
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
-                android:paddingLeft="8dp"
-                tools:text="User name"
-                android:layout_marginTop="10dp"
-                android:layout_alignParentLeft="true"/>
-
+                tools:text="User name" />
 
             <ImageButton
                 android:id="@+id/bt_settings"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
                 android:background="@null"
                 android:padding="14dp"
-                android:src="@drawable/icon_settings"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"/>
-
-            <ImageButton
-                android:id="@+id/bt_add_video"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@null"
-                android:padding="8dp"
-                android:layout_toLeftOf="@+id/bt_settings"
-                android:src="@android:drawable/ic_input_add"
-                android:layout_alignParentTop="true"/>
+                android:src="@drawable/icon_settings" />
 
             <LinearLayout
                 android:id="@+id/ll_settings"
-                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/title"
                 android:layout_marginTop="16dp"
+                android:orientation="vertical"
                 android:visibility="gone">
 
                 <CheckBox
@@ -111,10 +110,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
-                    android:textColor="@android:color/white"
-                    android:textSize="14sp"
                     android:clickable="true"
-                    android:text="@string/upload_only_wifi" />
+                    android:text="@string/upload_only_wifi"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp" />
 
                 <CheckBox
                     android:id="@+id/autoUploadCheckBox"
@@ -122,25 +121,47 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
-                    android:textColor="@android:color/white"
-                    android:textSize="14sp"
                     android:clickable="true"
-                    android:text="@string/upload_automatically" />
+                    android:text="@string/upload_automatically"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp" />
+
+                <CheckBox
+                    android:id="@+id/startWithRecording"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:clickable="true"
+                    android:text="@string/record_when_start"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/userName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="16dp"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp"
+                    tools:text="User name" />
 
                 <Button
                     android:id="@+id/logout"
-                    android:text="@string/logout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:textSize="12sp"
+                    android:background="@color/primaryColorDark"
+                    android:text="@string/logout"
                     android:textColor="@color/primaryTextColor"
-                    android:background="@color/primaryColorDark"/>
+                    android:textSize="12sp" />
 
             </LinearLayout>
 
         </RelativeLayout>
     </android.support.design.widget.CollapsingToolbarLayout>
-
 
 </RelativeLayout>

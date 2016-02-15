@@ -134,7 +134,8 @@ public class MainActivity extends BaseSpiceActivity
         llSettings = (LinearLayout) findViewById(R.id.ll_settings);
 
         userData = ProjectPreferencesManager.getUser(this);
-        ((TextView) findViewById(R.id.title)).setText(userData.getEmail());
+        ((TextView) findViewById(R.id.title)).setText(getString(R.string.app_name));
+        ((TextView) findViewById(R.id.userName)).setText(userData.getEmail());
     }
 
 
@@ -184,6 +185,9 @@ public class MainActivity extends BaseSpiceActivity
                         .setAction("autoUploadCheckBox")
                         .setLabel(String.valueOf(autoUploadCheckBox.isChecked()))
                         .build());
+                break;
+            case R.id.startWithRecording:
+                //TODO logic start with recording
                 break;
             case R.id.logout:
                 UserItem userData = new UserItem();

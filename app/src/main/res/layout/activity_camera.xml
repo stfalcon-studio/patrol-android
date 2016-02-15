@@ -46,8 +46,7 @@
             android:layout_alignParentTop="true"
             android:layout_margin="8dp"
             android:background="@null"
-            android:padding="16dp"
-            android:src="@drawable/grid" />
+            android:src="@drawable/ic_clear_white_48dp" />
 
         <TextView
             android:id="@+id/time"

@@ -47,4 +47,5 @@
     <string name="notification_end_upload_body">Завантаження успішно завершено</string>
     <string name="notification_end_upload_textTicker">Завантаження успішно завершено</string>
     <string name="error_incorrect_date">Введіть коректну дату</string>
+    <string name="record_when_start">Стартувати з запису</string>
 </resources>
