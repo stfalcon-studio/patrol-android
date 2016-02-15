@@ -15,7 +15,6 @@ import com.stfalcon.hromadskyipatrol.utils.FilesUtils;
 import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * Created by artem on 10.02.16.
@@ -24,6 +23,7 @@ public class VideoModeActivity extends BaseSpiceActivity {
 
     public static final int REQUEST_VIDEO_CAPTURE = 1;
     public static final String VIDEO_CAPTURE = "video";
+    private File dist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,22 +39,11 @@ public class VideoModeActivity extends BaseSpiceActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == RESULT_OK) {
-            Uri videoUri = data.getData();
-            String realPath = FilesUtils.getRealPathFromURI(this, videoUri, "VIDEO");
-            File src = new File(realPath);
-            Bitmap thumb = ThumbnailUtils.createVideoThumbnail(realPath, MediaStore.Video.Thumbnails.MINI_KIND);
-            try {
-                String thumbUrl = FilesUtils.storeThumb(thumb);
-                File dist = FilesUtils.getOutputInternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO);
-                FilesUtils.copyFile(src, dist);
-                FilesUtils.removeFile(src.getAbsolutePath());
-                addVideo(thumbUrl, dist);
-                setResult(RESULT_OK);
-                finish();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
+            Bitmap thumb = ThumbnailUtils.createVideoThumbnail(dist.getAbsolutePath(), MediaStore.Video.Thumbnails.MINI_KIND);
+            String thumbUrl = FilesUtils.storeThumb(thumb);
+            addVideo(thumbUrl, dist);
+            setResult(RESULT_OK);
+            finish();
         }
         setResult(RESULT_CANCELED);
         finish();
@@ -62,11 +51,12 @@ public class VideoModeActivity extends BaseSpiceActivity {
 
     private void dispatchTakeVideoIntent() {
         Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        dist = FilesUtils.getOutputInternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO);
+        takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(dist));
         if (takeVideoIntent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE);
         }
     }
-
 
     private void addVideo(String bitmapUrl, File videoFile) {
         DatabasePatrol db = DatabasePatrol.get(this);

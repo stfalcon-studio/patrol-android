@@ -68,7 +68,7 @@ public class UploadVideoActivity extends BaseSpiceActivity {
         if (requestCode == PICKED_VIDEO) {
             if (resultCode == RESULT_OK) {
                 selectedVideoUri = data.getData();
-                videoRealPath = FilesUtils.getRealPathFromURI(this, selectedVideoUri, "VIDEO");
+                videoRealPath = FilesUtils.getRealPathFromURI(this, selectedVideoUri);
                 imageView.setImageBitmap(ThumbnailUtils.createVideoThumbnail(
                         videoRealPath, MediaStore.Video.Thumbnails.FULL_SCREEN_KIND));
 
@@ -126,12 +126,6 @@ public class UploadVideoActivity extends BaseSpiceActivity {
                     try {
                         Date datePast = format.parse(violationDate);
                         FilesUtils.copyFile(video, dist);
-//                        FilesUtils.removeFile(video.getAbsolutePath());
-//                        Intent uploadIntent = new Intent(UploadVideoActivity.this, UploadService.class);
-//                        uploadIntent.putExtra(Extras.DATE, datePast);
-//                        uploadIntent.putExtra(Extras.ID, userId);
-//                        uploadIntent.putExtra(Extras.URL_VIDEO, videoRealPath);
-//                        startService(uploadIntent);
                         if (locationNotFormated != null) {
                             String[] geodata = locationNotFormated.substring(1).split("[+]"); //TODO Caution hard divide by +
                             double lat = Double.valueOf(geodata[0]);
