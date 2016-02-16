@@ -23,41 +23,37 @@
     <RelativeLayout
         android:id="@+id/bottomMenu"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="64dp"
         android:layout_alignParentBottom="true"
-        android:background="@color/primaryColor">
-
-        <ImageButton
-            android:id="@+id/snapVideo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_margin="16dp"
-            android:background="@null"
-            android:src="@drawable/ic_videocam_white_48dp" />
+        android:orientation="horizontal">
 
         <ImageButton
             android:id="@+id/bt_add_video"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:layout_margin="16dp"
+            android:layout_toLeftOf="@+id/snap"
             android:background="@null"
-            android:src="@drawable/ic_attachment_white_48dp" />
+            android:src="@drawable/ic_add" />
+
+        <ImageButton
+            android:id="@+id/snap"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:background="@color/primaryColor"
+            android:src="@drawable/ic_recorder" />
+
+        <ImageButton
+            android:id="@+id/snapVideo"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_toRightOf="@+id/snap"
+            android:background="@null"
+            android:src="@drawable/ic_camera" />
 
     </RelativeLayout>
-
-    <ImageButton
-        android:id="@+id/snap"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_above="@+id/bottomMenu"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="-28dp"
-        android:background="@drawable/bg_round"
-        android:src="@drawable/ic_video_white_24dp" />
 
     <android.support.design.widget.CollapsingToolbarLayout
         android:id="@+id/my_awesome_toolbar"
@@ -93,7 +89,7 @@
                 android:layout_alignParentTop="true"
                 android:background="@null"
                 android:padding="14dp"
-                android:src="@drawable/icon_settings" />
+                android:src="@drawable/ic_settings" />
 
             <LinearLayout
                 android:id="@+id/ll_settings"
