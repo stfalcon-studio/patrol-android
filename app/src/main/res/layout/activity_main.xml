@@ -20,6 +20,12 @@
         android:text="@string/no_photos_message"
         android:visibility="gone" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_above="@+id/bottomMenu"
+        android:background="@drawable/shadow"/>
+
     <RelativeLayout
         android:id="@+id/bottomMenu"
         android:layout_width="match_parent"
