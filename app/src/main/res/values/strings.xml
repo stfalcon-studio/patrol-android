@@ -47,6 +47,8 @@
     <string name="notification_end_upload_body">Завантаження успішно завершено</string>
     <string name="notification_end_upload_textTicker">Завантаження успішно завершено</string>
     <string name="error_incorrect_date">Введіть дату фіксації порушення</string>
-    <string name="record_when_start">Стартувати з запису</string>
+    <string name="record_when_start">Стартувати з реєстратора</string>
     <string name="exeption_copy_file">Помилка при копіюванні відеофайлу</string>
+    <string name="error_pick_video">Обране відео не може бути завантажене. Оберіть файл, що знаходиться на телефоні</string>
+    <string name="copy">Копіювання...</string>
 </resources>

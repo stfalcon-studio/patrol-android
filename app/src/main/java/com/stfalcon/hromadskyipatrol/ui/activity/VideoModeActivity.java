@@ -70,6 +70,7 @@ public class VideoModeActivity extends BaseSpiceActivity {
         video.setState(VideoItem.State.READY_TO_SEND);
         video.setOwnerEmail(ProjectPreferencesManager.getUser(this).getEmail());
         video.setThumb(bitmapUrl);
+        video.setSourceType(VideoItem.SOURCE_TYPE_CAMERA);
 
         db.addVideo(video);
     }

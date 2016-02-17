@@ -47,6 +47,7 @@ public class DatabasePatrol
         values.put(Const.KEY_LON, item.getLongitude());
         values.put(Const.KEY_LAT, item.getLatitude());
         values.put(Const.KEY_OWNER_EMAIL, item.getOwnerEmail());
+        values.put(Const.KEY_SOURCE_TYPE, item.getSourceType());
 
         db.insert(Const.TABLE_VIDEOS, null, values);
         db.close();
@@ -157,7 +158,8 @@ public class DatabasePatrol
                     cursor.getDouble(cursor.getColumnIndex(Const.KEY_LAT)),
                     cursor.getString(cursor.getColumnIndex(Const.KEY_OWNER_EMAIL)),
                     cursor.getString(cursor.getColumnIndex(Const.KEY_PREV_URL)),
-                    cursor.getString(cursor.getColumnIndex(Const.KEY_THUMB))
+                    cursor.getString(cursor.getColumnIndex(Const.KEY_THUMB)),
+                    cursor.getString(cursor.getColumnIndex(Const.KEY_SOURCE_TYPE))
             );
         }
 
@@ -178,7 +180,8 @@ public class DatabasePatrol
                         cursor.getDouble(cursor.getColumnIndex(Const.KEY_LAT)),
                         cursor.getString(cursor.getColumnIndex(Const.KEY_OWNER_EMAIL)),
                         cursor.getString(cursor.getColumnIndex(Const.KEY_PREV_URL)),
-                        cursor.getString(cursor.getColumnIndex(Const.KEY_THUMB))
+                        cursor.getString(cursor.getColumnIndex(Const.KEY_THUMB)),
+                        cursor.getString(cursor.getColumnIndex(Const.KEY_SOURCE_TYPE))
                 ));
             while (cursor.moveToNext());
         }
@@ -202,8 +205,9 @@ public class DatabasePatrol
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            db.execSQL("DROP TABLE IF EXISTS " + Const.TABLE_VIDEOS);
-            onCreate(db);
+            if (newVersion > 3) {
+                db.execSQL("ALTER TABLE " + Const.TABLE_VIDEOS + " ADD COLUMN " + Const.KEY_SOURCE_TYPE + " TEXT");
+            }
         }
     }
 }

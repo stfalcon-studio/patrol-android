@@ -13,12 +13,14 @@ import java.lang.reflect.Type;
  * Created by TROY!379 on 21.08.15.
  */
 public final class ProjectPreferencesManager {
+
     private ProjectPreferencesManager() {
         throw new AssertionError();
     }
 
     private static final String PREFERENCES_TAG_UPLOAD_ONLY_WIFI = "use_only_wifi_state";
     private static final String PREFERENCES_TAG_UPLOAD_AUTOMATICALLY = "automatic_upload";
+    private static final String PREFERENCES_TAG_START_REGISTRATOR = "start_registrator";
 
     private static final String PREFERENCES_TAG_USER = "user";
 
@@ -75,5 +77,17 @@ public final class ProjectPreferencesManager {
     private static <T> T getObject(Context context, String key, Type type) {
         String json = PreferenceManager.getDefaultSharedPreferences(context).getString(key, null);
         return new Gson().fromJson(json, type);
+    }
+
+    public static void setRegistratorMode(Context context, boolean mode) {
+        PreferenceManager.getDefaultSharedPreferences(context)
+                .edit()
+                .putBoolean(PREFERENCES_TAG_START_REGISTRATOR, mode)
+                .commit();
+    }
+
+    public static boolean getRegistratorMode(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(PREFERENCES_TAG_START_REGISTRATOR, true);
     }
 }

@@ -13,8 +13,10 @@ public final class IntentUtilities {
     public static String VIDEO_ID = "video_id";
 
     public static void openVideo(Context context, String path) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(path));
-        intent.setDataAndType(Uri.parse(path), "video/mp4");
-        context.startActivity(intent);
+        if (path != null) {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(path));
+            intent.setDataAndType(Uri.parse(path), "video/mp4");
+            context.startActivity(intent);
+        }
     }
 }

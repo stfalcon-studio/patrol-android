@@ -35,8 +35,7 @@
                 android:layout_marginTop="10dp"
                 android:paddingLeft="8dp"
                 android:textColor="@android:color/white"
-                android:textSize="20sp"
-                tools:text="User name" />
+                android:textSize="20sp"/>
 
             <ImageButton
                 android:id="@+id/bt_done"
@@ -46,6 +45,7 @@
                 android:layout_alignParentTop="true"
                 android:background="@null"
                 android:padding="14dp"
+                android:visibility="gone"
                 android:src="@drawable/icon_done" />
 
         </RelativeLayout>
@@ -69,7 +69,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:src="@drawable/ic_play_circle_outline_white_48dp" />
+            android:src="@drawable/ic_play_circle_outline_white_48dp"
+            android:id="@+id/view"
+            android:visibility="gone"/>
+
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"/>
+
+        <TextView
+            android:id="@+id/copy_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/copy"
+            android:layout_below="@+id/progress"
+            android:layout_centerHorizontal="true" />
 
     </RelativeLayout>
 
@@ -83,7 +99,8 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginTop="30dp"
-        app:errorEnabled="true">
+        app:errorEnabled="true"
+        android:visibility="gone">
 
         <EditText
             android:id="@+id/et_date"

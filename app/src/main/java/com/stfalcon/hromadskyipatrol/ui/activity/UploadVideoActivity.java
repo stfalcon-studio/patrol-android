@@ -6,7 +6,9 @@ import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.EditText;
@@ -25,7 +27,10 @@ import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -48,17 +53,15 @@ public class UploadVideoActivity extends BaseSpiceActivity {
     private String contentData;
     private Date violationDate;
     private LatLng violationLocation;
+    private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_video);
-
+        handler = new Handler();
         initView();
-
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.INTERNAL_CONTENT_URI);
-        startActivityForResult(intent, PICKED_VIDEO);
-
+        pickVideo();
     }
 
     @Override
@@ -86,25 +89,8 @@ public class UploadVideoActivity extends BaseSpiceActivity {
 
     private void initView() {
         date = (EditText) findViewById(R.id.et_date);
-        btnDone = (ImageButton) findViewById(R.id.bt_done);
         imageView = (ImageView) findViewById(R.id.img_video_preview);
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                IntentUtilities.openVideo(UploadVideoActivity.this, contentVideoRealPath);
-            }
-        });
-
-        btnDone.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (violationDate == null) {
-                    date.setError(getString(R.string.error_incorrect_date));
-                } else {
-                    processContent();
-                }
-            }
-        });
+        btnDone = (ImageButton) findViewById(R.id.bt_done);
 
         date.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,6 +107,21 @@ public class UploadVideoActivity extends BaseSpiceActivity {
                 });
             }
         });
+    }
+
+    private void pickVideo() {
+        if (Build.VERSION.SDK_INT < 19) {
+            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+            photoPickerIntent.setType("video/*");
+            startActivityForResult(photoPickerIntent,PICKED_VIDEO);
+        } else {
+            Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
+            photoPickerIntent.setType("video/*");
+            photoPickerIntent.addCategory(Intent.CATEGORY_OPENABLE);
+            if (photoPickerIntent.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(photoPickerIntent, PICKED_VIDEO);
+            } else finish();
+        }
     }
 
     public static void showDatePicker(Activity activity,
@@ -146,8 +147,34 @@ public class UploadVideoActivity extends BaseSpiceActivity {
 
         fetchContentMetaData();
         if (checkContentMetaData()) {
-           // processContent();
+           processContent();
+        } else {
+            contentNotReady();
         }
+    }
+
+    private void contentNotReady() {
+        findViewById(R.id.view).setVisibility(View.VISIBLE);
+        findViewById(R.id.progress).setVisibility(View.GONE);
+        findViewById(R.id.copy_message).setVisibility(View.GONE);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                IntentUtilities.openVideo(UploadVideoActivity.this, contentVideoRealPath);
+            }
+        });
+        btnDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (violationDate == null) {
+                    date.setError(getString(R.string.error_incorrect_date));
+                } else {
+                    processContent();
+                }
+            }
+        });
+        btnDone.setVisibility(View.VISIBLE);
+        findViewById(R.id.textInputLayout).setVisibility(View.VISIBLE);
     }
 
     private void fetchContentMetaData() {
@@ -160,6 +187,9 @@ public class UploadVideoActivity extends BaseSpiceActivity {
             metadataRetriever.release();
         }catch (IllegalArgumentException e){
             e.printStackTrace();
+            Toast.makeText(this, R.string.error_pick_video, Toast.LENGTH_LONG).show();
+            setResult(RESULT_CANCELED);
+            finish();
         }
     }
 
@@ -187,21 +217,37 @@ public class UploadVideoActivity extends BaseSpiceActivity {
 
 
     private void processContent() {
-        Bitmap thumb = ThumbnailUtils.createVideoThumbnail(contentVideoRealPath, MediaStore.Video.Thumbnails.MINI_KIND);
-        String thumbUrl = FilesUtils.storeThumb(thumb);
-        File video = new File(contentVideoRealPath);
-        File dist = FilesUtils.getOutputInternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO);
-        try {
-            FilesUtils.copyFile(video, dist);
-            addVideo(thumbUrl, dist, violationDate,
-                    violationLocation.latitude,
-                    violationLocation.longitude);
-            setResult(RESULT_OK);
-            finish();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(this, R.string.exeption_copy_file, Toast.LENGTH_LONG).show();
-        }
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    File dist = FilesUtils.getOutputInternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO);
+                    FileInputStream in = (FileInputStream) getContentResolver().openInputStream(contentVideoUri);
+                    FileOutputStream out = new FileOutputStream(dist);
+                    FileChannel inChannel   = in.getChannel();
+                    FileChannel outChannel  = out.getChannel();
+                    inChannel.transferTo(0, inChannel.size(), outChannel);
+                    in.close();
+                    out.close();
+
+                    Bitmap thumb = ThumbnailUtils.createVideoThumbnail(dist.getAbsolutePath(),
+                            MediaStore.Video.Thumbnails.MINI_KIND);
+                    String thumbUrl = FilesUtils.storeThumb(thumb);
+
+                    //FilesUtils.copyFile(video, dist);
+                    addVideo(thumbUrl, dist, violationDate,
+                            violationLocation.latitude,
+                            violationLocation.longitude);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                    handler.post(new Runnable() {
+                        public void run() {
+                            setResult(RESULT_OK);
+                            finish();
+                        }
+                    });
+            }
+        }).start();
     }
 
 
@@ -217,6 +263,7 @@ public class UploadVideoActivity extends BaseSpiceActivity {
         video.setState(VideoItem.State.READY_TO_SEND);
         video.setOwnerEmail(ProjectPreferencesManager.getUser(this).getEmail());
         video.setThumb(bitmapUrl);
+        video.setSourceType(VideoItem.SOURCE_TYPE_UPLOAD);
 
         db.addVideo(video);
     }

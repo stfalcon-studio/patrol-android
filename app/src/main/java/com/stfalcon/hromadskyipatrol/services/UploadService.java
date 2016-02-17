@@ -103,7 +103,8 @@ public class UploadService extends IntentService {
 
     private VideoAnswer uploadVideo(VideoItem video, UserItem user) {
         return uploadVideo(video.getVideoURL(), String.valueOf(user.getId()),
-                video.getId(), video.getDate(), video.getLatitude(), video.getLongitude());
+                video.getId(), video.getDate(), video.getLatitude(), video.getLongitude(),
+                video.getSourceType());
     }
 
 
@@ -123,12 +124,13 @@ public class UploadService extends IntentService {
      * @return
      */
     private VideoAnswer uploadVideo(String fileUrl, String userID, String videoID,
-                                    long date, double latitude, double longitude) {
+                                    long date, double latitude, double longitude, String sourceType) {
         String requestURL = BuildConfig.BASE_URL + UPLOAD_URL.replace("{userID}", userID);
         VideoAnswer serverAnswer = new VideoAnswer(videoID, VideoItem.State.SENDING.value());
 
         try {
-            MultipartUtility multipart = makeMultipart(requestURL, fileUrl, new Date(date), latitude, longitude);
+            MultipartUtility multipart = makeMultipart(requestURL, fileUrl, new Date(date),
+                    latitude, longitude, sourceType);
 
             //logs
             List<String> response = multipart.finish();
@@ -159,7 +161,7 @@ public class UploadService extends IntentService {
         String requestURL = BuildConfig.BASE_URL + UPLOAD_URL.replace("{userID}", userID);
         try {
             NotificationUtils.notificationStartLoad(this);
-            MultipartUtility multipart = makeMultipart(requestURL, fileUrl, date, 0, 0);
+            MultipartUtility multipart = makeMultipart(requestURL, fileUrl, date, 0, 0, VideoItem.SOURCE_TYPE_UPLOAD);
             multipart.finish();
         } catch (Exception ex) {
             System.err.println(ex);
@@ -181,7 +183,8 @@ public class UploadService extends IntentService {
      * @return
      */
     private MultipartUtility makeMultipart(String requestURL, String fileUrl,
-                                           Date date, double latitude, double longitude) {
+                                           Date date, double latitude, double longitude,
+                                           String sourceType) {
         String charset = "UTF-8";
         File file = new File(fileUrl);
         String violationDate = new SimpleDateFormat(Constants.SERVER_DATE_FORMAT).format(date);
@@ -196,6 +199,7 @@ public class UploadService extends IntentService {
             multipart.addFormField("latitude", String.valueOf(latitude));
             multipart.addFormField("longitude", String.valueOf(longitude));
             multipart.addFormField("date", violationDate);
+            multipart.addFormField("recordingType", sourceType);
         } catch (IOException e) {
             e.printStackTrace();
         }

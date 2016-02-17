@@ -101,6 +101,7 @@ public class VideoProcessingService extends IntentService {
         video.setState(VideoItem.State.SAVING);
         video.setOwnerEmail(ProjectPreferencesManager.getUser(this).getEmail());
         video.setThumb(thumbUrl);
+        video.setSourceType(VideoItem.SOURCE_TYPE_REGISTRATOR);
 
         db.addVideo(video);
 

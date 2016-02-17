@@ -6,16 +6,20 @@ package com.stfalcon.hromadskyipatrol.models;
  */
 public class VideoItem {
 
+    public static final String SOURCE_TYPE_CAMERA = "camera";
+    public static final String SOURCE_TYPE_REGISTRATOR = "recorder";
+    public static final String SOURCE_TYPE_UPLOAD = "upload";
+
     public VideoItem() {
     }
 
     public VideoItem(String id, long date, String videoURL, int state, double longitude,
-                     double latitude, String ownerEmail, String videoPrevURL, String thumb) {
-        this(id, date, videoURL, State.from(state), longitude, latitude, ownerEmail, videoPrevURL, thumb);
+                     double latitude, String ownerEmail, String videoPrevURL, String thumb, String sourceType) {
+        this(id, date, videoURL, State.from(state), longitude, latitude, ownerEmail, videoPrevURL, thumb, sourceType);
     }
 
     public VideoItem(String id, long date, String videoURL, State state, double longitude,
-                     double latitude, String ownerEmail, String videoPrevURL, String thumb) {
+                     double latitude, String ownerEmail, String videoPrevURL, String thumb, String sourceType) {
         this.id = id;
         this.date = date ;
         this.videoURL = videoURL;
@@ -25,6 +29,7 @@ public class VideoItem {
         this.latitude = latitude;
         this.ownerEmail = ownerEmail;
         this.videoPrevURL = videoPrevURL;
+        this.sourceType = sourceType;
     }
 
     private String id;
@@ -33,6 +38,7 @@ public class VideoItem {
     private String thumb;
     private String videoPrevURL;
     private State state;
+    private String sourceType;
     private double longitude;
     private double latitude;
     private String ownerEmail;
@@ -107,6 +113,14 @@ public class VideoItem {
 
     public void setVideoPrevURL(String videoPrevURL) {
         this.videoPrevURL = videoPrevURL;
+    }
+
+    public String getSourceType() {
+        return sourceType;
+    }
+
+    public void setSourceType(String sourceType) {
+        this.sourceType = sourceType;
     }
 
     public enum State {

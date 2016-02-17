@@ -42,7 +42,7 @@ public class MainActivity extends BaseSpiceActivity
 
     private TextView noVideosTextView;
     private LinearLayout llSettings;
-    private CheckBox onlyWiFiCheckBox, autoUploadCheckBox;
+    private CheckBox onlyWiFiCheckBox, autoUploadCheckBox, registratorCheckBox;
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private VideoGridAdapter mAdapter;
@@ -54,8 +54,8 @@ public class MainActivity extends BaseSpiceActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (checkLocationManager()) {
-            openCamera();
+        if (checkLocationManager() && ProjectPreferencesManager.getRegistratorMode(this)) {
+            openRegistratorMode();
         }
         initViews();
     }
@@ -130,6 +130,10 @@ public class MainActivity extends BaseSpiceActivity
         autoUploadCheckBox.setOnClickListener(this);
         autoUploadCheckBox.setChecked(ProjectPreferencesManager.getAutoUploadMode(this));
 
+        registratorCheckBox = (CheckBox) findViewById(R.id.startWithRecording);
+        registratorCheckBox.setOnClickListener(this);
+        registratorCheckBox.setChecked(ProjectPreferencesManager.getRegistratorMode(this));
+
         noVideosTextView = (TextView) findViewById(R.id.noVideosTextView);
         llSettings = (LinearLayout) findViewById(R.id.ll_settings);
 
@@ -161,7 +165,7 @@ public class MainActivity extends BaseSpiceActivity
                 break;
             case R.id.snap:
                 if (checkLocationManager()) {
-                    openCamera();
+                    openRegistratorMode();
                     getTracker().send(new HitBuilders.EventBuilder()
                             .setCategory("Settings")
                             .setAction("snap")
@@ -187,7 +191,12 @@ public class MainActivity extends BaseSpiceActivity
                         .build());
                 break;
             case R.id.startWithRecording:
-                //TODO logic start with recording
+                ProjectPreferencesManager.setRegistratorMode(this, registratorCheckBox.isChecked());
+                getTracker().send(new HitBuilders.EventBuilder()
+                        .setCategory("Settings")
+                        .setAction("registratorCheckBox")
+                        .setLabel(String.valueOf(autoUploadCheckBox.isChecked()))
+                        .build());
                 break;
             case R.id.logout:
                 UserItem userData = new UserItem();
@@ -217,7 +226,7 @@ public class MainActivity extends BaseSpiceActivity
         }
     }
 
-    private void openCamera() {
+    private void openRegistratorMode() {
         Intent intent = new Intent(this, VideoCaptureActivity.class);
         startActivityForResult(intent, Constants.REQUEST_CAMERA);
     }
@@ -240,7 +249,7 @@ public class MainActivity extends BaseSpiceActivity
             startService(new Intent(MainActivity.this, VideoProcessingService.class));
         } else if (requestCode == Constants.REQUEST_GPS_SETTINGS) {
             if (checkLocationManager()) {
-                openCamera();
+                openRegistratorMode();
             }
         }
     }

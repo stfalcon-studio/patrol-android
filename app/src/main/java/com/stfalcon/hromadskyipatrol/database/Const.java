@@ -7,7 +7,7 @@ final class Const {
     private Const() { throw new AssertionError(); }
 
     public static final String DATABASE_NAME = "patrol_videos_db";
-    public static final int DATABASE_VERSION = 3;
+    public static final int DATABASE_VERSION = 4;
 
     public static final String TABLE_VIDEOS= "videos";
 
@@ -20,6 +20,7 @@ final class Const {
     public static final String KEY_LON = "lon";
     public static final String KEY_LAT = "lat";
     public static final String KEY_OWNER_EMAIL = "owner_email";
+    public static final String KEY_SOURCE_TYPE = "source";
 
     public static final String CREATE_VIDEOS_TABLE = "CREATE TABLE " + TABLE_VIDEOS + "("
             + Const.KEY_ID + " TEXT PRIMARY KEY, "
@@ -31,5 +32,6 @@ final class Const {
             + Const.KEY_LON + " REAL, "
             + Const.KEY_LAT + " REAL, "
             + Const.KEY_OWNER_EMAIL + " TEXT"
+            + Const.KEY_SOURCE_TYPE + " TEXT"
             + ")";
 }
