@@ -20,12 +20,17 @@
         android:text="@string/no_photos_message"
         android:visibility="gone" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_above="@+id/bottomMenu"
+        android:background="@drawable/shadow"/>
+
     <RelativeLayout
         android:id="@+id/bottomMenu"
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:layout_alignParentBottom="true"
-        android:elevation="2dp"
         android:orientation="horizontal">
 
         <ImageButton
