@@ -65,4 +65,5 @@ dependencies {
     }
     compile 'com.googlecode.mp4parser:isoparser:1.1.7'
     compile 'com.google.android.gms:play-services-appindexing:8.3.0'
+    compile 'com.wdullaer:materialdatetimepicker:2.1.1'
 }

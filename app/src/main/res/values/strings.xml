@@ -34,7 +34,7 @@
     <string name="error_no_connection">Будь ласка, перевіте ваше з\'єднання та спробуйте ще раз</string>
     <string name="error_server_connecting">Неможливо з\'єднатися з сервером</string>
     <string name="error_camera_access_denied">Неможливо відкрити камеру</string>
-    <string name="hint_date">Введіть дату порушення</string>
+    <string name="hint_date">Дата порушення</string>
     <string name="notification_fail_upload_title">Помилка завантаження</string>
     <string name="notification_fail_upload_body">При завантаженні на сервер відбулась помилка</string>
     <string name="notification_fail_upload_textTicker">Помилка завантаження...</string>
@@ -46,6 +46,7 @@
     <string name="notification_end_upload_title">Завантаження відео</string>
     <string name="notification_end_upload_body">Завантаження успішно завершено</string>
     <string name="notification_end_upload_textTicker">Завантаження успішно завершено</string>
-    <string name="error_incorrect_date">Введіть коректну дату</string>
+    <string name="error_incorrect_date">Введіть дату фіксації порушення</string>
     <string name="record_when_start">Стартувати з запису</string>
+    <string name="exeption_copy_file">Помилка при копіюванні відеофайлу</string>
 </resources>
