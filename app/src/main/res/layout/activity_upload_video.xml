@@ -35,7 +35,8 @@
                 android:layout_marginTop="10dp"
                 android:paddingLeft="8dp"
                 android:textColor="@android:color/white"
-                android:textSize="20sp"/>
+                android:textSize="20sp"
+                android:text="@string/add_video"/>
 
             <ImageButton
                 android:id="@+id/bt_done"
@@ -57,7 +58,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/my_awesome_toolbar"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="24dp">
+        android:layout_marginTop="24dp"
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/img_video_preview"
@@ -70,22 +72,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:src="@drawable/ic_play_circle_outline_white_48dp"
-            android:id="@+id/view"
-            android:visibility="gone"/>
-
-        <ProgressBar
-            android:id="@+id/progress"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_centerInParent="true"/>
-
-        <TextView
-            android:id="@+id/copy_message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/copy"
-            android:layout_below="@+id/progress"
-            android:layout_centerHorizontal="true" />
+            android:id="@+id/view"/>
 
     </RelativeLayout>
 
@@ -113,6 +100,28 @@
             android:focusable="false"
             android:focusableInTouchMode="false" />
     </android.support.design.widget.TextInputLayout>
+
+
+
+    <ProgressBar
+        android:id="@+id/progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="false"
+        android:layout_centerVertical="true"
+        android:padding="24dp"
+        android:maxHeight="10dip"
+        android:minHeight="10dip"
+        android:progress="0"/>
+
+    <TextView
+        android:id="@+id/copy_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/copy"
+        android:layout_above="@+id/progress"
+        android:layout_centerHorizontal="true"/>
 
 
 </RelativeLayout>

@@ -218,10 +218,14 @@ public class MainActivity extends BaseSpiceActivity
                         UploadVideoActivity.UPLOAD_VIDEO);
                 break;
             case R.id.snapVideo:
-                startActivityForResult(
-                        new Intent(MainActivity.this, VideoModeActivity.class)
-                                .putExtra(Extras.VIDEO, VideoModeActivity.VIDEO_CAPTURE),
-                        VideoModeActivity.REQUEST_VIDEO_CAPTURE);
+                if (checkLocationManager()) {
+                    startActivityForResult(
+                            new Intent(MainActivity.this, VideoModeActivity.class)
+                                    .putExtra(Extras.VIDEO, VideoModeActivity.VIDEO_CAPTURE),
+                            VideoModeActivity.REQUEST_VIDEO_CAPTURE);
+                } else {
+                    LocationDialog.showSettingsAlert(this);
+                }
                 break;
         }
     }

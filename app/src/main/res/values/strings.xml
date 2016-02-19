@@ -48,7 +48,10 @@
     <string name="notification_end_upload_textTicker">Завантаження успішно завершено</string>
     <string name="error_incorrect_date">Введіть дату фіксації порушення</string>
     <string name="record_when_start">Стартувати з реєстратора</string>
-    <string name="exeption_copy_file">Помилка при копіюванні відеофайлу</string>
-    <string name="error_pick_video">Обране відео не може бути завантажене. Оберіть файл, що знаходиться на телефоні</string>
+    <string name="exception_copy_file">Помилка при копіюванні відеофайлу</string>
+    <string name="error_pick_video">Не можливо визначити тип файлу</string>
+    <string name="error_type_video">Ви можете завантажити лише відео</string>
     <string name="copy">Копіювання...</string>
+    <string name="add_video">Додавання відео</string>
+    <string name="search_gps">Визначення gps координат...</string>
 </resources>

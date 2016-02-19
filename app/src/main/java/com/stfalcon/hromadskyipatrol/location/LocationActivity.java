@@ -65,4 +65,8 @@ public class LocationActivity extends AppCompatActivity implements MyLocationLis
                 LocationDialog.showSettingsAlert(this);
         }
     }
+
+    public void stopLocationUpdates(){
+        locationApi.stopLocationUpdates();
+    }
 }
