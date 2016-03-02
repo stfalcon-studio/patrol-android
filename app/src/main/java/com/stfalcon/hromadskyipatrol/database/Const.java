@@ -31,7 +31,7 @@ final class Const {
             + Const.KEY_STATE + " INTEGER, "
             + Const.KEY_LON + " REAL, "
             + Const.KEY_LAT + " REAL, "
-            + Const.KEY_OWNER_EMAIL + " TEXT"
+            + Const.KEY_OWNER_EMAIL + " TEXT, "
             + Const.KEY_SOURCE_TYPE + " TEXT"
             + ")";
 }

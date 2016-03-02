@@ -54,9 +54,14 @@ public class ContentUtil {
             if (resultCode == Activity.RESULT_OK) {
                 handleContentData(data);
             } else {
+                cleanData();
                 pickContentListener.onCanceled();
             }
         }
+    }
+
+    private void cleanData() {
+        new File(targetFile.getAbsolutePath()).delete();
     }
 
     private void handleContentData(final Intent data) {

@@ -6,6 +6,7 @@ import android.location.Location;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 
 import com.stfalcon.hromadskyipatrol.R;
@@ -25,8 +26,10 @@ public class VideoModeActivity extends LocationActivity {
 
     public static final int REQUEST_VIDEO_CAPTURE = 1;
     public static final String VIDEO_CAPTURE = "video";
+    private static final long WAIT_LOCATION_TIME = 15000;
     private File dist;
     private Location currentLocation;
+    private boolean waitLocation = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,11 +37,8 @@ public class VideoModeActivity extends LocationActivity {
         setContentView(R.layout.activity_videomode);
 
         currentLocation = getLastUserLocation();
-
-        if (currentLocation != null) {
-            if (getIntent().hasExtra(Extras.VIDEO)) {
-                dispatchTakeVideoIntent();
-            }
+        if (getIntent().hasExtra(Extras.VIDEO)) {
+            dispatchTakeVideoIntent();
         }
     }
 
@@ -46,20 +46,46 @@ public class VideoModeActivity extends LocationActivity {
     public void onLocationChanged(Location location) {
         super.onLocationChanged(location);
         currentLocation = location;
-        dispatchTakeVideoIntent();
-        stopLocationUpdates();
+        if (waitLocation) saveVideo();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == RESULT_OK) {
-            Bitmap thumb = ThumbnailUtils.createVideoThumbnail(dist.getAbsolutePath(), MediaStore.Video.Thumbnails.MINI_KIND);
-            String thumbUrl = FilesUtils.storeThumb(thumb);
-            addVideo(thumbUrl, dist);
-            setResult(RESULT_OK);
-            finish();
+        if (requestCode == REQUEST_VIDEO_CAPTURE) {
+            if (resultCode == RESULT_OK) {
+                if (currentLocation != null) {
+                    saveVideo();
+                } else {
+                    waitLoc();
+                }
+            } else {
+                FilesUtils.removeFile(dist.getAbsolutePath());
+                setResult(RESULT_CANCELED);
+                finish();
+            }
         }
-        setResult(RESULT_CANCELED);
+    }
+
+    private void waitLoc() {
+        waitLocation = true;
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (currentLocation == null) {
+                    currentLocation = new Location("gps");
+                    currentLocation.setLatitude(0);
+                    currentLocation.setLongitude(0);
+                    saveVideo();
+                }
+            }
+        }, WAIT_LOCATION_TIME);
+    }
+
+    private void saveVideo() {
+        Bitmap thumb = ThumbnailUtils.createVideoThumbnail(dist.getAbsolutePath(), MediaStore.Video.Thumbnails.MINI_KIND);
+        String thumbUrl = FilesUtils.storeThumb(thumb);
+        addVideo(thumbUrl, dist);
+        setResult(RESULT_OK);
         finish();
     }
 
