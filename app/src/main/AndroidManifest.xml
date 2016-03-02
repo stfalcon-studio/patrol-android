@@ -33,7 +33,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.activity.MainActivity"
-            android:keepScreenOn="true"/>
+            android:keepScreenOn="true"
+            android:screenOrientation="portrait"/>
 
         <activity android:name=".camera.VideoCaptureActivity"
             android:keepScreenOn="true"
