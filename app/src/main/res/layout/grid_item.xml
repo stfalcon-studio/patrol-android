@@ -16,24 +16,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:background="@drawable/shape_shadow" />
+        android:background="@drawable/shadow" />
 
-
-    <ImageView
-        android:id="@+id/img_state"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:padding="8dp"/>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:padding="5dp">
-    </LinearLayout>
 
     <TextView
         android:id="@+id/gps"
@@ -45,6 +29,14 @@
         android:textColor="@android:color/white"
         android:textStyle="bold"
         android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/img_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:padding="8dp"/>
 
     <com.stfalcon.hromadskyipatrol.ui.view.SquareImageView
         android:layout_width="wrap_content"
