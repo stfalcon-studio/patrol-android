@@ -9,5 +9,5 @@ public class Extras {
     public static final String URL = "url";
     public static final String URL_VIDEO = "url_video";
     public static final String DATE = "date";
-    public static final String VIDEO = "video";
+    public static final String VIDEO = "video_capture";
 }

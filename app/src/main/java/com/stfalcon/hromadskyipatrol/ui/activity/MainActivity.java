@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,10 +15,10 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.stfalcon.hromadskyipatrol.R;
-import com.stfalcon.hromadskyipatrol.camera.VideoCaptureActivity;
 import com.stfalcon.hromadskyipatrol.database.DatabasePatrol;
 import com.stfalcon.hromadskyipatrol.location.LocationDialog;
 import com.stfalcon.hromadskyipatrol.models.UserItem;
@@ -38,8 +39,6 @@ import java.util.Collections;
 public class MainActivity extends BaseSpiceActivity
         implements View.OnClickListener, VideoGridAdapter.VideosListener {
 
-    private static final String TAG = BaseSpiceActivity.class.getName();
-
     private TextView noVideosTextView;
     private LinearLayout llSettings;
     private CheckBox onlyWiFiCheckBox, autoUploadCheckBox, registratorCheckBox;
@@ -48,6 +47,7 @@ public class MainActivity extends BaseSpiceActivity
     private VideoGridAdapter mAdapter;
     private UserItem userData;
     private boolean isGPSDialogShowed;
+    private boolean mastShowClosingErrorExplanatoin = false;
 
 
     @Override
@@ -70,6 +70,22 @@ public class MainActivity extends BaseSpiceActivity
     protected void onStop() {
         super.onStop();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mastShowClosingErrorExplanatoin) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(MainActivity.this,
+                            R.string.finish_record_error, Toast.LENGTH_LONG).show();
+                    mastShowClosingErrorExplanatoin = false;
+                }
+            }, 3000);
+
+        }
     }
 
     private void initUIReceiver() {
@@ -248,14 +264,30 @@ public class MainActivity extends BaseSpiceActivity
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == Activity.RESULT_OK) {
-            initGrid();
-            startService(new Intent(MainActivity.this, VideoProcessingService.class));
-        } else if (requestCode == Constants.REQUEST_GPS_SETTINGS) {
-            if (checkLocationManager()) {
-                openRegistratorMode();
-            }
+        switch (requestCode) {
+            case Constants.REQUEST_CAMERA:
+                if (resultCode == Activity.RESULT_OK) {
+                    processNewContent();
+                } else {
+                    mastShowClosingErrorExplanatoin = true;
+                }
+                break;
+            case Constants.REQUEST_GPS_SETTINGS:
+                if (checkLocationManager()) {
+                    openRegistratorMode();
+                }
+                break;
+            case UploadVideoActivity.UPLOAD_VIDEO:
+            case VideoModeActivity.REQUEST_VIDEO_CAPTURE:
+                if (resultCode == Activity.RESULT_OK) {
+                    processNewContent();
+                }
         }
+    }
+
+    private void processNewContent() {
+        initGrid();
+        startService(new Intent(MainActivity.this, VideoProcessingService.class));
     }
 
     @Override

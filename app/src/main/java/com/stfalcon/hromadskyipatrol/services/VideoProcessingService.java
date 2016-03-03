@@ -7,7 +7,7 @@ import android.provider.MediaStore;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.stfalcon.hromadskyipatrol.camera.VideoCaptureActivity;
+import com.stfalcon.hromadskyipatrol.ui.activity.VideoCaptureActivity;
 import com.stfalcon.hromadskyipatrol.database.DatabasePatrol;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
 import com.stfalcon.hromadskyipatrol.models.ViolationItem;

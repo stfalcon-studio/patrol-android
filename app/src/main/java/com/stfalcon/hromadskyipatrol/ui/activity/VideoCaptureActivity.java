@@ -1,4 +1,4 @@
-package com.stfalcon.hromadskyipatrol.camera;
+package com.stfalcon.hromadskyipatrol.ui.activity;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -11,6 +11,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.stfalcon.hromadskyipatrol.R;
+import com.stfalcon.hromadskyipatrol.camera.ICamera;
 import com.stfalcon.hromadskyipatrol.camera.fragment.BaseCameraFragment;
 import com.stfalcon.hromadskyipatrol.camera.fragment.Camera2VideoFragment;
 import com.stfalcon.hromadskyipatrol.camera.fragment.CameraVideoFragment;
@@ -132,9 +133,6 @@ public class VideoCaptureActivity extends LocationActivity implements ICamera, V
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        setResult(RESULT_OK);
-        finish();
     }
 
     public void showRecordMessage() {
@@ -152,6 +150,8 @@ public class VideoCaptureActivity extends LocationActivity implements ICamera, V
         switch (v.getId()) {
             case R.id.bt_main_screen:
                 startMenuActivity();
+                setResult(RESULT_OK);
+                finish();
                 break;
         }
     }
@@ -159,6 +159,15 @@ public class VideoCaptureActivity extends LocationActivity implements ICamera, V
     @Override
     public void onBackPressed() {
         startMenuActivity();
+    }
+
+    @Override
+    public void onStop() {
+        cameraFragment.onStop();
+        startMenuActivity();
+        setResult(RESULT_CANCELED);
+        finish();
+        super.onStop();
     }
 }
 

@@ -54,4 +54,5 @@
     <string name="copy">Копіювання...</string>
     <string name="add_video">Додавання відео</string>
     <string name="search_gps">Визначення gps координат...</string>
+    <string name="finish_record_error">Запис відео був припинений не корректно, файл втрачено...</string>
 </resources>
