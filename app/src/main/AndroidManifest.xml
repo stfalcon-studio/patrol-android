@@ -37,7 +37,7 @@
         </activity>
         <activity android:name=".ui.activity.MainActivity"
             android:keepScreenOn="true"
-            android:screenOrientation="portrait"/>
+            android:configChanges="orientation|screenSize" />
 
         <activity android:name=".ui.activity.VideoCaptureActivity"
             android:keepScreenOn="true"
