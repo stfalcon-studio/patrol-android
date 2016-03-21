@@ -191,7 +191,7 @@ public class CameraVideoFragment extends BaseCameraFragment implements View.OnCl
         mMediaRecorder.setProfile(profile);
 
         // Step 4: Set output file
-        violationFileURI = FilesUtils.getOutputInternalMediaFile(
+        violationFileURI = FilesUtils.getOutputExternalMediaFile(
                 FilesUtils.MEDIA_TYPE_VIDEO).getAbsolutePath();
 
         mMediaRecorder.setOutputFile(violationFileURI);

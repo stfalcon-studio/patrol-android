@@ -59,7 +59,7 @@ public class UploadVideoActivity extends BaseSpiceActivity implements ContentUti
         initView();
         contentUtil = new ContentUtil(this, this);
         contentUtil.pickContent(ContentUtil.Content.VIDEO,
-                FilesUtils.getOutputInternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO));
+                FilesUtils.getOutputExternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO));
     }
 
     @Override

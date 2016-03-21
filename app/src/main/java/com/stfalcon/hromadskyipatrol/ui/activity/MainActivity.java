@@ -41,20 +41,20 @@ public class MainActivity extends BaseSpiceActivity
 
     private TextView noVideosTextView;
     private LinearLayout llSettings;
-    private CheckBox onlyWiFiCheckBox, autoUploadCheckBox, registratorCheckBox;
+    private CheckBox onlyWiFiCheckBox, autoUploadCheckBox, recorderCheckBox;
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private VideoGridAdapter mAdapter;
     private UserItem userData;
     private boolean isGPSDialogShowed;
-    private boolean mastShowClosingErrorExplanatoin = false;
+    private boolean mastShowClosingErrorExplanation = false;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (checkLocationManager() && ProjectPreferencesManager.getRegistratorMode(this)) {
+        if (checkLocationManager() && ProjectPreferencesManager.getRecorderMode(this)) {
             openRegistratorMode();
         }
         initViews();
@@ -75,13 +75,13 @@ public class MainActivity extends BaseSpiceActivity
     @Override
     protected void onResume() {
         super.onResume();
-        if (mastShowClosingErrorExplanatoin) {
+        if (mastShowClosingErrorExplanation) {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     Toast.makeText(MainActivity.this,
                             R.string.finish_record_error, Toast.LENGTH_LONG).show();
-                    mastShowClosingErrorExplanatoin = false;
+                    mastShowClosingErrorExplanation = false;
                 }
             }, 3000);
 
@@ -146,9 +146,9 @@ public class MainActivity extends BaseSpiceActivity
         autoUploadCheckBox.setOnClickListener(this);
         autoUploadCheckBox.setChecked(ProjectPreferencesManager.getAutoUploadMode(this));
 
-        registratorCheckBox = (CheckBox) findViewById(R.id.startWithRecording);
-        registratorCheckBox.setOnClickListener(this);
-        registratorCheckBox.setChecked(ProjectPreferencesManager.getRegistratorMode(this));
+        recorderCheckBox = (CheckBox) findViewById(R.id.startWithRecording);
+        recorderCheckBox.setOnClickListener(this);
+        recorderCheckBox.setChecked(ProjectPreferencesManager.getRecorderMode(this));
 
         noVideosTextView = (TextView) findViewById(R.id.noVideosTextView);
         llSettings = (LinearLayout) findViewById(R.id.ll_settings);
@@ -207,10 +207,10 @@ public class MainActivity extends BaseSpiceActivity
                         .build());
                 break;
             case R.id.startWithRecording:
-                ProjectPreferencesManager.setRegistratorMode(this, registratorCheckBox.isChecked());
+                ProjectPreferencesManager.setRecorderMode(this, recorderCheckBox.isChecked());
                 getTracker().send(new HitBuilders.EventBuilder()
                         .setCategory("Settings")
-                        .setAction("registratorCheckBox")
+                        .setAction("recorderCheckBox")
                         .setLabel(String.valueOf(autoUploadCheckBox.isChecked()))
                         .build());
                 break;
@@ -269,7 +269,7 @@ public class MainActivity extends BaseSpiceActivity
                 if (resultCode == Activity.RESULT_OK) {
                     processNewContent();
                 } else {
-                    mastShowClosingErrorExplanatoin = true;
+                    mastShowClosingErrorExplanation = true;
                 }
                 break;
             case Constants.REQUEST_GPS_SETTINGS:

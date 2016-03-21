@@ -20,7 +20,7 @@ public final class ProjectPreferencesManager {
 
     private static final String PREFERENCES_TAG_UPLOAD_ONLY_WIFI = "use_only_wifi_state";
     private static final String PREFERENCES_TAG_UPLOAD_AUTOMATICALLY = "automatic_upload";
-    private static final String PREFERENCES_TAG_START_REGISTRATOR = "start_registrator";
+    private static final String PREFERENCES_TAG_START_RECORDER = "start_with_recorder";
 
     private static final String PREFERENCES_TAG_USER = "user";
 
@@ -79,15 +79,15 @@ public final class ProjectPreferencesManager {
         return new Gson().fromJson(json, type);
     }
 
-    public static void setRegistratorMode(Context context, boolean mode) {
+    public static void setRecorderMode(Context context, boolean mode) {
         PreferenceManager.getDefaultSharedPreferences(context)
                 .edit()
-                .putBoolean(PREFERENCES_TAG_START_REGISTRATOR, mode)
+                .putBoolean(PREFERENCES_TAG_START_RECORDER, mode)
                 .commit();
     }
 
-    public static boolean getRegistratorMode(Context context) {
+    public static boolean getRecorderMode(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                .getBoolean(PREFERENCES_TAG_START_REGISTRATOR, true);
+                .getBoolean(PREFERENCES_TAG_START_RECORDER, false);
     }
 }

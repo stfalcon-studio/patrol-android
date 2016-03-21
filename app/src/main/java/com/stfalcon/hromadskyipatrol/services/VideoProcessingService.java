@@ -133,7 +133,7 @@ public class VideoProcessingService extends IntentService {
         String videoPrevURL = video.getVideoPrevURL();
         if (videoPrevURL != null) {
             File src2 = new File(videoPrevURL);
-            File result = new File(FilesUtils.getOutputInternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
+            File result = new File(FilesUtils.getOutputExternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
             ProcessVideoUtils.concatTwoVideos(src2, src, result);
             FilesUtils.removeFile(src.getAbsolutePath());
             FilesUtils.removeFile(src2.getAbsolutePath());

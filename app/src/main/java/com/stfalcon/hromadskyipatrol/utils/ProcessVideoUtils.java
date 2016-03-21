@@ -53,7 +53,7 @@ public class ProcessVideoUtils {
         Log.d(TAG, "trimToLast20sec: " + duration);
         if (duration > 20) {
             double startTime = duration - 20;
-            File dst = new File(FilesUtils.getOutputInternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
+            File dst = new File(FilesUtils.getOutputExternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
             Log.d(TAG, "dst: " + dst.getAbsolutePath());
             startTrim(src, dst, startTime, duration);
             FilesUtils.removeFile(src.getAbsolutePath());

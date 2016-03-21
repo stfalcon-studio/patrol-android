@@ -112,7 +112,7 @@ public class VideoModeActivity extends LocationActivity {
 
     private void dispatchTakeVideoIntent() {
         Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-        dist = FilesUtils.getOutputInternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO);
+        dist = FilesUtils.getOutputExternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO);
         ContentValues value = new ContentValues();
         value.put(MediaStore.Video.Media.TITLE, dist.getName());
         value.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");

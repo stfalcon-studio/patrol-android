@@ -127,7 +127,7 @@ public class BaseCameraFragment extends Fragment {
                         Log.d(TAG, "run: " + violationFileURI);
                         Log.d(TAG, "prev run: " + previousFileURI);
                         if (previousFileURI != null) {
-                            final File prevVideo = new File(FilesUtils.getOutputInternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
+                            final File prevVideo = new File(FilesUtils.getOutputExternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
                             try {
                                 FilesUtils.copyFile(new File(previousFileURI), prevVideo);
                             } catch (IOException e) {

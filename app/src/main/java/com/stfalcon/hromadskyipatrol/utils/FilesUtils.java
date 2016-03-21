@@ -35,7 +35,7 @@ public class FilesUtils {
 
 
     public static String storeThumb(Bitmap image) {
-        File pictureFile = getOutputInternalThumbFile();
+        File pictureFile = getOutputExternalThumbFile();
         if (pictureFile == null) {
             Log.d(TAG,
                     "Error creating media file, check storage permissions: ");// e.getMessage());
@@ -63,13 +63,13 @@ public class FilesUtils {
     }
 
 
-    public static File getOutputInternalMediaFile(int type) {
+    public static File getOutputExternalMediaFile(int type) {
         File mediaStorageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), APP_CONTENT_PATH);
         createMediaStorageDir(mediaStorageDir);
         return createFile(type, mediaStorageDir);
     }
 
-    public static File getOutputInternalThumbFile() {
+    public static File getOutputExternalThumbFile() {
         File mediaStorageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), VIDEO_THUMB_PATH);
         createMediaStorageDir(mediaStorageDir);
         return createFile(MEDIA_TYPE_IMAGE, mediaStorageDir);
@@ -102,7 +102,7 @@ public class FilesUtils {
         OutputStream out = null;
 
         File sourceExternalImageFile = new File(tempUri.getPath());
-        File destinationInternalImageFile = new File(getOutputInternalMediaFile(type).getPath());
+        File destinationInternalImageFile = new File(getOutputExternalMediaFile(type).getPath());
 
         try {
             destinationInternalImageFile.createNewFile();
@@ -135,7 +135,11 @@ public class FilesUtils {
     }
 
     public static void removeFile(String url) {
-        new File(url).delete();
+        try {
+            new File(url).delete();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public static void copyFile(File src, File dst) throws IOException {
