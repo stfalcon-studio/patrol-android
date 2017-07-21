@@ -2,14 +2,12 @@
 
 [![Get it on Google Play](https://play.google.com/intl/en_us/badges/images/badge_new.png)](https://play.google.com/store/apps/details?id=com.stfalcon.hromadskyipatrol)
 
-<p align="center">
-<img src="images/screen1.png"><img src="images/screen2.png">
-</p>
-
 ### Project description
 An application for video registration of traffic rules violations. You can use this like video registrator. App`s can automaticaly send violations to our server.
 
-
+<p align="center">
+<img src="images/screen1.png"><img src="images/screen2.png">
+</p>
 
 ### Features
 * Video registrator mode for recording last 20 sec after tap;
