@@ -5,12 +5,16 @@
 ### Project description
 An application for video registration of traffic rules violations. You can use this like video registrator. App`s can automaticaly send violations to our server.
 
+"Are you disturbed by impudent behavior of road users and violations that cause emergency situations? Moreover, are you ready to act decisively? Then our service is for you! Let’s together collect the base of violators and bring them to responsibility. 
+If you notice violation of traffic rules – fix it and send us. Video camera starts to operate immediately after you download the app, so you can promptly catch the rule breaker. 
+Our service is a social initiative. If idea proves to be good, we will provide it to our New Police with pleasure."
+
 <p align="center">
 <img src="images/screen1.png"><img src="images/screen2.png">
 </p>
 
 ### Features
-* Video registrator mode for recording last 20 sec after tap;
+* Video recording in dash cam mode saving last 20 sec after tap;
 * Video record in usual mode;
 * Sending violation to the server side;
 
