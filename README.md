@@ -3,7 +3,7 @@
 [![Get it on Google Play](https://play.google.com/intl/en_us/badges/images/badge_new.png)](https://play.google.com/store/apps/details?id=com.stfalcon.hromadskyipatrol)
 
 ### Project description
-An application for video registration of traffic rules violations. You can use this like video registrator. App`s can automaticaly send violations to our server.
+An application for video registration of traffic rules violations. You can use this like video registrator. App`s can automatically send violations to our server.
 
 "Are you disturbed by impudent behavior of road users and violations that cause emergency situations? Moreover, are you ready to act decisively? Then our service is for you! Let’s together collect the base of violators and bring them to responsibility. 
 If you notice violation of traffic rules – fix it and send us. Video camera starts to operate immediately after you download the app, so you can promptly catch the rule breaker. 
