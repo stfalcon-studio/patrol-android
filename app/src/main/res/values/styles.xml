@@ -22,13 +22,17 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-            <!-- Main theme colors -->
-            <!--   your app branding color for the app bar -->
-            <item name="android:colorPrimary">@color/primaryColor</item>
-            <!--   darker variant for the status bar and contextual app bars -->
-            <item name="android:colorPrimaryDark">@color/primaryColorDark</item>
-            <!--   theme UI controls like checkboxes and text fields -->
-            <item name="android:colorAccent">@color/primaryColorDark</item>
+        <!-- Main theme colors -->
+        <!--   your app branding color for the app bar -->
+        <item name="android:colorPrimary">@color/primaryColor</item>
+        <!--   darker variant for the status bar and contextual app bars -->
+        <item name="android:colorPrimaryDark">@color/primaryColorDark</item>
+        <!--   theme UI controls like checkboxes and text fields -->
+        <item name="android:colorAccent">@color/primaryColorDark</item>
+        <!--   custom color for checkbox -->
+        <item name="colorControlNormal">@android:color/white</item>
+        <item name="colorControlActivated">@android:color/white</item>
+
     </style>
 
 </resources>

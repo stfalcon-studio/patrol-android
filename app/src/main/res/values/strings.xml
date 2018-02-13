@@ -30,7 +30,7 @@
     <string name="message_invalid_email">Невірна пошта</string>
     <string name="login_button">Авторизуватися</string>
     <string name="gps_dialog_title">Налаштування GPS</string>
-    <string name="gps_dialog_text">Для можливості знімати відео, будь ласка, увімкніть датчик GPS</string>
+    <string name="gps_dialog_text">Додаток використовує GPS для фіксації місця порушення правил дорожнього руху. Ці дані будуть оприлюднені. Для подальшої роботи, будь ласка, увімкніть датчик GPS</string>
     <string name="gps_turn_on">Увімкнути</string>
     <string name="no_photos_message">Ви ще не зробили жодного відеозапису</string>
     <string name="upload_only_wifi">Відправка відео лише по Wi-Fi</string>
@@ -75,4 +75,5 @@
     <string name="add_video">Додавання відео</string>
     <string name="search_gps">Визначення gps координат...</string>
     <string name="finish_record_error">Запис відео був припинений не корректно, файл втрачено...</string>
+    <string name="terms_and_privacy">Я погоджуюсь \n з умовами користування</string>
 </resources>
