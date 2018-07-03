@@ -76,4 +76,6 @@
     <string name="search_gps">Визначення gps координат...</string>
     <string name="finish_record_error">Запис відео був припинений не корректно, файл втрачено...</string>
     <string name="terms_and_privacy">Я погоджуюсь \n з умовами користування</string>
+
+    <string name="privacy_policy_url">https://stfalcon-studio.github.io/patrol-android/</string>
 </resources>

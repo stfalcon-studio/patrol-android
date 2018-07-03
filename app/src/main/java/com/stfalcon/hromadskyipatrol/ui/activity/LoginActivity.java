@@ -27,19 +27,13 @@ import android.os.Handler;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
 import android.text.style.UnderlineSpan;
-
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import android.widget.EditText;
-import android.widget.LinearLayout;
 
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -96,7 +90,7 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
             public void onClick(View view) {
                 Intent intent = new Intent(
                         Intent.ACTION_VIEW,
-                        Uri.parse("https://www.google.com")
+                        Uri.parse(getString(R.string.privacy_policy_url))
                 );
                 startActivity(intent);
             }
