@@ -24,9 +24,16 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.UnderlineSpan;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -49,7 +56,9 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
     private View loginButton;
     private View progressBar;
     private EditText emailEditText;
+    private CheckBox termsPrivacyCb;
     private LinearLayout copyrightLayout;
+    private TextView termsPrivacyTv;
     private LoginUserRequestListener requestListener = new LoginUserRequestListener();
 
     @Override
@@ -65,9 +74,34 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
         loginButton.setOnClickListener(this);
         progressBar = findViewById(R.id.progressBar);
         emailEditText = (EditText) findViewById(R.id.emailEditText);
+        termsPrivacyCb = (CheckBox) findViewById(R.id.termsPrivacyCb);
+        termsPrivacyTv = (TextView) findViewById(R.id.termsPrivacyTv);
+
         copyrightLayout = (LinearLayout) findViewById(R.id.copyrightLayout);
 
         copyrightLayout.setOnClickListener(this);
+
+        SpannableString ss = new SpannableString(getString(R.string.terms_and_privacy));
+        ss.setSpan(new UnderlineSpan(), 17, 24, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        termsPrivacyTv.setText(ss);
+        termsPrivacyTv.setMovementMethod(LinkMovementMethod.getInstance());
+        termsPrivacyTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse(getString(R.string.privacy_policy_url))
+                );
+                startActivity(intent);
+            }
+        });
+        termsPrivacyCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                loginButton.setEnabled(b);
+            }
+        });
+
     }
 
     @Override

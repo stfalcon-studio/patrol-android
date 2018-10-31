@@ -22,6 +22,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tool="http://schemas.android.com/tools"
     android:animateLayoutChanges="true"
     android:background="@color/primaryColor"
     android:padding="16dp">
@@ -117,6 +118,28 @@
             android:color="@color/primaryTextColor" />
 
     </RelativeLayout>
+
+    <TextView
+        android:id="@+id/termsPrivacyTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/copyrightLayout"
+        android:layout_marginBottom="8dp"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        tool:text="@string/terms_and_privacy" />
+
+    <CheckBox
+        android:id="@+id/termsPrivacyCb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/termsPrivacyTv"
+        android:layout_alignTop="@+id/termsPrivacyTv"
+        android:layout_marginRight="8dp"
+        android:layout_toLeftOf="@+id/termsPrivacyTv" />
+
 
     <LinearLayout
         android:id="@+id/copyrightLayout"
