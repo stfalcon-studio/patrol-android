@@ -1,25 +1,46 @@
+/*
+ * Copyright (c) 2015 - 2016. Stepan Tanasiychuk
+ *
+ *     This file is part of Gromadskyi Patrul is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Found ation, version 3 of the License, or any later version.
+ *
+ *     If you would like to use any part of this project for commercial purposes, please contact us
+ *     for negotiating licensing terms and getting permission for commercial use.
+ *     Our email address: info@stfalcon.com
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.stfalcon.hromadskyipatrol.ui;
 
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.stfalcon.hromadskyipatrol.R;
-import com.stfalcon.hromadskyipatrol.database.DatabasePatrol;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
 import com.stfalcon.hromadskyipatrol.services.UploadService;
+import com.stfalcon.hromadskyipatrol.services.VideoProcessingService;
 import com.stfalcon.hromadskyipatrol.utils.AppUtilities;
 import com.stfalcon.hromadskyipatrol.utils.IntentUtilities;
 import com.stfalcon.hromadskyipatrol.utils.NetworkUtils;
+import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 import com.stfalcon.hromadskyipatrol.utils.StringUtilities;
 
 import java.io.File;
@@ -95,39 +116,39 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
                 viewHolder.imgState.setImageResource(R.drawable.icon_upload);
                 viewHolder.noGPS.setVisibility(View.GONE);
                 viewHolder.imgState.setVisibility(View.VISIBLE);
-                viewHolder.progressBar.setVisibility(View.GONE);
                 break;
             case SENDING:
                 viewHolder.noGPS.setVisibility(View.GONE);
-                viewHolder.imgState.setVisibility(View.GONE);
-                viewHolder.progressBar.setVisibility(View.VISIBLE);
-                viewHolder.upload();
+                viewHolder.imgState.setImageResource((android.R.drawable.stat_sys_upload));
+                ((AnimationDrawable) viewHolder.imgState.getDrawable()).start();
                 if (!NetworkUtils.isConnectionAvailable(context)) {
                     video.setState(VideoItem.State.ERROR);
                     viewHolder.imgState.setImageResource(R.drawable.icon_repeat);
                     viewHolder.noGPS.setVisibility(View.GONE);
                     viewHolder.imgState.setVisibility(View.VISIBLE);
-                    viewHolder.progressBar.setVisibility(View.GONE);
                 }
                 break;
             case UPLOADED:
                 viewHolder.imgState.setImageResource(R.drawable.icon_done);
                 viewHolder.noGPS.setVisibility(View.GONE);
                 viewHolder.imgState.setVisibility(View.VISIBLE);
-                viewHolder.progressBar.setVisibility(View.GONE);
                 break;
             case ERROR:
                 viewHolder.imgState.setImageResource(R.drawable.icon_repeat);
                 viewHolder.noGPS.setVisibility(View.GONE);
                 viewHolder.imgState.setVisibility(View.VISIBLE);
-                viewHolder.progressBar.setVisibility(View.GONE);
+                break;
+
+            case BROKEN_FILE:
+                viewHolder.imgState.setImageResource(R.drawable.icon_broken);
+                viewHolder.noGPS.setVisibility(View.GONE);
+                viewHolder.imgState.setVisibility(View.VISIBLE);
                 break;
 
             case SAVING:
                 viewHolder.noGPS.setText(R.string.saving);
                 viewHolder.noGPS.setVisibility(View.VISIBLE);
                 viewHolder.imgState.setVisibility(View.GONE);
-                viewHolder.progressBar.setVisibility(View.GONE);
                 break;
         }
 
@@ -141,6 +162,8 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
 
     public interface VideosListener {
         void onVideosEmpty();
+
+        void noAuthUser();
     }
 
     private void loadThumb(ViewHolder holder) {
@@ -160,7 +183,6 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
         public ImageView imgThumbnail;
         public ImageView imgState;
         public TextView noGPS;
-        public ProgressBar progressBar;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -169,7 +191,6 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
             imgThumbnail = (ImageView) itemView.findViewById(R.id.img_thumbnail);
             imgState = (ImageView) itemView.findViewById(R.id.img_state);
             noGPS = (TextView) itemView.findViewById(R.id.gps);
-            progressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar);
         }
 
         @Override
@@ -190,12 +211,8 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
         }
 
         private void delete() {
-            try {
-                new File(video.getVideoURL()).delete();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            DatabasePatrol.get(context).deleteVideo(video.getId());
+            context.startService(new Intent(context,
+                    VideoProcessingService.class).putExtra(VideoProcessingService.DELETE_MOVIE, video.getId()));
 
             mItems.remove(video);
             notifyItemRemoved(getAdapterPosition());
@@ -208,6 +225,7 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
         private void showDialog() {
             final boolean isCanDelete = NetworkUtils.isCanDelete(video.getState());
             final boolean isCanLoad = NetworkUtils.isCanLoadItem(video.getState());
+            final boolean isAuth = ProjectPreferencesManager.getUser(context).isLogin();
             ArrayList<String> options = StringUtilities.getOptions(context, isCanLoad, isCanDelete);
 
             new AlertDialog.Builder(context)
@@ -221,8 +239,15 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
                                             IntentUtilities.openVideo(context, mItems.get(getAdapterPosition()).getVideoURL());
                                             break;
                                         case 1:
-                                            if (isCanLoad) upload();
-                                            else delete();
+                                            if (isCanLoad) {
+                                                if (isAuth) {
+                                                    upload();
+                                                } else {
+                                                    if (listener != null) {
+                                                        listener.noAuthUser();
+                                                    }
+                                                }
+                                            } else delete();
                                             break;
                                         case 2:
                                             delete();

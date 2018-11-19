@@ -1,9 +1,30 @@
+/*
+ * Copyright (c) 2015 - 2016. Stepan Tanasiychuk
+ *
+ *     This file is part of Gromadskyi Patrul is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Found ation, version 3 of the License, or any later version.
+ *
+ *     If you would like to use any part of this project for commercial purposes, please contact us
+ *     for negotiating licensing terms and getting permission for commercial use.
+ *     Our email address: info@stfalcon.com
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.stfalcon.hromadskyipatrol.ui.activity;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -31,6 +52,7 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
     private EditText emailEditText;
     private LinearLayout copyrightLayout;
     private LoginUserRequestListener requestListener = new LoginUserRequestListener();
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +62,19 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
         initUserAccount();
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
     private void initViews() {
+        toolbar = (Toolbar) findViewById(R.id.loginToolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setTitle("");
+
         loginButton = findViewById(R.id.loginButton);
         loginButton.setOnClickListener(this);
         progressBar = findViewById(R.id.progressBar);
@@ -76,7 +110,7 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
             }
         }
 
-        emailEditText.setText(userData == null ? UserEmailFetcher.getEmail(this) : userData.getEmail());
+        emailEditText.setText(userData == null || !userData.isLogin() ? UserEmailFetcher.getEmail(this) : userData.getEmail());
         loginButton.setVisibility(View.VISIBLE);
     }
 
@@ -121,29 +155,17 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
 
         @Override
         public void onRequestFailure(SpiceException spiceException) {
+            loginButton.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
 
-            UserItem user = ProjectPreferencesManager.getUser(LoginActivity.this);
-            if (user != null) {
-                if (user.getEmail().contentEquals(emailEditText.getText().toString())) {
-                    user.setIsLogin(true);
-                    ProjectPreferencesManager.setUser(LoginActivity.this, user);
-
-                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                    finish();
-                }
+            String message;
+            if (NetworkUtils.getConnectivityStatus(LoginActivity.this) == NetworkUtils.NOT_CONNECTED) {
+                message = getString(R.string.error_no_connection);
             } else {
-                loginButton.setVisibility(View.VISIBLE);
-                progressBar.setVisibility(View.GONE);
-
-                String message;
-                if (NetworkUtils.getConnectivityStatus(LoginActivity.this) == NetworkUtils.NOT_CONNECTED) {
-                    message = getString(R.string.error_no_connection);
-                } else {
-                    message = getString(R.string.error_server_connecting);
-                }
-
-                AppUtilities.showToast(LoginActivity.this, message, false);
+                message = getString(R.string.error_server_connecting);
             }
+
+            AppUtilities.showToast(LoginActivity.this, message, false);
         }
 
         @Override
@@ -152,10 +174,11 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
             if (userData == null) userData = new UserItem();
             userData.setEmail(user.email);
             userData.setId(user.id);
-            userData.setIsLogin(true);
             ProjectPreferencesManager.setUser(LoginActivity.this, userData);
 
-            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
             finish();
         }
     }

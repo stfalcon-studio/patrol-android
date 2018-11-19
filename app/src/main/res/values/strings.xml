@@ -1,3 +1,23 @@
+<!--
+  ~ Copyright (c) 2015 - 2016. Stepan Tanasiychuk
+  ~
+  ~     This file is part of Gromadskyi Patrul is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Found ation, version 3 of the License, or any later version.
+  ~
+  ~     If you would like to use any part of this project for commercial purposes, please contact us
+  ~     for negotiating licensing terms and getting permission for commercial use.
+  ~     Our email address: info@stfalcon.com
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
 <resources>
     <string name="app_name">Громадський патруль</string>
 
@@ -10,11 +30,11 @@
     <string name="message_invalid_email">Невірна пошта</string>
     <string name="login_button">Авторизуватися</string>
     <string name="gps_dialog_title">Налаштування GPS</string>
-    <string name="gps_dialog_text">Для можливості знімати відео, будь ласка, увімкніть датчик GPS.</string>
+    <string name="gps_dialog_text">Для можливості знімати відео, будь ласка, увімкніть датчик GPS</string>
     <string name="gps_turn_on">Увімкнути</string>
-    <string name="no_photos_message">Ви ще не зробили жодного відеозапису.</string>
+    <string name="no_photos_message">Ви ще не зробили жодного відеозапису</string>
     <string name="upload_only_wifi">Відправка відео лише по Wi-Fi</string>
-    <string name="upload_automatically">Завантажувати файли автоматично</string>
+    <string name="upload_automatically">Автоматична відправка відео</string>
     <string name="logout">Вийти</string>
     <string name="no_gps">Відсутні GPS \nкоординати</string>
     <string name="email_hint">Ваша електронна пошта</string>
@@ -22,7 +42,7 @@
     <string name="record">Record</string>
     <string name="stop">Stop</string>
     <string name="description_info">Iнформація</string>
-    <string name="permission_request">Необхідний дозвіл для запису аудіо та відео.</string>
+    <string name="permission_request">Необхідний дозвіл для запису аудіо та відео</string>
     <string name="camera_error">Ваш пристрій не підтримує Camera2 API.</string>
     <string name="view_video">Переглянути відео</string>
     <string name="upload_video">Завантажити одне відео</string>
@@ -34,4 +54,29 @@
     <string name="error_no_connection">Будь ласка, перевіте ваше з\'єднання та спробуйте ще раз</string>
     <string name="error_server_connecting">Неможливо з\'єднатися з сервером</string>
     <string name="error_camera_access_denied">Неможливо відкрити камеру</string>
+    <string name="hint_date">Дата порушення</string>
+    <string name="notification_fail_upload_title">Помилка завантаження</string>
+    <string name="notification_fail_upload_body">При завантаженні на сервер відбулась помилка</string>
+    <string name="notification_fail_upload_textTicker">Помилка завантаження...</string>
+
+    <string name="notification_start_upload_title">Завантаження відео</string>
+    <string name="notification_start_upload_body">Завантаження відео на сервер розпочато</string>
+    <string name="notification_start_upload_textTicker">Розпочато завантаження відео</string>
+
+    <string name="notification_end_upload_title">Завантаження відео</string>
+    <string name="notification_end_upload_body">Завантаження успішно завершено</string>
+    <string name="notification_end_upload_textTicker">Завантаження успішно завершено</string>
+    <string name="error_incorrect_date">Введіть дату фіксації порушення</string>
+    <string name="record_when_start">Стартувати з реєстратора</string>
+    <string name="exception_copy_file">Помилка при копіюванні відеофайлу</string>
+    <string name="error_pick_video">Не можливо визначити тип файлу</string>
+    <string name="error_type_video">Ви можете завантажити лише відео</string>
+    <string name="copy">Копіювання...</string>
+    <string name="add_video">Додавання відео</string>
+    <string name="search_gps">Визначення gps координат...</string>
+    <string name="finish_record_error">Запис відео був припинений не корректно, файл втрачено...</string>
+    <string name="dialog_auth_title">Авторизація</string>
+    <string name="dialog_auth_message">Щоб мати можливість відправляти відео на наш сервер вам потрібно авторизуватись</string>
+    <string name="dialog_auth_positive">Авторизація</string>
+    <string name="dialog_auth_negative">Відміна</string>
 </resources>

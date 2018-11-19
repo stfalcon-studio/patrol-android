@@ -1,3 +1,23 @@
+<!--
+  ~ Copyright (c) 2015 - 2016. Stepan Tanasiychuk
+  ~
+  ~     This file is part of Gromadskyi Patrul is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Found ation, version 3 of the License, or any later version.
+  ~
+  ~     If you would like to use any part of this project for commercial purposes, please contact us
+  ~     for negotiating licensing terms and getting permission for commercial use.
+  ~     Our email address: info@stfalcon.com
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -9,30 +29,57 @@
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="48dp"/>
+        android:layout_above="@+id/bottomMenu"
+        android:layout_marginTop="48dp" />
 
     <TextView
         android:id="@+id/noVideosTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/no_photos_message"
         android:layout_centerInParent="true"
-        android:visibility="gone"/>
+        android:text="@string/no_photos_message"
+        android:visibility="gone" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_above="@+id/bottomMenu"
+        android:background="@drawable/shape_shadow"/>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/snap"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <RelativeLayout
+        android:id="@+id/bottomMenu"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_margin="16dp"
-        android:clickable="true"
-        android:src="@drawable/ic_video_white_24dp"
-        app:backgroundTint="@color/primaryColor"
-        app:borderWidth="0dp"
-        app:elevation="6dp"
-        app:fabSize="normal"/>
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/bt_add_video"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/snap"
+            android:background="@null"
+            android:src="@drawable/ic_add" />
+
+        <ImageButton
+            android:id="@+id/snap"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:background="@color/primaryColor"
+            android:src="@drawable/ic_recorder" />
+
+        <ImageButton
+            android:id="@+id/snapVideo"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_toRightOf="@+id/snap"
+            android:background="@null"
+            android:src="@drawable/ic_camera" />
+
+    </RelativeLayout>
 
     <android.support.design.widget.CollapsingToolbarLayout
         android:id="@+id/my_awesome_toolbar"
@@ -53,31 +100,30 @@
                 android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginTop="10dp"
+                android:paddingLeft="8dp"
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
-                android:paddingLeft="8dp"
-                tools:text="User name"
-                android:layout_marginTop="10dp"
-                android:layout_alignParentLeft="true"/>
-
+                tools:text="User name" />
 
             <ImageButton
                 android:id="@+id/bt_settings"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
                 android:background="@null"
                 android:padding="14dp"
-                android:src="@drawable/icon_settings"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"/>
+                android:src="@drawable/ic_settings" />
 
             <LinearLayout
                 android:id="@+id/ll_settings"
-                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/title"
                 android:layout_marginTop="16dp"
+                android:orientation="vertical"
                 android:visibility="gone">
 
                 <CheckBox
@@ -86,10 +132,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
-                    android:textColor="@android:color/white"
-                    android:textSize="14sp"
                     android:clickable="true"
-                    android:text="@string/upload_only_wifi" />
+                    android:text="@string/upload_only_wifi"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp" />
 
                 <CheckBox
                     android:id="@+id/autoUploadCheckBox"
@@ -97,25 +143,47 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
-                    android:textColor="@android:color/white"
-                    android:textSize="14sp"
                     android:clickable="true"
-                    android:text="@string/upload_automatically" />
+                    android:text="@string/upload_automatically"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp" />
+
+                <CheckBox
+                    android:id="@+id/startWithRecording"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:clickable="true"
+                    android:text="@string/record_when_start"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/userName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="16dp"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp"
+                    tools:text="User name" />
 
                 <Button
                     android:id="@+id/logout"
-                    android:text="@string/logout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:textSize="12sp"
+                    android:background="@color/primaryColorDark"
+                    android:text="@string/logout"
                     android:textColor="@color/primaryTextColor"
-                    android:background="@color/primaryColorDark"/>
+                    android:textSize="12sp" />
 
             </LinearLayout>
 
         </RelativeLayout>
     </android.support.design.widget.CollapsingToolbarLayout>
-
 
 </RelativeLayout>

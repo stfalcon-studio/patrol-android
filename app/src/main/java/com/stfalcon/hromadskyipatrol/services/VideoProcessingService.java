@@ -1,3 +1,23 @@
+/*
+ * Copyright (c) 2015 - 2016. Stepan Tanasiychuk
+ *
+ *     This file is part of Gromadskyi Patrul is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Found ation, version 3 of the License, or any later version.
+ *
+ *     If you would like to use any part of this project for commercial purposes, please contact us
+ *     for negotiating licensing terms and getting permission for commercial use.
+ *     Our email address: info@stfalcon.com
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.stfalcon.hromadskyipatrol.services;
 
 import android.app.IntentService;
@@ -7,19 +27,17 @@ import android.provider.MediaStore;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.stfalcon.hromadskyipatrol.camera.VideoCaptureActivity;
+import com.stfalcon.hromadskyipatrol.ui.activity.VideoCaptureActivity;
 import com.stfalcon.hromadskyipatrol.database.DatabasePatrol;
 import com.stfalcon.hromadskyipatrol.models.VideoItem;
 import com.stfalcon.hromadskyipatrol.models.ViolationItem;
 import com.stfalcon.hromadskyipatrol.utils.Extras;
-import com.stfalcon.hromadskyipatrol.utils.Constants;
 import com.stfalcon.hromadskyipatrol.utils.FilesUtils;
 import com.stfalcon.hromadskyipatrol.utils.ProcessVideoUtils;
 import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 import com.stfalcon.hromadskyipatrol.utils.VideoThumbUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -30,6 +48,7 @@ public class VideoProcessingService extends IntentService {
 
     private static final String TAG = VideoProcessingService.class.getName();
     public static final String ADD_VIDEO_UI = "videoAdded";
+    public static final String DELETE_MOVIE = "delete_movie";
 
     public VideoProcessingService() {
         super(VideoProcessingService.class.getName());
@@ -42,58 +61,90 @@ public class VideoProcessingService extends IntentService {
         DatabasePatrol db = DatabasePatrol.get(this);
 
         // add new video to db if need
-        if (intent.hasExtra(VideoCaptureActivity.MOVIES_RESULT)) {
-            addVideos(intent);
+        if (intent.hasExtra(VideoCaptureActivity.MOVIES_TO_SAVE)) {
+            addVideo(intent);
         }
 
-        ArrayList<VideoItem> videoItems = db.getVideos(
-                VideoItem.State.SAVING,
-                ProjectPreferencesManager.getUser(this));
+        //delete video
+        else if (intent.hasExtra(DELETE_MOVIE)) {
+            deleteVideo(intent);
+        }
 
-        if (!videoItems.isEmpty()) {
-            for (VideoItem item : videoItems) {
-                tryToProcessVideo(item, db);
+        //process all videos
+        else {
+            ArrayList<VideoItem> videoItems = db.getVideos(
+                    VideoItem.State.SAVING,
+                    ProjectPreferencesManager.getUser(this));
+
+            if (!videoItems.isEmpty()) {
+                for (VideoItem item : videoItems) {
+                    tryToProcessVideo(item, db);
+                }
             }
-            // start auto upload service if need
-            if (ProjectPreferencesManager.getAutoUploadMode(getApplicationContext())) {
-                startService(new Intent(VideoProcessingService.this, UploadService.class));
-            }
+        }
+
+        // start auto upload service if need
+        if (ProjectPreferencesManager.getAutoUploadMode(getApplicationContext())) {
+            startService(new Intent(VideoProcessingService.this, UploadService.class));
         }
     }
 
-    private void addVideos(Intent data) {
+    private void deleteVideo(Intent intent) {
+        String id = intent.getStringExtra(DELETE_MOVIE);
+        DatabasePatrol db = DatabasePatrol.get(this);
+        VideoItem video = db.getVideo(id);
+        FilesUtils.removeFile(video.getVideoURL());
+        if (video.getThumb() != null) {
+            FilesUtils.removeFile(video.getThumb());
+        }
+        DatabasePatrol.get(this).deleteVideo(id);
+    }
 
+    private void addVideo(Intent data) {
         DatabasePatrol db = DatabasePatrol.get(this);
 
-        ArrayList<ViolationItem> violationItems
-                = data.getParcelableArrayListExtra(VideoCaptureActivity.MOVIES_RESULT);
-        String ownerEmail = data.getStringExtra(Constants.EXTRAS_OWNER_EMAIL);
+        ViolationItem violationItem
+                = data.getParcelableExtra(VideoCaptureActivity.MOVIES_TO_SAVE);
 
-        if (!violationItems.isEmpty()) {
-            int i = 0;
-            for (ViolationItem item : violationItems) {
-                VideoItem video = new VideoItem();
-                video.setId(String.valueOf(System.currentTimeMillis() + i++));
-                video.setVideoPrevURL(item.videoUrlPrev);
-                video.setVideoURL(item.videoUrl);
-                video.setLatitude(item.getLat());
-                video.setLongitude(item.getLon());
-                video.setState(VideoItem.State.SAVING);
-                video.setOwnerEmail(ownerEmail);
+        checkIfFileExist(violationItem.videoUrl);
 
-                String thumbUrl = VideoThumbUtils.makeThumb(ThumbnailUtils.createVideoThumbnail(video.getVideoURL(),
-                        MediaStore.Images.Thumbnails.MINI_KIND));
+        String thumbUrl = VideoThumbUtils.makeThumb(ThumbnailUtils.createVideoThumbnail(violationItem.videoUrl,
+                MediaStore.Images.Thumbnails.MINI_KIND));
 
-                video.setThumb(thumbUrl);
+        VideoItem video = new VideoItem();
+        video.setId(String.valueOf(System.currentTimeMillis()));
+        video.setDate(violationItem.getViolationTime());
+        video.setVideoPrevURL(violationItem.videoUrlPrev);
+        video.setVideoURL(violationItem.videoUrl);
+        video.setLatitude(violationItem.getLat());
+        video.setLongitude(violationItem.getLon());
+        video.setState(VideoItem.State.SAVING);
+        video.setOwnerEmail(ProjectPreferencesManager.getUser(this).getEmail());
+        video.setThumb(thumbUrl);
+        video.setSourceType(VideoItem.SOURCE_TYPE_REGISTRATOR);
 
-                db.addVideo(video);
+        db.addVideo(video);
 
-                addVideoToUI(video.getId());
+        addVideoToUI(video.getId());
+    }
+
+    private void checkIfFileExist(String fileUri) {
+        for (int existRetry = 0; existRetry < 3; existRetry++) {
+            boolean isFileExist = new File(fileUri).exists();
+            if (!isFileExist) {
+                existRetry++;
+                try {
+                    Thread.sleep(3000);   //wait file saving in media store
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                break;
             }
         }
     }
 
-    private void tryToProcessVideo(VideoItem video, DatabasePatrol db) {
+    private void tryToProcessVideo(final VideoItem video, DatabasePatrol db) {
         String id = video.getId();
         Log.d(TAG, "item: " + id);
         Log.d(TAG, "itemUrl: " + video.getVideoURL());
@@ -102,38 +153,27 @@ public class VideoProcessingService extends IntentService {
         String videoPrevURL = video.getVideoPrevURL();
         if (videoPrevURL != null) {
             File src2 = new File(videoPrevURL);
-            File result = new File(FilesUtils.getOutputInternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
+            File result = new File(FilesUtils.getOutputExternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
             ProcessVideoUtils.concatTwoVideos(src2, src, result);
-            deleteFile(src);
-            deleteFile(src2);
+            FilesUtils.removeFile(src.getAbsolutePath());
+            FilesUtils.removeFile(src2.getAbsolutePath());
             src = result;
         }
-        File dst = new File(FilesUtils.getOutputInternalMediaFile(FilesUtils.MEDIA_TYPE_VIDEO).getAbsolutePath());
 
-        Log.d(TAG, "dst: " + dst.getAbsolutePath());
         try {
-            if (ProcessVideoUtils.trimToLast20sec(src, dst)) {
-                deleteFile(src);
-                video.setVideoURL(dst.getAbsolutePath());
-            } else {
-                deleteFile(dst);
-                video.setVideoURL(src.getAbsolutePath());
+            String trimResultUrl = ProcessVideoUtils.trimToLast20sec(src);
+            if (trimResultUrl != null) {
+                video.setVideoURL(trimResultUrl);
             }
+
             db.updateVideo(id, video.getVideoURL());
             db.updateVideo(video.getId(), VideoItem.State.READY_TO_SEND);
-            updateUI(id, video.getVideoURL());
-        } catch (Exception e) {
-            e.printStackTrace();
-            db.updateVideo(video.getId(), VideoItem.State.ERROR);
-        }
-    }
 
-    private void deleteFile(File file) {
-        try {
-            file.delete();
         } catch (Exception e) {
             e.printStackTrace();
+            db.updateVideo(video.getId(), VideoItem.State.BROKEN_FILE);
         }
+        updateUI(id, video.getVideoURL());
     }
 
     private void updateUI(String id, String url) {

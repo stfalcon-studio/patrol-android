@@ -1,9 +1,28 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.stfalcon.hromadskyipatrol" >
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2015 - 2016. Stepan Tanasiychuk
+  ~
+  ~     This file is part of Gromadskyi Patrul is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Found ation, version 3 of the License, or any later version.
+  ~
+  ~     If you would like to use any part of this project for commercial purposes, please contact us
+  ~     for negotiating licensing terms and getting permission for commercial use.
+  ~     Our email address: info@stfalcon.com
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
 
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.stfalcon.hromadskyipatrol">
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -14,35 +33,49 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+
     <application
         android:name=".PatrolApp"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
             android:name="com.stfalcon.hromadskyipatrol.ui.activity.LoginActivity"
-            android:label="@string/app_name"
             android:keepScreenOn="true"
+            android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan|stateAlwaysHidden">
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden"></activity>
+        <activity
+            android:name=".ui.activity.MainActivity"
+            android:configChanges="orientation|screenSize"
+            android:launchMode="singleTask"
+            android:keepScreenOn="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activity.MainActivity"
-            android:keepScreenOn="true"
-            android:screenOrientation="portrait"/>
 
-        <activity android:name=".camera.VideoCaptureActivity"
+        <activity
+            android:name=".ui.activity.VideoCaptureActivity"
             android:keepScreenOn="true"
-            android:screenOrientation="landscape"/>
+            android:screenOrientation="landscape" />
 
-        <service android:name="com.stfalcon.hromadskyipatrol.network.PatrolSpiceService"/>
-        <service android:name=".services.UploadService"/>
-        <service android:name=".services.VideoProcessingService"/>
+        <activity
+            android:name=".ui.activity.UploadVideoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.VideoModeActivity"
+            android:screenOrientation="portrait" />
+
+        <service android:name="com.stfalcon.hromadskyipatrol.network.PatrolSpiceService" />
+        <service android:name=".services.UploadService" />
+        <service android:name=".services.VideoProcessingService" />
 
         <receiver
             android:name="com.stfalcon.hromadskyipatrol.receivers.NetworkStateReceiver"

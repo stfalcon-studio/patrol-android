@@ -1,3 +1,23 @@
+/*
+ * Copyright (c) 2015 - 2016. Stepan Tanasiychuk
+ *
+ *     This file is part of Gromadskyi Patrul is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Found ation, version 3 of the License, or any later version.
+ *
+ *     If you would like to use any part of this project for commercial purposes, please contact us
+ *     for negotiating licensing terms and getting permission for commercial use.
+ *     Our email address: info@stfalcon.com
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.stfalcon.hromadskyipatrol.database;
 
 import android.content.ContentValues;
@@ -39,6 +59,7 @@ public class DatabasePatrol
 
         ContentValues values = new ContentValues();
         values.put(Const.KEY_ID, item.getId());
+        values.put(Const.KEY_DATE, item.getDate());
         values.put(Const.KEY_THUMB, item.getThumb());
         values.put(Const.KEY_URL, item.getVideoURL());
         values.put(Const.KEY_PREV_URL, item.getVideoPrevURL());
@@ -46,6 +67,7 @@ public class DatabasePatrol
         values.put(Const.KEY_LON, item.getLongitude());
         values.put(Const.KEY_LAT, item.getLatitude());
         values.put(Const.KEY_OWNER_EMAIL, item.getOwnerEmail());
+        values.put(Const.KEY_SOURCE_TYPE, item.getSourceType());
 
         db.insert(Const.TABLE_VIDEOS, null, values);
         db.close();
@@ -66,8 +88,7 @@ public class DatabasePatrol
     @Override
     public ArrayList<VideoItem> getVideos(UserItem user) {
         SQLiteDatabase db = helper.getReadableDatabase();
-        String selectQuery = "SELECT * FROM " + Const.TABLE_VIDEOS
-                + " WHERE " + Const.KEY_OWNER_EMAIL + " = '" + user.getEmail() + "'";
+        String selectQuery = "SELECT * FROM " + Const.TABLE_VIDEOS;
 
         return getVideos(db.rawQuery(selectQuery, null));
     }
@@ -76,8 +97,7 @@ public class DatabasePatrol
     public ArrayList<VideoItem> getVideos(VideoItem.State state, UserItem user) {
         SQLiteDatabase db = helper.getReadableDatabase();
         String selectQuery = "SELECT * FROM " + Const.TABLE_VIDEOS
-                + " WHERE " + Const.KEY_STATE + " = '" + state.value() + "'"
-                + " AND " + Const.KEY_OWNER_EMAIL + " = '" + user.getEmail() + "'";
+                + " WHERE " + Const.KEY_STATE + " = '" + state.value() + "'";
 
         return getVideos(db.rawQuery(selectQuery, null));
     }
@@ -141,21 +161,22 @@ public class DatabasePatrol
     private VideoItem getVideoWhere(String state, String value, UserItem user) {
         SQLiteDatabase db = helper.getReadableDatabase();
         String selectQuery = "SELECT * FROM " + Const.TABLE_VIDEOS
-                + " WHERE " + state + " = '" + value + "'"
-                + " AND " + Const.KEY_OWNER_EMAIL + " = '" + user.getEmail() + "'";
+                + " WHERE " + state + " = '" + value + "'";
         VideoItem item = null;
 
         Cursor cursor = db.rawQuery(selectQuery, null);
         if (cursor.moveToFirst()) {
             item = new VideoItem(
                     cursor.getString(cursor.getColumnIndex(Const.KEY_ID)),
+                    cursor.getLong(cursor.getColumnIndex(Const.KEY_DATE)),
                     cursor.getString(cursor.getColumnIndex(Const.KEY_URL)),
                     cursor.getInt(cursor.getColumnIndex(Const.KEY_STATE)),
                     cursor.getDouble(cursor.getColumnIndex(Const.KEY_LON)),
                     cursor.getDouble(cursor.getColumnIndex(Const.KEY_LAT)),
                     cursor.getString(cursor.getColumnIndex(Const.KEY_OWNER_EMAIL)),
                     cursor.getString(cursor.getColumnIndex(Const.KEY_PREV_URL)),
-                    cursor.getString(cursor.getColumnIndex(Const.KEY_THUMB))
+                    cursor.getString(cursor.getColumnIndex(Const.KEY_THUMB)),
+                    cursor.getString(cursor.getColumnIndex(Const.KEY_SOURCE_TYPE))
             );
         }
 
@@ -169,13 +190,15 @@ public class DatabasePatrol
             do
                 items.add(new VideoItem(
                         cursor.getString(cursor.getColumnIndex(Const.KEY_ID)),
+                        cursor.getLong(cursor.getColumnIndex(Const.KEY_DATE)),
                         cursor.getString(cursor.getColumnIndex(Const.KEY_URL)),
                         cursor.getInt(cursor.getColumnIndex(Const.KEY_STATE)),
                         cursor.getDouble(cursor.getColumnIndex(Const.KEY_LON)),
                         cursor.getDouble(cursor.getColumnIndex(Const.KEY_LAT)),
                         cursor.getString(cursor.getColumnIndex(Const.KEY_OWNER_EMAIL)),
                         cursor.getString(cursor.getColumnIndex(Const.KEY_PREV_URL)),
-                        cursor.getString(cursor.getColumnIndex(Const.KEY_THUMB))
+                        cursor.getString(cursor.getColumnIndex(Const.KEY_THUMB)),
+                        cursor.getString(cursor.getColumnIndex(Const.KEY_SOURCE_TYPE))
                 ));
             while (cursor.moveToNext());
         }
@@ -199,8 +222,9 @@ public class DatabasePatrol
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            db.execSQL("DROP TABLE IF EXISTS " + Const.TABLE_VIDEOS);
-            onCreate(db);
+            if (newVersion > 3) {
+                db.execSQL("ALTER TABLE " + Const.TABLE_VIDEOS + " ADD COLUMN " + Const.KEY_SOURCE_TYPE + " TEXT");
+            }
         }
     }
 }
