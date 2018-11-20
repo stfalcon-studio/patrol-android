@@ -30,7 +30,7 @@
     <string name="message_invalid_email">Невірна пошта</string>
     <string name="login_button">Авторизуватися</string>
     <string name="gps_dialog_title">Налаштування GPS</string>
-    <string name="gps_dialog_text">Для можливості знімати відео, будь ласка, увімкніть датчик GPS</string>
+    <string name="gps_dialog_text">Додаток використовує GPS для фіксації місця порушення правил дорожнього руху. Ці дані будуть оприлюднені. Для подальшої роботи, будь ласка, увімкніть датчик GPS</string>
     <string name="gps_turn_on">Увімкнути</string>
     <string name="no_photos_message">Ви ще не зробили жодного відеозапису</string>
     <string name="upload_only_wifi">Відправка відео лише по Wi-Fi</string>
@@ -49,7 +49,7 @@
     <string name="delete_video">Видалити відео</string>
     <string name="cancel">Відміна</string>
     <string name="violator">Фіксую порушення</string>
-    <string name="in_process">Обробляється...</string>
+    <string name="in_process">Обробляється…</string>
     <string name="timer_format">00:%1$s</string>
     <string name="error_no_connection">Будь ласка, перевіте ваше з\'єднання та спробуйте ще раз</string>
     <string name="error_server_connecting">Неможливо з\'єднатися з сервером</string>
@@ -57,7 +57,7 @@
     <string name="hint_date">Дата порушення</string>
     <string name="notification_fail_upload_title">Помилка завантаження</string>
     <string name="notification_fail_upload_body">При завантаженні на сервер відбулась помилка</string>
-    <string name="notification_fail_upload_textTicker">Помилка завантаження...</string>
+    <string name="notification_fail_upload_textTicker">Помилка завантаження…</string>
 
     <string name="notification_start_upload_title">Завантаження відео</string>
     <string name="notification_start_upload_body">Завантаження відео на сервер розпочато</string>
@@ -71,12 +71,15 @@
     <string name="exception_copy_file">Помилка при копіюванні відеофайлу</string>
     <string name="error_pick_video">Не можливо визначити тип файлу</string>
     <string name="error_type_video">Ви можете завантажити лише відео</string>
-    <string name="copy">Копіювання...</string>
+    <string name="copy">Копіювання…</string>
     <string name="add_video">Додавання відео</string>
-    <string name="search_gps">Визначення gps координат...</string>
-    <string name="finish_record_error">Запис відео був припинений не корректно, файл втрачено...</string>
+    <string name="search_gps">Визначення gps координат…</string>
+    <string name="finish_record_error">Запис відео був припинений не корректно, файл втрачено…</string>
     <string name="dialog_auth_title">Авторизація</string>
     <string name="dialog_auth_message">Щоб мати можливість відправляти відео на наш сервер вам потрібно авторизуватись</string>
     <string name="dialog_auth_positive">Авторизація</string>
     <string name="dialog_auth_negative">Відміна</string>
+    <string name="terms_and_privacy">Я погоджуюсь \n з умовами користування</string>
+    <string name="terms_and_privacy_error">Вам потрібно погодитись з умовами використання</string>
+    <string name="privacy_policy_url">https://stfalcon-studio.github.io/patrol-android/</string>
 </resources>

@@ -19,18 +19,19 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:animateLayoutChanges="true"
     android:background="@color/primaryColor"
     android:padding="16dp">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/loginToolbar"
-        app:title=""
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize" />
+        android:layout_height="?attr/actionBarSize"
+        app:title="" />
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -123,6 +124,28 @@
             android:visibility="gone" />
 
     </RelativeLayout>
+
+    <TextView
+        android:id="@+id/termsPrivacyTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/copyrightLayout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="8dp"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        tool:text="@string/terms_and_privacy" />
+
+    <CheckBox
+        android:id="@+id/termsPrivacyCb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/termsPrivacyTv"
+        android:layout_alignBottom="@+id/termsPrivacyTv"
+        android:layout_marginRight="8dp"
+        android:layout_toLeftOf="@+id/termsPrivacyTv" />
+
 
     <LinearLayout
         android:id="@+id/copyrightLayout"
