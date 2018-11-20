@@ -38,9 +38,9 @@ import com.stfalcon.hromadskyipatrol.models.VideoItem;
 import com.stfalcon.hromadskyipatrol.services.UploadService;
 import com.stfalcon.hromadskyipatrol.services.VideoProcessingService;
 import com.stfalcon.hromadskyipatrol.utils.AppUtilities;
-import com.stfalcon.hromadskyipatrol.utils.Extras;
 import com.stfalcon.hromadskyipatrol.utils.IntentUtilities;
 import com.stfalcon.hromadskyipatrol.utils.NetworkUtils;
+import com.stfalcon.hromadskyipatrol.utils.ProjectPreferencesManager;
 import com.stfalcon.hromadskyipatrol.utils.StringUtilities;
 
 import java.io.File;
@@ -162,6 +162,8 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
 
     public interface VideosListener {
         void onVideosEmpty();
+
+        void noAuthUser();
     }
 
     private void loadThumb(ViewHolder holder) {
@@ -223,6 +225,7 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
         private void showDialog() {
             final boolean isCanDelete = NetworkUtils.isCanDelete(video.getState());
             final boolean isCanLoad = NetworkUtils.isCanLoadItem(video.getState());
+            final boolean isAuth = ProjectPreferencesManager.getUser(context).isLogin();
             ArrayList<String> options = StringUtilities.getOptions(context, isCanLoad, isCanDelete);
 
             new AlertDialog.Builder(context)
@@ -236,8 +239,15 @@ public class VideoGridAdapter extends RecyclerView.Adapter<VideoGridAdapter.View
                                             IntentUtilities.openVideo(context, mItems.get(getAdapterPosition()).getVideoURL());
                                             break;
                                         case 1:
-                                            if (isCanLoad) upload();
-                                            else delete();
+                                            if (isCanLoad) {
+                                                if (isAuth) {
+                                                    upload();
+                                                } else {
+                                                    if (listener != null) {
+                                                        listener.noAuthUser();
+                                                    }
+                                                }
+                                            } else delete();
                                             break;
                                         case 2:
                                             delete();

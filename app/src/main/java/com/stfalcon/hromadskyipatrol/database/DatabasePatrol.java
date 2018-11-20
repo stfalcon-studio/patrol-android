@@ -88,8 +88,7 @@ public class DatabasePatrol
     @Override
     public ArrayList<VideoItem> getVideos(UserItem user) {
         SQLiteDatabase db = helper.getReadableDatabase();
-        String selectQuery = "SELECT * FROM " + Const.TABLE_VIDEOS
-                + " WHERE " + Const.KEY_OWNER_EMAIL + " = '" + user.getEmail() + "'";
+        String selectQuery = "SELECT * FROM " + Const.TABLE_VIDEOS;
 
         return getVideos(db.rawQuery(selectQuery, null));
     }
@@ -98,8 +97,7 @@ public class DatabasePatrol
     public ArrayList<VideoItem> getVideos(VideoItem.State state, UserItem user) {
         SQLiteDatabase db = helper.getReadableDatabase();
         String selectQuery = "SELECT * FROM " + Const.TABLE_VIDEOS
-                + " WHERE " + Const.KEY_STATE + " = '" + state.value() + "'"
-                + " AND " + Const.KEY_OWNER_EMAIL + " = '" + user.getEmail() + "'";
+                + " WHERE " + Const.KEY_STATE + " = '" + state.value() + "'";
 
         return getVideos(db.rawQuery(selectQuery, null));
     }
@@ -163,8 +161,7 @@ public class DatabasePatrol
     private VideoItem getVideoWhere(String state, String value, UserItem user) {
         SQLiteDatabase db = helper.getReadableDatabase();
         String selectQuery = "SELECT * FROM " + Const.TABLE_VIDEOS
-                + " WHERE " + state + " = '" + value + "'"
-                + " AND " + Const.KEY_OWNER_EMAIL + " = '" + user.getEmail() + "'";
+                + " WHERE " + state + " = '" + value + "'";
         VideoItem item = null;
 
         Cursor cursor = db.rawQuery(selectQuery, null);

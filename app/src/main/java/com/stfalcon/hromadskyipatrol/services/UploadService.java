@@ -161,10 +161,10 @@ public class UploadService extends IntentService {
             serverAnswer.setState(VideoItem.State.UPLOADED.value());
 
         } catch (FileNotFoundException ex) {
-            System.err.println(ex);
+            System.err.println(ex.getMessage());
             serverAnswer.setState(VideoItem.State.BROKEN_FILE.value());
         } catch (Exception ex) {
-            System.err.println(ex);
+            System.err.println(ex.getMessage());
             serverAnswer.setState(VideoItem.State.ERROR.value());
         }
         return serverAnswer;

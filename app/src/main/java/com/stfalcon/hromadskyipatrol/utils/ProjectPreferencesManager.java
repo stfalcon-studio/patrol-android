@@ -48,7 +48,7 @@ public final class ProjectPreferencesManager {
         PreferenceManager.getDefaultSharedPreferences(context)
                 .edit()
                 .putBoolean(PREFERENCES_TAG_UPLOAD_ONLY_WIFI, mode)
-                .commit();
+                .apply();
     }
 
     public static boolean getUploadWifiOnlyMode(Context context) {
@@ -60,7 +60,7 @@ public final class ProjectPreferencesManager {
         PreferenceManager.getDefaultSharedPreferences(context)
                 .edit()
                 .putBoolean(PREFERENCES_TAG_UPLOAD_AUTOMATICALLY, mode)
-                .commit();
+                .apply();
     }
 
     public static boolean getAutoUploadMode(Context context) {
@@ -75,12 +75,20 @@ public final class ProjectPreferencesManager {
     }
 
     public static UserItem getUser(Context context) {
-        return getObject(
+        UserItem item = getObject(
                 context,
                 PREFERENCES_TAG_USER,
                 new TypeToken<UserItem>() {
                 }.getType()
         );
+        if (item != null) {
+            return item;
+        } else {
+            UserItem userItem = new UserItem();
+            userItem.setEmail(UserItem.NO_AUTHORIZED_EMAIL);
+            userItem.setId(UserItem.NO_AUTHORIZED_ID);
+            return userItem;
+        }
     }
 
     /*      PRIVATE METHODS     */
@@ -91,7 +99,7 @@ public final class ProjectPreferencesManager {
                 .putString(
                         key,
                         new Gson().toJson(object))
-                .commit();
+                .apply();
     }
 
     private static <T> T getObject(Context context, String key, Type type) {
@@ -103,7 +111,7 @@ public final class ProjectPreferencesManager {
         PreferenceManager.getDefaultSharedPreferences(context)
                 .edit()
                 .putBoolean(PREFERENCES_TAG_START_RECORDER, mode)
-                .commit();
+                .apply();
     }
 
     public static boolean getRecorderMode(Context context) {

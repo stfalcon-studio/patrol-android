@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
@@ -34,6 +35,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -59,7 +61,9 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
     private CheckBox termsPrivacyCb;
     private LinearLayout copyrightLayout;
     private TextView termsPrivacyTv;
+    private Toolbar toolbar;
     private LoginUserRequestListener requestListener = new LoginUserRequestListener();
+    private boolean isPrivacyAccepted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +73,19 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
         initUserAccount();
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
     private void initViews() {
+        toolbar = (Toolbar) findViewById(R.id.loginToolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setTitle("");
+
         loginButton = findViewById(R.id.loginButton);
         loginButton.setOnClickListener(this);
         progressBar = findViewById(R.id.progressBar);
@@ -98,7 +114,7 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
         termsPrivacyCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                loginButton.setEnabled(b);
+                isPrivacyAccepted = b;
             }
         });
 
@@ -108,8 +124,13 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.loginButton:
-                if (isEmailValid(emailEditText.getText().toString())) {
-                    loginUser(emailEditText.getText().toString());
+                if (isPrivacyAccepted) {
+                    if (isEmailValid(emailEditText.getText().toString())) {
+                        loginUser(emailEditText.getText().toString());
+                    }
+                } else {
+                    Toast.makeText(this, R.string.terms_and_privacy_error, Toast.LENGTH_SHORT)
+                            .show();
                 }
                 break;
             case R.id.copyrightLayout:
@@ -130,7 +151,7 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
             }
         }
 
-        emailEditText.setText(userData == null ? UserEmailFetcher.getEmail(this) : userData.getEmail());
+        emailEditText.setText(userData == null || !userData.isLogin() ? UserEmailFetcher.getEmail(this) : userData.getEmail());
         loginButton.setVisibility(View.VISIBLE);
     }
 
@@ -175,29 +196,17 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
 
         @Override
         public void onRequestFailure(SpiceException spiceException) {
+            loginButton.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
 
-            UserItem user = ProjectPreferencesManager.getUser(LoginActivity.this);
-            if (user != null) {
-                if (user.getEmail().contentEquals(emailEditText.getText().toString())) {
-                    user.setIsLogin(true);
-                    ProjectPreferencesManager.setUser(LoginActivity.this, user);
-
-                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                    finish();
-                }
+            String message;
+            if (NetworkUtils.getConnectivityStatus(LoginActivity.this) == NetworkUtils.NOT_CONNECTED) {
+                message = getString(R.string.error_no_connection);
             } else {
-                loginButton.setVisibility(View.VISIBLE);
-                progressBar.setVisibility(View.GONE);
-
-                String message;
-                if (NetworkUtils.getConnectivityStatus(LoginActivity.this) == NetworkUtils.NOT_CONNECTED) {
-                    message = getString(R.string.error_no_connection);
-                } else {
-                    message = getString(R.string.error_server_connecting);
-                }
-
-                AppUtilities.showToast(LoginActivity.this, message, false);
+                message = getString(R.string.error_server_connecting);
             }
+
+            AppUtilities.showToast(LoginActivity.this, message, false);
         }
 
         @Override
@@ -206,10 +215,11 @@ public class LoginActivity extends BaseSpiceActivity implements View.OnClickList
             if (userData == null) userData = new UserItem();
             userData.setEmail(user.email);
             userData.setId(user.id);
-            userData.setIsLogin(true);
             ProjectPreferencesManager.setUser(LoginActivity.this, userData);
 
-            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
             finish();
         }
     }

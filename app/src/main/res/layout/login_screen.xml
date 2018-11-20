@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2015 - 2016. Stepan Tanasiychuk
   ~
   ~     This file is part of Gromadskyi Patrul is free software: you can redistribute it and/or modify
@@ -20,12 +19,19 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tool="http://schemas.android.com/tools"
     android:animateLayoutChanges="true"
     android:background="@color/primaryColor"
     android:padding="16dp">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/loginToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:title="" />
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -38,33 +44,33 @@
             android:layout_width="@dimen/login_screen_icon"
             android:layout_height="@dimen/login_screen_icon"
             android:layout_centerHorizontal="true"
-            android:src="@drawable/logo_login"/>
+            android:src="@drawable/logo_login" />
 
         <TextView
             android:id="@+id/titleTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
             android:layout_below="@+id/logoImageView"
+            android:layout_centerHorizontal="true"
             android:layout_marginTop="12dp"
-            android:textSize="30sp"
-            android:textStyle="bold"
             android:gravity="center"
+            android:text="@string/app_name"
             android:textColor="@color/primaryTextColor"
-            android:text="@string/app_name"/>
+            android:textSize="30sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/descriptionTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
             android:layout_below="@+id/titleTextView"
+            android:layout_centerHorizontal="true"
             android:layout_marginTop="12dp"
-            android:textSize="18sp"
-            android:textStyle="normal"
             android:gravity="center"
+            android:text="@string/login_description"
             android:textColor="@color/primaryTextColor"
-            android:text="@string/login_description"/>
+            android:textSize="18sp"
+            android:textStyle="normal" />
 
         <!--    focus thief     -->
         <View
@@ -75,22 +81,22 @@
 
         <com.stfalcon.hromadskyipatrol.ui.custom.ClearEditText
             android:id="@+id/emailEditText"
+            style="@style/Base.V12.Widget.AppCompat.EditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/descriptionTextView"
             android:layout_alignLeft="@+id/titleTextView"
             android:layout_alignRight="@+id/titleTextView"
             android:layout_centerHorizontal="true"
-            android:layout_below="@+id/descriptionTextView"
             android:layout_marginTop="12dp"
             android:ems="10"
-            android:inputType="textEmailAddress"
-            android:textSize="18sp"
-            android:textStyle="normal"
             android:gravity="center"
-            android:textColor="@color/primaryTextColor"
             android:hint="@string/email_hint"
+            android:inputType="textEmailAddress"
+            android:textColor="@color/primaryTextColor"
             android:textColorHint="@color/primaryTextColor"
-            style="@style/Base.V12.Widget.AppCompat.EditText"/>
+            android:textSize="18sp"
+            android:textStyle="normal" />
 
         <Button
             android:id="@+id/loginButton"
@@ -99,12 +105,12 @@
             android:layout_below="@+id/emailEditText"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="12dp"
-            android:text="@string/login_button"
-            android:textColor="@color/darkTextColor"
             android:background="@color/primaryTextColor"
+            android:elevation="4dp"
             android:paddingLeft="6dp"
             android:paddingRight="6dp"
-            android:elevation="4dp"/>
+            android:text="@string/login_button"
+            android:textColor="@color/darkTextColor" />
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -114,8 +120,8 @@
             android:layout_below="@+id/loginButton"
             android:layout_centerHorizontal="true"
             android:layout_margin="16dp"
-            android:visibility="gone"
-            android:color="@color/primaryTextColor" />
+            android:color="@color/primaryTextColor"
+            android:visibility="gone" />
 
     </RelativeLayout>
 
@@ -124,9 +130,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/copyrightLayout"
-        android:layout_marginBottom="8dp"
-        android:gravity="center"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="24dp"
+        android:gravity="center"
         android:textColor="@android:color/white"
         android:textSize="16sp"
         tool:text="@string/terms_and_privacy" />
@@ -135,8 +141,8 @@
         android:id="@+id/termsPrivacyCb"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/termsPrivacyTv"
         android:layout_alignTop="@+id/termsPrivacyTv"
+        android:layout_alignBottom="@+id/termsPrivacyTv"
         android:layout_marginRight="8dp"
         android:layout_toLeftOf="@+id/termsPrivacyTv" />
 
@@ -145,27 +151,28 @@
         android:id="@+id/copyrightLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="6dp"
         android:gravity="center"
-        android:layout_marginBottom="6dp">
+        android:orientation="horizontal">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/primaryTextColor"
-            android:text="@string/made_by"/>
+            android:text="@string/made_by"
+            android:textColor="@color/primaryTextColor" />
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_stfalcon"/>
+            android:src="@drawable/icon_stfalcon" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/primaryTextColor"
-            android:text="@string/stfalcon_com"/>
+            android:text="@string/stfalcon_com"
+            android:textColor="@color/primaryTextColor" />
     </LinearLayout>
 
 </RelativeLayout>
